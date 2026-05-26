@@ -1,0 +1,14 @@
+# Flutter
+app/.dart_tool/
+app/build/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+
+# NestJS
+backend/node_modules/
+backend/dist/
+backend/.env
+
+# General
+.DS_Store
+*.log
