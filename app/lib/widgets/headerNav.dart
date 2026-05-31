@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app/core/theme/app_color.dart';
 
 class HeaderNavBar extends StatelessWidget implements PreferredSizeWidget {
   final String userName;
@@ -19,6 +20,10 @@ class HeaderNavBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final dimColor = isDark ? Colors.white70 : AppColors.textSecondary;
+
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       padding: EdgeInsets.only(
@@ -36,10 +41,10 @@ class HeaderNavBar extends StatelessWidget implements PreferredSizeWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   'Hey!',
                   style: TextStyle(
-                    color: Color(0xFF555555),
+                    color: dimColor,
                     fontSize: 15,
                     fontWeight: FontWeight.w400,
                   ),
@@ -47,8 +52,8 @@ class HeaderNavBar extends StatelessWidget implements PreferredSizeWidget {
                 const SizedBox(height: 2),
                 Text(
                   userName.toUpperCase(),
-                  style: const TextStyle(
-                    color: Color(0xFF1A1A1A),
+                  style: TextStyle(
+                    color: dimColor,
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.5,
