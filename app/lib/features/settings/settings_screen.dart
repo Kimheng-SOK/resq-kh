@@ -4,6 +4,8 @@ import 'package:app/features/settings/widgets/section_header_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'widgets/setting_tile_widget.dart';
+import 'widgets/diver_widget.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -47,13 +49,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
               margin: EdgeInsets.zero,
               child: Column(
                 children: [
-                  _SettingsTile(
+                  SettingsTile(
                     icon: Icons.person_outline_rounded,
                     label: 'Edit Profile',
                     onTap: () => context.push('/profile'),
                   ),
-                  _Divider(),
-                  _SettingsTile(
+                  const DividerWidget(),
+                  SettingsTile(
                     icon: Icons.lock_outline_rounded,
                     label: 'Change Password',
                     onTap: () {},
@@ -71,18 +73,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
               margin: EdgeInsets.zero,
               child: Column(
                 children: [
-                  _SettingsTile(
+                  SettingsTile(
                     icon: Icons.notifications_outlined,
                     label: 'Push Notifications',
                     trailing: Switch(
                       value: _pushNotifications,
                       activeTrackColor: AppColors.red,
-                      onChanged: (v) =>
-                          setState(() => _pushNotifications = v),
+                      onChanged: (v) => setState(() => _pushNotifications = v),
                     ),
                   ),
-                  _Divider(),
-                  _SettingsTile(
+                  const Divider(),
+                  SettingsTile(
                     icon: Icons.email_outlined,
                     label: 'Email Alerts',
                     trailing: Switch(
@@ -112,11 +113,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     child: Row(
                       children: [
-                        Icon(
-                          Icons.language_rounded,
-                          color: dimColor,
-                          size: 22,
-                        ),
+                        Icon(Icons.language_rounded, color: dimColor, size: 22),
                         const SizedBox(width: 14),
                         Expanded(
                           child: Text(
@@ -134,18 +131,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               value: 'EN',
                               label: Text(
                                 'EN',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                style: TextStyle(fontWeight: FontWeight.w600),
                               ),
                             ),
                             ButtonSegment(
                               value: 'KH',
                               label: Text(
                                 'KH',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                style: TextStyle(fontWeight: FontWeight.w600),
                               ),
                             ),
                           ],
@@ -159,7 +152,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
 
-                  _Divider(),
+                  const Divider(),
 
                   // Theme Mode
                   Padding(
@@ -191,27 +184,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               value: ThemeMode.system,
                               label: Text(
                                 'Auto',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                style: TextStyle(fontWeight: FontWeight.w600),
                               ),
                             ),
                             ButtonSegment(
                               value: ThemeMode.light,
                               label: Text(
                                 'Light',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                style: TextStyle(fontWeight: FontWeight.w600),
                               ),
                             ),
                             ButtonSegment(
                               value: ThemeMode.dark,
                               label: Text(
                                 'Dark',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                style: TextStyle(fontWeight: FontWeight.w600),
                               ),
                             ),
                           ],
@@ -237,13 +224,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
               margin: EdgeInsets.zero,
               child: Column(
                 children: [
-                  _SettingsTile(
+                  SettingsTile(
                     icon: Icons.medical_information_outlined,
                     label: 'Medical Info',
                     onTap: () {},
                   ),
-                  _Divider(),
-                  _SettingsTile(
+                  const Divider(),
+                  SettingsTile(
                     icon: Icons.contacts_outlined,
                     label: 'Emergency Contacts',
                     onTap: () {},
@@ -261,7 +248,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               margin: EdgeInsets.zero,
               child: Column(
                 children: [
-                  _SettingsTile(
+                  SettingsTile(
                     icon: Icons.info_outline_rounded,
                     label: 'Version',
                     trailing: Text(
@@ -273,14 +260,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                   ),
-                  _Divider(),
-                  _SettingsTile(
+                  const Divider(),
+                  SettingsTile(
                     icon: Icons.privacy_tip_outlined,
                     label: 'Privacy Policy',
                     onTap: () {},
                   ),
-                  _Divider(),
-                  _SettingsTile(
+                  const Divider(),
+                  SettingsTile(
                     icon: Icons.article_outlined,
                     label: 'Terms of Service',
                     onTap: () {},
@@ -331,73 +318,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         if (state.contains(WidgetState.selected)) return Colors.white;
         return onSurface;
       }),
-    );
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// Reusable settings tile
-// ═══════════════════════════════════════════════════════════════════════
-
-class _SettingsTile extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Widget? trailing;
-  final VoidCallback? onTap;
-
-  const _SettingsTile({
-    required this.icon,
-    required this.label,
-    this.trailing,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final onSurface = theme.colorScheme.onSurface;
-
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Row(
-          children: [
-            Icon(icon, color: isDark ? Colors.white54 : AppColors.textSecondary, size: 22),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  color: onSurface,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            if (trailing != null)
-              trailing!
-            else if (onTap != null)
-              Icon(
-                Icons.chevron_right_rounded,
-                color: isDark ? Colors.white38 : AppColors.textSecondary.withAlpha(150),
-                size: 22,
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Thin divider matching the card's content inset.
-class _Divider extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.only(left: 52),
-      child: Divider(height: 1, thickness: 0.5),
     );
   }
 }

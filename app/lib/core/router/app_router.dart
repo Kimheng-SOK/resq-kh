@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import '../../features/home/home_screen.dart';
 import '../../widgets/bottomNav.dart';
 import '../../widgets/headerNav.dart';
-import '../theme/app_color.dart';
 import '../../widgets/placeholder_screen.dart';
 import '../../features/settings/settings_screen.dart';
 
