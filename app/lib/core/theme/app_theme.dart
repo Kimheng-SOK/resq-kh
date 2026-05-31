@@ -79,11 +79,38 @@ class AppTheme {
         labelStyle: const TextStyle(color: AppColors.textSecondary),
       ),
 
+      // M2 compat (kept for older BottomNavigationBar usage)
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.white,
         selectedItemColor: AppColors.red,
         unselectedItemColor: AppColors.textSecondary,
         type: BottomNavigationBarType.fixed,
+      ),
+
+      // M3 NavigationBar theme
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: AppColors.surface,
+        elevation: 2,
+        shadowColor: AppColors.shadow,
+        surfaceTintColor: Colors.transparent,
+        indicatorColor: AppColors.red.withAlpha(30),
+        indicatorShape: const StadiumBorder(),
+        height: 80,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppColors.red,
+            );
+          }
+          return const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: AppColors.textSecondary,
+          );
+        }),
       ),
 
       textTheme: const TextTheme(
@@ -221,11 +248,38 @@ class AppTheme {
         labelStyle: const TextStyle(color: onSurfaceDim),
       ),
 
+      // M2 compat (kept for older BottomNavigationBar usage)
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: surface,
         selectedItemColor: AppColors.redLight,
         unselectedItemColor: onSurfaceDim,
         type: BottomNavigationBarType.fixed,
+      ),
+
+      // M3 NavigationBar theme
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: surface,
+        elevation: 2,
+        shadowColor: Colors.black26,
+        surfaceTintColor: Colors.transparent,
+        indicatorColor: AppColors.redLight.withAlpha(30),
+        indicatorShape: const StadiumBorder(),
+        height: 80,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppColors.redLight,
+            );
+          }
+          return const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: onSurfaceDim,
+          );
+        }),
       ),
 
       textTheme: const TextTheme(
