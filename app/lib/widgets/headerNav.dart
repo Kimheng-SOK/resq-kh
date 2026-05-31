@@ -15,12 +15,12 @@ class HeaderNavBar extends StatelessWidget implements PreferredSizeWidget {
   }) : super(key: key);
 
   @override
-  Size get preferredSize => const Size.fromHeight(80);
+  Size get preferredSize => const Size.fromHeight(50);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFFF2F2F2),
+      color: Theme.of(context).scaffoldBackgroundColor,
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top + 12,
         left: 20,
