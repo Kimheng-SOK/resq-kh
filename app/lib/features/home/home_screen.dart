@@ -7,7 +7,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Center(
       child: Text(
-        'Home',
+        'Home Page',
         style: TextStyle(
           color: Color(0xFF1A1A1A),
           fontSize: 22,
