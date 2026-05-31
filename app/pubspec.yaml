@@ -10,6 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_riverpod: ^3.3.1
 
   cupertino_icons: ^1.0.8
   provider: ^6.1.2
@@ -33,3 +34,4 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/data/contacts.json
