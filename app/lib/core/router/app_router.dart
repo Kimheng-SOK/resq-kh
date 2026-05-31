@@ -3,6 +3,7 @@ import 'package:app/features/contacts/contact_screen.dart';
 import 'package:app/features/contacts/fire_station_screen.dart';
 import 'package:app/features/contacts/general_contacts_screen.dart';
 import 'package:app/features/contacts/police_screen.dart';
+import 'package:app/features/preference/preference_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/home/home_screen.dart';
@@ -69,6 +70,10 @@ final router = GoRouter(
       path: '/settings',
       builder: (context, state) => const SettingsScreen(),
     ),
+    GoRoute(
+      path: '/preferences',
+      builder: (context, state) => const PreferenceScreen(),
+    ),
   ],
 );
 
@@ -120,7 +125,7 @@ class AppShell extends StatelessWidget {
             userName: 'SOK KIMHENG',
             hasNotification: true,
             onNotificationTap: () => context.push('/notifications'),
-            onProfileTap: () => context.push('/profile'),
+            onProfileTap: () => context.push('/settings'),
           ),
           Expanded(child: child),
           BottomNavBar(
