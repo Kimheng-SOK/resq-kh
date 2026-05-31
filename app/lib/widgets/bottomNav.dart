@@ -1,63 +1,74 @@
 import 'package:flutter/material.dart';
+import '../core/theme/app_color.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
   const BottomNavBar({
-    Key? key,
+    super.key,
     required this.currentIndex,
     required this.onTap,
-  }) : super(key: key);
+  });
+
+  // ── Build ────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
+      height: 100,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
-        ),
+        color: theme.colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
+            color: isDark ? Colors.black26 : AppColors.shadow,
+            blurRadius: 8,
+            offset: const Offset(0, -2),
           ),
         ],
       ),
       child: SafeArea(
-        child: SizedBox(
-          height: 72,
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _NavItem(
+                index: 0,
                 icon: Icons.home_rounded,
+                activeIcon: Icons.home_rounded,
                 label: 'Home',
                 isSelected: currentIndex == 0,
                 onTap: () => onTap(0),
               ),
               _NavItem(
-                icon: Icons.location_on_outlined,
+                index: 1,
+                icon: Icons.map_rounded,
+                activeIcon: Icons.map_rounded,
                 label: 'Map',
                 isSelected: currentIndex == 1,
                 onTap: () => onTap(1),
               ),
-
-              // Center SOS button
-              _SOSCenterButton(onTap: () => onTap(2)),
-
+              _SOSNavItem(
+                isSelected: currentIndex == 2,
+                onTap: () => onTap(2),
+                onLongPress: () => _showSOSBottomSheet(context),
+              ),
               _NavItem(
-                icon: Icons.people_outline_rounded,
+                index: 3,
+                icon: Icons.people_rounded,
+                activeIcon: Icons.people_rounded,
                 label: 'Contacts',
                 isSelected: currentIndex == 3,
                 onTap: () => onTap(3),
               ),
               _NavItem(
-                icon: Icons.medical_services_outlined,
+                index: 4,
+                icon: Icons.medical_services_rounded,
+                activeIcon: Icons.medical_services_rounded,
                 label: 'First Aid',
                 isSelected: currentIndex == 4,
                 onTap: () => onTap(4),
@@ -68,16 +79,39 @@ class BottomNavBar extends StatelessWidget {
       ),
     );
   }
+
+  // ── SOS long-press sheet ──────────────────────────────────────────
+
+  void _showSOSBottomSheet(BuildContext context) async {
+    final String? type = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => const _SOSEmergencySheet(),
+    );
+    if (type != null && context.mounted) {
+      onTap(2);
+      // TODO: route to '/services/$type' once the router supplies those paths
+    }
+  }
 }
 
+// ═══════════════════════════════════════════════════════════════════════
+// Standard nav item
+// ═══════════════════════════════════════════════════════════════════════
+
 class _NavItem extends StatelessWidget {
+  final int index;
   final IconData icon;
+  final IconData activeIcon;
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _NavItem({
+    required this.index,
     required this.icon,
+    required this.activeIcon,
     required this.label,
     required this.isSelected,
     required this.onTap,
@@ -85,72 +119,379 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isSelected
-        ? const Color(0xFFD32F2F)
-        : const Color(0xFF9E9E9E);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: SizedBox(
-        width: 64,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: color, size: 24),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: color,
-                fontSize: 11,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+    final Color fgColor = isSelected
+        ? AppColors.red
+        : isDark
+        ? Colors.white54
+        : AppColors.textSecondary;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // ── Indicator pill ────────────────────────────
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                width: isSelected ? 36 : 0,
+                height: 3,
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.red : Colors.transparent,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 6),
+              // ── Icon ──────────────────────────────────────
+              Icon(isSelected ? activeIcon : icon, size: 26, color: fgColor),
+              const SizedBox(height: 4),
+              // ── Label ─────────────────────────────────────
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                  color: fgColor,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-/// Center SOS circular button
-class _SOSCenterButton extends StatelessWidget {
-  final VoidCallback onTap;
+// ═══════════════════════════════════════════════════════════════════════
+// SOS nav item — featured, elevated, red circle embedded in the row
+// ═══════════════════════════════════════════════════════════════════════
 
-  const _SOSCenterButton({required this.onTap});
+class _SOSNavItem extends StatelessWidget {
+  final bool isSelected;
+  final VoidCallback onTap;
+  final VoidCallback onLongPress;
+
+  const _SOSNavItem({
+    required this.isSelected,
+    required this.onTap,
+    required this.onLongPress,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Transform.translate(
-        offset: const Offset(0, -12), // Lift above nav bar
-        child: Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            color: const Color(0xFFD32F2F),
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFFD32F2F).withOpacity(0.4),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        onLongPress: onLongPress,
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // ── Indicator pill ────────────────────────────
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                width: isSelected ? 36 : 0,
+                height: 3,
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.red : Colors.transparent,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
+              const SizedBox(height: 4),
+              // ── SOS circle ────────────────────────────────
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: AppColors.red,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.red.withAlpha(isSelected ? 140 : 80),
+                      blurRadius: isSelected ? 18 : 10,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                  border: isSelected
+                      ? Border.all(
+                          color: Colors.white.withAlpha(90),
+                          width: 2.5,
+                        )
+                      : null,
+                ),
+                child: const Center(
+                  child: Text(
+                    'SOS',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.8,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
             ],
           ),
-          child: const Center(
-            child: Text(
-              'SOS',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
-              ),
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Data model for emergency types shown in the SOS long-press sheet
+// ═══════════════════════════════════════════════════════════════════════
+
+class _EmergencyType {
+  final String id;
+  final String label;
+  final IconData icon;
+  final Color color;
+
+  const _EmergencyType({
+    required this.id,
+    required this.label,
+    required this.icon,
+    required this.color,
+  });
+}
+
+const List<_EmergencyType> _emergencyTypes = [
+  _EmergencyType(
+    id: 'police',
+    label: 'Police',
+    icon: Icons.local_police_rounded,
+    color: AppColors.police,
+  ),
+  _EmergencyType(
+    id: 'hospital',
+    label: 'Hospital',
+    icon: Icons.local_hospital_rounded,
+    color: AppColors.hospital,
+  ),
+  _EmergencyType(
+    id: 'fire',
+    label: 'Fire',
+    icon: Icons.local_fire_department_rounded,
+    color: AppColors.fire,
+  ),
+  _EmergencyType(
+    id: 'ambulance',
+    label: 'Ambulance',
+    icon: Icons.airport_shuttle_rounded,
+    color: AppColors.ambulance,
+  ),
+];
+
+// ═══════════════════════════════════════════════════════════════════════
+// SOS Emergency bottom sheet — 2×2 grid of emergency types
+// ═══════════════════════════════════════════════════════════════════════
+
+class _SOSEmergencySheet extends StatelessWidget {
+  const _SOSEmergencySheet();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // ── Drag handle ────────────────────────────────────
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.white.withAlpha(120),
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
+          const SizedBox(height: 16),
+
+          // ── Card ───────────────────────────────────────────
+          Container(
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(24),
+            ),
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
+            child: Column(
+              children: [
+                // ── Header ──────────────────────────────────
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: AppColors.red.withAlpha(25),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.warning_rounded,
+                    color: AppColors.red,
+                    size: 32,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Select Emergency Type',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'What kind of help do you need?',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: isDark ? Colors.white54 : AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // ── 2×2 Emergency type grid ─────────────────
+                Row(
+                  children: [
+                    Expanded(
+                      child: _EmergencyTypeCard(
+                        type: _emergencyTypes[0],
+                        onTap: () =>
+                            Navigator.pop(context, _emergencyTypes[0].id),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _EmergencyTypeCard(
+                        type: _emergencyTypes[1],
+                        onTap: () =>
+                            Navigator.pop(context, _emergencyTypes[1].id),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _EmergencyTypeCard(
+                        type: _emergencyTypes[2],
+                        onTap: () =>
+                            Navigator.pop(context, _emergencyTypes[2].id),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _EmergencyTypeCard(
+                        type: _emergencyTypes[3],
+                        onTap: () =>
+                            Navigator.pop(context, _emergencyTypes[3].id),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                // ── Cancel ──────────────────────────────────
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          bottom: Radius.circular(20),
+                        ),
+                      ),
+                    ),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: isDark
+                            ? Colors.white54
+                            : AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Safe-area spacer
+          SizedBox(height: MediaQuery.of(context).padding.bottom),
+        ],
+      ),
+    );
+  }
+}
+
+/// A single emergency type card inside the 2×2 grid.
+class _EmergencyTypeCard extends StatelessWidget {
+  final _EmergencyType type;
+  final VoidCallback onTap;
+
+  const _EmergencyTypeCard({required this.type, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final bool isDark = theme.brightness == Brightness.dark;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: isDark ? type.color.withAlpha(20) : type.color.withAlpha(15),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: type.color.withAlpha(50), width: 1),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 20),
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                color: type.color.withAlpha(35),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(type.icon, color: type.color, size: 30),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              type.label,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
         ),
       ),
     );
