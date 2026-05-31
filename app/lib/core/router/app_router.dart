@@ -5,6 +5,7 @@ import '../../widgets/bottomNav.dart';
 import '../../widgets/headerNav.dart';
 import '../theme/app_color.dart';
 import '../../widgets/placeholder_screen.dart';
+import '../../features/settings/settings_screen.dart';
 
 final router = GoRouter(
   initialLocation: '/',
@@ -42,6 +43,10 @@ final router = GoRouter(
       builder: (context, state) =>
           const PlaceholderScreen(title: 'Notifications'),
     ),
+    GoRoute(
+      path: '/settings',
+      builder: (context, state) => const SettingsScreen(),
+    ),
   ],
 );
 
@@ -55,6 +60,8 @@ class AppShell extends StatelessWidget {
     required this.child,
   });
 
+  /// Maps a route location to the corresponding BottomNavBar external index.
+  /// External index layout: 0=Home, 1=Map, 2=SOS, 3=Contacts, 4=First Aid
   int _currentIndexForLocation(String location) {
     switch (location) {
       case '/map':
@@ -70,6 +77,8 @@ class AppShell extends StatelessWidget {
     }
   }
 
+  /// Converts a BottomNavBar external index back to a route location.
+  /// External index layout: 0=Home, 1=Map, 2=SOS, 3=Contacts, 4=First Aid
   String _locationForIndex(int index) {
     switch (index) {
       case 1:
