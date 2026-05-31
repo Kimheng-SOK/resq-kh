@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import '../../features/home/home_screen.dart';
 import '../../widgets/bottomNav.dart';
 import '../../widgets/headerNav.dart';
+import '../theme/app_color.dart';
+import '../../widgets/placeholder_screen.dart';
 
 final router = GoRouter(
   initialLocation: '/',
@@ -29,15 +31,16 @@ final router = GoRouter(
           path: '/first-aid',
           builder: (context, state) => const _RouteBody(title: 'First Aid'),
         ),
-        GoRoute(
-          path: '/profile',
-          builder: (context, state) => const _RouteBody(title: 'Profile'),
-        ),
-        GoRoute(
-          path: '/notifications',
-          builder: (context, state) => const _RouteBody(title: 'Notifications'),
-        ),
       ],
+    ),
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) => const PlaceholderScreen(title: 'Profile'),
+    ),
+    GoRoute(
+      path: '/notifications',
+      builder: (context, state) =>
+          const PlaceholderScreen(title: 'Notifications'),
     ),
   ],
 );
@@ -46,8 +49,11 @@ class AppShell extends StatelessWidget {
   final String currentLocation;
   final Widget child;
 
-  const AppShell({Key? key, required this.currentLocation, required this.child})
-    : super(key: key);
+  const AppShell({
+    super.key,
+    required this.currentLocation,
+    required this.child,
+  });
 
   int _currentIndexForLocation(String location) {
     switch (location) {
@@ -82,14 +88,14 @@ class AppShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F2),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
           HeaderNavBar(
-            userName: 'RESQ',
+            userName: 'SOK KIMHENG',
             hasNotification: true,
-            onNotificationTap: () => context.go('/notifications'),
-            onProfileTap: () => context.go('/profile'),
+            onNotificationTap: () => context.push('/notifications'),
+            onProfileTap: () => context.push('/profile'),
           ),
           Expanded(child: child),
           BottomNavBar(
