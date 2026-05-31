@@ -3,7 +3,6 @@ import 'package:app/features/home/widgets/quick_action_tile.dart';
 import 'package:app/features/home/widgets/sos_button.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import '../../core/theme/app_color.dart';
 
 class HomeScreen extends StatelessWidget {
