@@ -80,8 +80,6 @@ class BottomNavBar extends StatelessWidget {
     );
   }
 
-  // ── SOS long-press sheet ──────────────────────────────────────────
-
   void _showSOSBottomSheet(BuildContext context) async {
     final String? type = await showModalBottomSheet<String>(
       context: context,
@@ -95,10 +93,6 @@ class BottomNavBar extends StatelessWidget {
     }
   }
 }
-
-// ═══════════════════════════════════════════════════════════════════════
-// Standard nav item
-// ═══════════════════════════════════════════════════════════════════════
 
 class _NavItem extends StatelessWidget {
   final int index;
@@ -169,10 +163,6 @@ class _NavItem extends StatelessWidget {
     );
   }
 }
-
-// ═══════════════════════════════════════════════════════════════════════
-// SOS nav item — featured, elevated, red circle embedded in the row
-// ═══════════════════════════════════════════════════════════════════════
 
 class _SOSNavItem extends StatelessWidget {
   final bool isSelected;
@@ -254,10 +244,6 @@ class _SOSNavItem extends StatelessWidget {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// Data model for emergency types shown in the SOS long-press sheet
-// ═══════════════════════════════════════════════════════════════════════
-
 class _EmergencyType {
   final String id;
   final String label;
@@ -299,10 +285,6 @@ const List<_EmergencyType> _emergencyTypes = [
   ),
 ];
 
-// ═══════════════════════════════════════════════════════════════════════
-// SOS Emergency bottom sheet — 2×2 grid of emergency types
-// ═══════════════════════════════════════════════════════════════════════
-
 class _SOSEmergencySheet extends StatelessWidget {
   const _SOSEmergencySheet();
 
@@ -316,7 +298,6 @@ class _SOSEmergencySheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // ── Drag handle ────────────────────────────────────
           Container(
             width: 40,
             height: 4,
