@@ -13,3 +13,5 @@ backend/.env
 .DS_Store
 *.log
 .claude
+.cursor
+.codegraph
