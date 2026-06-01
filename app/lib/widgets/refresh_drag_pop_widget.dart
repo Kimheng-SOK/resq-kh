@@ -5,6 +5,7 @@ class RefreshDragPopWidget extends StatefulWidget {
   final Future<void> Function() onRefresh;
   final double refreshThreshold;
   final double swipeVelocityThreshold;
+  final Duration minRefreshDuration;
 
   const RefreshDragPopWidget({
     super.key,
@@ -12,6 +13,7 @@ class RefreshDragPopWidget extends StatefulWidget {
     required this.onRefresh,
     this.refreshThreshold = 80,
     this.swipeVelocityThreshold = 300,
+    this.minRefreshDuration = const Duration(milliseconds: 600),
   });
 
   @override
@@ -61,7 +63,11 @@ class _RefreshDragPopWidgetState extends State<RefreshDragPopWidget>
       _isRefreshing = true;
     });
     try {
-      await widget.onRefresh();
+      // Ensure the spinner is visible long enough to feel intentional.
+      await Future.wait([
+        widget.onRefresh(),
+        Future.delayed(widget.minRefreshDuration),
+      ]);
     } finally {
       if (mounted) {
         setState(() => _isRefreshing = false);

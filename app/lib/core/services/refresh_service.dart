@@ -8,8 +8,8 @@ class RefreshService {
 
   static Future<void> refreshPreferences(BuildContext context) async {
     final controller = context.read<ThemeController>();
-    await StorageService.getLanguage();
     await controller.loadThemeMode();
+    // Note: language is reloaded directly by PreferenceScreen after refresh.
   }
 
   static Future<void> refreshSettings(BuildContext context) async {
