@@ -1,11 +1,9 @@
 import 'package:app/core/services/refresh_service.dart';
 import 'package:app/core/theme/app_color.dart';
-import 'package:app/core/theme/theme_controller.dart';
 import 'package:app/features/settings/widgets/section_header_widget.dart';
 import 'package:app/widgets/refresh_drag_pop_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'widgets/setting_tile_widget.dart';
 import 'widgets/diver_widget.dart';
 

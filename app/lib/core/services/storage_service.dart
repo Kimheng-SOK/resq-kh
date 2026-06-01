@@ -21,7 +21,7 @@ class StorageService {
       await setSettings('themeMode', mode);
 
   static Future<String> getLanguage() async {
-    return await getSettings('language') ?? 'EN';
+    return await getSettings('language') ?? 'en';
   }
 
   static Future<void> setLanguage(String language) async =>
