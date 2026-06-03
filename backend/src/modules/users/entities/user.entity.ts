@@ -14,47 +14,50 @@ import { Notification } from '../../notifications/entities/notification.entity';
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id?: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  full_name: string | null;
+  full_name?: string | null;
 
   @Column({ type: 'varchar', length: 255, nullable: true, unique: true })
-  email: string | null;
+  email?: string | null;
 
   @Column({ type: 'varchar', length: 50, nullable: true })
-  phone_number: string | null;
-
-  @Column({ type: 'varchar', length: 10, nullable: true })
-  blood_group: string | null;
-
-  @Column({ type: 'text', nullable: true })
-  allergies: string | null;
-
-  @Column({ type: 'text', nullable: true })
-  medical_conditions: string | null;
-
-  @Column({ type: 'varchar', length: 10, default: 'en' })
-  preferred_language: string;
+  phone_number?: string | null;
 
   @Column({ type: 'boolean', default: false })
-  dark_mode_enabled: boolean;
+  is_phone_verified?: boolean;
+
+  @Column({ type: 'varchar', length: 10, nullable: true })
+  blood_group?: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  allergies?: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  medical_conditions?: string | null;
+
+  @Column({ type: 'varchar', length: 10, default: 'en' })
+  preferred_language?: string;
+
+  @Column({ type: 'boolean', default: false })
+  dark_mode_enabled?: boolean;
 
   @CreateDateColumn({ type: 'timestamptz' })
-  created_at: Date;
+  created_at?: Date;
 
   @UpdateDateColumn({ type: 'timestamptz' })
-  updated_at: Date;
+  updated_at?: Date;
 
   @OneToMany(() => Contact, (contact) => contact.user)
-  contacts: Contact[];
+  contacts?: Contact[];
 
   @OneToMany(() => EmergencyAlert, (alert) => alert.user)
-  emergency_alerts: EmergencyAlert[];
+  emergency_alerts?: EmergencyAlert[];
 
   @OneToMany(() => UserLocation, (location) => location.user)
-  locations: UserLocation[];
+  locations?: UserLocation[];
 
   @OneToMany(() => Notification, (notification) => notification.user)
-  notifications: Notification[];
+  notifications?: Notification[];
 }
