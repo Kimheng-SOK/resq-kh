@@ -6,12 +6,15 @@ class SettingsTile extends StatelessWidget {
   final String label;
   final Widget? trailing;
   final VoidCallback? onTap;
+  final Color? labelColor;
 
   const SettingsTile({
+    super.key,
     required this.icon,
     required this.label,
     this.trailing,
     this.onTap,
+    this.labelColor,
   });
 
   @override
@@ -36,7 +39,7 @@ class SettingsTile extends StatelessWidget {
               child: Text(
                 label,
                 style: TextStyle(
-                  color: onSurface,
+                  color: labelColor ?? onSurface,
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),

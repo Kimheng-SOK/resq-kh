@@ -85,7 +85,7 @@ class ServiceCard extends StatelessWidget {
             Row(
               children: [
                 const Icon(Icons.phone, size: 16, color: Colors.red),
-                Text('${service.phoneNumber}'),
+                Text(service.phoneNumber),
               ],
             ),
 

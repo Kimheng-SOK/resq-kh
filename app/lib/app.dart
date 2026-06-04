@@ -5,7 +5,7 @@ import 'core/theme/app_theme.dart';
 import 'core/theme/theme_controller.dart';
 
 class ResQApp extends StatelessWidget {
-  const ResQApp({Key? key}) : super(key: key);
+  const ResQApp({super.key});
 
   @override
   Widget build(BuildContext context) {

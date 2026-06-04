@@ -11,21 +11,21 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   bool isLoading = false;
 
   @override
   void dispose() {
     _nameController.dispose();
-    _emailController.dispose();
+    _emailController?.dispose();
     _phoneController.dispose();
     super.dispose();
   }
 
   Future<void> _continue() async {
     final name = _nameController.text.trim();
-    final email = _emailController.text.trim();
+    final email = _emailController?.text.trim();
     final phone = _phoneController.text.trim();
 
     if (name.isEmpty || phone.isEmpty) {
@@ -42,7 +42,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     try {
       final success = await AuthService.sendOtp(
         fullName: name,
-        email: email,
+        email: email ?? '',
         phoneNumber: phone,
       );
 

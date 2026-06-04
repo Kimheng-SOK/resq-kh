@@ -1,4 +1,11 @@
-import { Controller, Get, Post, Body, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -29,7 +36,7 @@ export class AuthController {
   }
 
   @Post('send-otp')
-  setOtp(@Body() dto: SendOtpDto){
+  setOtp(@Body() dto: SendOtpDto) {
     return this.authService.sendOtp(dto);
   }
 
@@ -37,5 +44,4 @@ export class AuthController {
   verifyOtp(@Body() dto: VerifyOtpDto) {
     return this.authService.verifyOtp(dto);
   }
-
 }

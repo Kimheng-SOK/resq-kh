@@ -40,8 +40,8 @@ export class User {
   @Column({ type: 'varchar', length: 10, default: 'en' })
   preferred_language?: string;
 
-  @Column({ type: 'boolean', default: false })
-  dark_mode_enabled?: boolean;
+  @Column({ type: 'varchar', length: 10, default: 'light' })
+  dark_mode?: string;
 
   @CreateDateColumn({ type: 'timestamptz' })
   created_at?: Date;

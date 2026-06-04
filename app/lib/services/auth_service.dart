@@ -1,10 +1,13 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AuthService {
-  static const String baseUrl = 'http://10.0.2.2:3000';
+  static final String baseUrl = dotenv.get(
+    'API_BASE_URL',
+    fallback: 'http://localhost:3000',
+  );
 
   static Future<bool> sendOtp({
     required String fullName,
@@ -20,7 +23,8 @@ class AuthService {
         'phone_number': phoneNumber,
       }),
     );
-
+    print('OTP Response Status: ${response.statusCode}');
+    print('OTP Response Body: ${response.body}');
     return response.statusCode >= 200 && response.statusCode < 300;
   }
 

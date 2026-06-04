@@ -4,7 +4,7 @@ import '../../../core/theme/app_color.dart';
 class SOSButton extends StatefulWidget {
   final VoidCallback onTap;
 
-  const SOSButton({Key? key, required this.onTap}) : super(key: key);
+  const SOSButton({super.key, required this.onTap});
 
   @override
   State<SOSButton> createState() => _SOSButtonState();
