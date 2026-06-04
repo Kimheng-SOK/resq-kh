@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/storage_service.dart';
+import 'package:app/services/storage_service.dart';
 
 class ThemeController extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;

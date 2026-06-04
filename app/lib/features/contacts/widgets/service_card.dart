@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../service_model.dart';
+import 'package:app/models/service_model.dart';
 import '../../../core/utils/launcher_helper.dart';
 
 class ServiceCard extends StatelessWidget {

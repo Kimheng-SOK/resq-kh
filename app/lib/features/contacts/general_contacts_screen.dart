@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:app/features/contacts/contacts_model.dart';
+import 'package:app/models/contact_model.dart';
 import 'widgets/contact_card.dart';
-import 'contacts_storage.dart';
+import 'package:app/services/contacts_storage.dart';
 
 class GeneralContactsScreen extends StatefulWidget {
   const GeneralContactsScreen({super.key});

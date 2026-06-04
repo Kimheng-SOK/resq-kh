@@ -1,4 +1,4 @@
-import 'package:app/core/services/storage_service.dart';
+import 'package:app/services/storage_service.dart';
 import 'package:app/core/theme/theme_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

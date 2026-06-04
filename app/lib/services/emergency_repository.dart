@@ -2,7 +2,7 @@ import 'dart:convert';
  
 import 'package:flutter/services.dart';
  
-import '../models/emergency_contact.dart';
+import 'package:app/models/emergency_contact.dart';
  
 class EmergencyRepository {
 

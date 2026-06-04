@@ -1,4 +1,4 @@
-import 'package:app/core/services/refresh_service.dart';
+import 'package:app/services/refresh_service.dart';
 import 'package:app/core/theme/app_color.dart';
 import 'package:app/features/settings/widgets/delete_modal_sheet.dart';
 import 'package:app/features/settings/widgets/section_header_widget.dart';
