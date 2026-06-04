@@ -16,92 +16,97 @@ import '../../widgets/headerNav.dart';
 import '../../widgets/placeholder_screen.dart';
 import '../../features/settings/settings_screen.dart';
 
-final router = GoRouter(
-  initialLocation: '/splash',
+GoRouter createRouter(String initialRoute) {
+  return GoRouter(
+    routes: [
+      GoRoute(
+        path: '/splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
 
-  routes: [
-    GoRoute(path: '/splash', builder: (context, state) => const SplashScreen()),
+      GoRoute(
+        path: '/register',
+        builder: (context, state) => const RegisterScreen(),
+      ),
 
-    GoRoute(
-      path: '/register',
-      builder: (context, state) => const RegisterScreen(),
-    ),
+      GoRoute(
+        path: '/otp',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
 
-    GoRoute(
-      path: '/otp',
-      builder: (context, state) {
-        final extra = state.extra as Map<String, dynamic>;
+          return OtpScreen(phoneNumber: extra['phone_number'] as String);
+        },
+      ),
 
-        return OtpScreen(phoneNumber: extra['phone_number'] as String);
-      },
-    ),
+      GoRoute(
+        path: '/location-permission',
+        builder: (context, state) => const LocationPermissionScreen(),
+      ),
+      ShellRoute(
+        builder: (context, state, child) {
+          return AppShell(currentLocation: state.matchedLocation, child: child);
+        },
+        routes: [
+          GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
 
-    GoRoute(
-      path: '/location-permission',
-      builder: (context, state) => const LocationPermissionScreen(),
-    ),
-    ShellRoute(
-      builder: (context, state, child) {
-        return AppShell(currentLocation: state.matchedLocation, child: child);
-      },
-      routes: [
-        GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+          GoRoute(
+            path: '/map',
+            builder: (context, state) => const _RouteBody(title: 'Map'),
+          ),
+          GoRoute(
+            path: '/sos',
+            builder: (context, state) => const _RouteBody(title: 'SOS'),
+          ),
+          GoRoute(
+            path: '/contacts',
+            builder: (context, state) => const ContactsScreen(),
+            routes: [
+              GoRoute(
+                path: '/general',
+                builder: (context, state) => const GeneralContactsScreen(),
+              ),
+              GoRoute(
+                path: '/police',
+                builder: (context, state) => const PoliceScreen(),
+              ),
+              GoRoute(
+                path: '/ambulance',
+                builder: (context, state) => const AmbulanceScreen(),
+              ),
+              GoRoute(
+                path: '/fire',
+                builder: (context, state) => const FireStationScreen(),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/first-aid',
+            builder: (context, state) => const _RouteBody(title: 'First Aid'),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/profile',
+        builder: (context, state) => const PlaceholderScreen(title: 'Profile'),
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) =>
+            const PlaceholderScreen(title: 'Notifications'),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/preferences',
+        builder: (context, state) => const PreferenceScreen(),
+      ),
+    ],
 
-        GoRoute(
-          path: '/map',
-          builder: (context, state) => const _RouteBody(title: 'Map'),
-        ),
-        GoRoute(
-          path: '/sos',
-          builder: (context, state) => const _RouteBody(title: 'SOS'),
-        ),
-        GoRoute(
-          path: '/contacts',
-          builder: (context, state) => const ContactsScreen(),
-          routes: [
-            GoRoute(
-              path: '/general',
-              builder: (context, state) => const GeneralContactsScreen(),
-            ),
-            GoRoute(
-              path: '/police',
-              builder: (context, state) => const PoliceScreen(),
-            ),
-            GoRoute(
-              path: '/ambulance',
-              builder: (context, state) => const AmbulanceScreen(),
-            ),
-            GoRoute(
-              path: '/fire',
-              builder: (context, state) => const FireStationScreen(),
-            ),
-          ],
-        ),
-        GoRoute(
-          path: '/first-aid',
-          builder: (context, state) => const _RouteBody(title: 'First Aid'),
-        ),
-      ],
-    ),
-    GoRoute(
-      path: '/profile',
-      builder: (context, state) => const PlaceholderScreen(title: 'Profile'),
-    ),
-    GoRoute(
-      path: '/notifications',
-      builder: (context, state) =>
-          const PlaceholderScreen(title: 'Notifications'),
-    ),
-    GoRoute(
-      path: '/settings',
-      builder: (context, state) => const SettingsScreen(),
-    ),
-    GoRoute(
-      path: '/preferences',
-      builder: (context, state) => const PreferenceScreen(),
-    ),
-  ],
-);
+    initialLocation: initialRoute,
+  );
+}
 
 class AppShell extends StatelessWidget {
   final String currentLocation;

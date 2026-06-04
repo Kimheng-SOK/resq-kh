@@ -1,3 +1,4 @@
+import 'package:app/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'app.dart';
 import 'package:http/http.dart' as http;
@@ -20,5 +21,9 @@ void main() async {
 
   await testBackend();
 
-  runApp(const ResQApp());
+  final token = await AuthService.getToken();
+
+  final initialRoute = token != null ? '/' : '/splash';
+
+  runApp(ResQApp(initialRoute: initialRoute));
 }

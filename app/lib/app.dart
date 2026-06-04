@@ -1,11 +1,13 @@
+import 'package:app/core/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_controller.dart';
 
 class ResQApp extends StatelessWidget {
-  const ResQApp({Key? key}) : super(key: key);
+  final String initialRoute;
+
+  const ResQApp({super.key, required this.initialRoute});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class ResQApp extends StatelessWidget {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: themeController.themeMode,
-            routerConfig: router,
+            routerConfig: createRouter(initialRoute),
           );
         },
       ),
