@@ -1,6 +1,8 @@
 import 'package:app/core/services/refresh_service.dart';
 import 'package:app/core/theme/app_color.dart';
+import 'package:app/features/settings/widgets/delete_modal_sheet.dart';
 import 'package:app/features/settings/widgets/section_header_widget.dart';
+import 'package:app/services/auth_service.dart';
 import 'package:app/widgets/refresh_drag_pop_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -17,6 +19,24 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _pushNotifications = true;
   bool _emailAlerts = false;
+
+  Future<void> _handleDeleteAccount() async {
+    final token = await AuthService.getToken();
+    if (token == null || !mounted) return;
+
+    final confirmed = await showDeleteAccountSheet(
+      context,
+      token: token,
+      confirmMessage: 'SOK KIMEHNG',
+    );
+
+    if (confirmed == true && mounted) {
+      await AuthService.logout();
+      if (mounted) {
+        context.go('/login');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -159,6 +179,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onTap: () {},
                     ),
                   ],
+                ),
+              ),
+
+              const SizedBox(height: 32),
+              Material(
+                color: isDark ? AppColors.redDark : AppColors.red,
+                borderRadius: BorderRadius.circular(12),
+                child: InkWell(
+                  onTap: _handleDeleteAccount,
+                  borderRadius: BorderRadius.circular(12),
+                  hoverColor: Colors.white.withValues(alpha: 0.15),
+                  splashColor: Colors.white.withValues(alpha: 0.25),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.delete_outline_rounded,
+                          size: 22,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          'Delete Account',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ],
