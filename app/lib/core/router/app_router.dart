@@ -1,3 +1,7 @@
+import 'package:app/auth/screens/location_permission_screen.dart';
+import 'package:app/auth/screens/otp_screen.dart';
+import 'package:app/auth/screens/register_screen.dart';
+import 'package:app/auth/screens/splash_screen.dart';
 import 'package:app/features/contacts/ambulance_screen.dart';
 import 'package:app/features/contacts/contact_screen.dart';
 import 'package:app/features/contacts/fire_station_screen.dart';
@@ -13,14 +17,36 @@ import '../../widgets/placeholder_screen.dart';
 import '../../features/settings/settings_screen.dart';
 
 final router = GoRouter(
-  initialLocation: '/',
+  initialLocation: '/splash',
+
   routes: [
+    GoRoute(path: '/splash', builder: (context, state) => const SplashScreen()),
+
+    GoRoute(
+      path: '/register',
+      builder: (context, state) => const RegisterScreen(),
+    ),
+
+    GoRoute(
+      path: '/otp',
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>;
+
+        return OtpScreen(phoneNumber: extra['phone_number'] as String);
+      },
+    ),
+
+    GoRoute(
+      path: '/location-permission',
+      builder: (context, state) => const LocationPermissionScreen(),
+    ),
     ShellRoute(
       builder: (context, state, child) {
         return AppShell(currentLocation: state.matchedLocation, child: child);
       },
       routes: [
         GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+
         GoRoute(
           path: '/map',
           builder: (context, state) => const _RouteBody(title: 'Map'),
