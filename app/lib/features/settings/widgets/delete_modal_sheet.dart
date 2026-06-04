@@ -1,34 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:app/services/user_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:app/providers/user_provider.dart';
 
 Future<bool?> showDeleteAccountSheet(
   BuildContext context, {
-  required String token,
   required String confirmMessage,
 }) {
   return showModalBottomSheet<bool>(
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
-    builder: (context) =>
-        _DeleteAccountSheet(confirmMessage: confirmMessage, token: token),
+    builder: (context) => _DeleteAccountSheet(
+      confirmMessage: confirmMessage,
+    ),
   );
 }
 
-class _DeleteAccountSheet extends StatefulWidget {
+class _DeleteAccountSheet extends ConsumerStatefulWidget {
   const _DeleteAccountSheet({
     required this.confirmMessage,
-    required this.token,
   });
 
   final String confirmMessage;
-  final String token;
 
   @override
-  State<_DeleteAccountSheet> createState() => _DeleteAccountSheetState();
+  ConsumerState<_DeleteAccountSheet> createState() =>
+      _DeleteAccountSheetState();
 }
 
-class _DeleteAccountSheetState extends State<_DeleteAccountSheet> {
+class _DeleteAccountSheetState extends ConsumerState<_DeleteAccountSheet> {
   final _controller = TextEditingController();
   bool _isLoading = false;
   String? _error;
@@ -49,12 +49,16 @@ class _DeleteAccountSheetState extends State<_DeleteAccountSheet> {
       _error = null;
     });
 
-    try {
-      await UserService.deleteAccount(widget.token);
-      if (mounted) Navigator.of(context).pop(true);
-    } catch (e) {
+    final success = await ref.read(userProvider.notifier).deleteAccount();
+
+    if (!mounted) return;
+
+    if (success) {
+      Navigator.of(context).pop(true);
+    } else {
+      final providerError = ref.read(userProvider).error;
       setState(() {
-        _error = 'Failed to delete account. Please try again.';
+        _error = providerError ?? 'Failed to delete account. Please try again.';
         _isLoading = false;
       });
     }

@@ -1,20 +1,19 @@
-import 'package:app/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:app/providers/auth_provider.dart';
 
-class OtpScreen extends StatefulWidget {
+class OtpScreen extends ConsumerStatefulWidget {
   final String phoneNumber;
 
   const OtpScreen({super.key, required this.phoneNumber});
 
   @override
-  State<OtpScreen> createState() => _OtpScreenState();
+  ConsumerState<OtpScreen> createState() => _OtpScreenState();
 }
 
-class _OtpScreenState extends State<OtpScreen> {
+class _OtpScreenState extends ConsumerState<OtpScreen> {
   final _otpController = TextEditingController();
-
-  bool isLoading = false;
 
   @override
   void dispose() {
@@ -32,35 +31,24 @@ class _OtpScreenState extends State<OtpScreen> {
       return;
     }
 
-    setState(() {
-      isLoading = true;
-    });
+    final result = await ref.read(authProvider.notifier).verifyOtp(
+      phoneNumber: widget.phoneNumber,
+      otp: otp,
+    );
 
-    try {
-      final result = await AuthService.verifyOtp(
-        phoneNumber: widget.phoneNumber,
-        otp: otp,
-      );
-
-      debugPrint('RESULT: $result');
-      debugPrint('RESULT TYPE: ${result.runtimeType}');
-
-      await AuthService.saveToken(result['data']['access_token']);
-
-      if (!mounted) return;
-
-      context.go('/location-permission');
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
-    } finally {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
+    if (result == null) {
+      // error is already set in the provider
+      final error = ref.read(authProvider).error;
+      if (error != null && mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error)));
       }
+      return;
     }
+
+    if (!mounted) return;
+    context.go('/location-permission');
   }
 
   @override
@@ -116,7 +104,7 @@ class _OtpScreenState extends State<OtpScreen> {
               height: 55,
 
               child: ElevatedButton(
-                onPressed: isLoading ? null : _verifyOtp,
+                onPressed: ref.watch(authProvider).isLoading ? null : _verifyOtp,
 
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFD32F2F),
@@ -125,7 +113,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
                 ),
 
-                child: isLoading
+                child: ref.watch(authProvider).isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
                     : const Text(
                         'Verify OTP',

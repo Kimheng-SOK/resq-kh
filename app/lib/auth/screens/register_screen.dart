@@ -1,31 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:app/services/auth_service.dart';
+import 'package:app/providers/auth_provider.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-  bool isLoading = false;
 
   @override
   void dispose() {
     _nameController.dispose();
-    _emailController?.dispose();
+    _emailController.dispose();
     _phoneController.dispose();
     super.dispose();
   }
 
   Future<void> _continue() async {
     final name = _nameController.text.trim();
-    final email = _emailController?.text.trim();
+    final email = _emailController.text.trim();
     final phone = _phoneController.text.trim();
 
     if (name.isEmpty || phone.isEmpty) {
@@ -35,32 +35,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    setState(() {
-      isLoading = true;
-    });
+    final success = await ref.read(authProvider.notifier).sendOtp(
+      fullName: name,
+      email: email,
+      phoneNumber: phone,
+    );
 
-    try {
-      final success = await AuthService.sendOtp(
-        fullName: name,
-        email: email ?? '',
-        phoneNumber: phone,
-      );
+    if (!mounted) return;
 
-      if (!mounted) return;
-
-      if (success) {
-        context.push('/otp', extra: {'phone_number': phone});
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
-    } finally {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
+    if (success) {
+      context.push('/otp', extra: {'phone_number': phone});
     }
   }
 
@@ -155,7 +139,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
 
-                  child: isLoading
+                  child: ref.watch(authProvider).isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
                       : const Text(
                           'Continue',

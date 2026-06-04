@@ -1,4 +1,4 @@
-import 'package:app/services/auth_service.dart';
+import 'package:app/services/auth_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -20,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _checkLogin() async {
     await Future.delayed(const Duration(seconds: 2));
 
-    final token = await AuthService.getToken();
+    final token = await AuthStorageService.getToken();
 
     if (!mounted) return;
 

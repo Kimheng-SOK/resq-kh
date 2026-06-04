@@ -2,36 +2,33 @@ import 'package:app/services/refresh_service.dart';
 import 'package:app/core/theme/app_color.dart';
 import 'package:app/features/settings/widgets/delete_modal_sheet.dart';
 import 'package:app/features/settings/widgets/section_header_widget.dart';
-import 'package:app/services/auth_service.dart';
+import 'package:app/providers/auth_provider.dart';
 import 'package:app/widgets/refresh_drag_pop_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'widgets/setting_tile_widget.dart';
 import 'widgets/diver_widget.dart';
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _pushNotifications = true;
   bool _emailAlerts = false;
 
   Future<void> _handleDeleteAccount() async {
-    final token = await AuthService.getToken();
-    if (token == null || !mounted) return;
-
     final confirmed = await showDeleteAccountSheet(
       context,
-      token: token,
       confirmMessage: 'SOK KIMEHNG',
     );
 
     if (confirmed == true && mounted) {
-      await AuthService.logout();
+      await ref.read(authProvider.notifier).logout();
       if (mounted) {
         context.go('/login');
       }
