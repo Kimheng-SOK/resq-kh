@@ -8,10 +8,10 @@ import 'package:go_router/go_router.dart';
 import '../../features/home/home_screen.dart';
 import '../../widgets/bottomNav.dart';
 import '../../widgets/headerNav.dart';
-import '../theme/app_color.dart';
 import '../../widgets/placeholder_screen.dart';
 import '../../features/settings/settings_screen.dart';
-
+import '../../features/first_aid/first_aid_screen.dart';
+import '../../features/first_aid/first_aid_detail_screen.dart';
 final router = GoRouter(
   initialLocation: '/',
   routes: [
@@ -53,7 +53,13 @@ final router = GoRouter(
         ),
         GoRoute(
           path: '/first-aid',
-          builder: (context, state) => const _RouteBody(title: 'First Aid'),
+          builder: (context, state) => const FirstAidScreen(),
+        ),
+        GoRoute(
+          path: '/first-aid/:conditionId',
+          builder: (context, state) => FirstAidDetailScreen(
+            conditionId: state.pathParameters['conditionId']!,
+          ),
         ),
       ],
     ),
