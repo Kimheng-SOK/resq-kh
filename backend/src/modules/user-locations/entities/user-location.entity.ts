@@ -13,30 +13,30 @@ import { EmergencyAlert } from '../../emergency-alerts/entities/emergency-alert.
 @Entity('user_locations')
 export class UserLocation {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ type: 'uuid' })
-  user_id: string;
+  user_id!: string;
 
   @ManyToOne(() => User, (user) => user.locations, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  user!: User;
 
   @Column({ type: 'decimal', precision: 9, scale: 6 })
-  latitude: string;
+  latitude!: string;
 
   @Column({ type: 'decimal', precision: 9, scale: 6 })
-  longitude: string;
+  longitude!: string;
 
   @Column({ type: 'decimal', precision: 8, scale: 2, nullable: true })
-  accuracy: string | null;
+  accuracy!: string | null;
 
   @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
-  captured_at: Date;
+  captured_at!: Date;
 
   @CreateDateColumn({ type: 'timestamptz' })
-  created_at: Date;
+  created_at!: Date;
 
   @OneToMany(() => EmergencyAlert, (alert) => alert.location)
-  emergency_alerts: EmergencyAlert[];
+  emergency_alerts!: EmergencyAlert[];
 }

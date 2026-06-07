@@ -25,8 +25,8 @@ export class User {
   @Column({ type: 'varchar', length: 50, nullable: true })
   phone_number?: string | null;
 
-  @Column({ type: 'boolean', default: false })
-  is_phone_verified?: boolean;
+  @Column({ default: false })
+  is_email_verified!: boolean;
 
   @Column({ type: 'varchar', length: 10, nullable: true })
   blood_group?: string | null;

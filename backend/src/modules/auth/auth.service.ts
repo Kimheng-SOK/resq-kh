@@ -9,6 +9,7 @@ import { User } from '../users/entities/user.entity';
 import { OtpCode } from './entities/otp.entity';
 import { SendOtpDto } from './dto/send-otp.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { EmailService } from './services/email.service';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +23,11 @@ export class AuthService {
     @InjectRepository(OtpCode)
     private otpRepository: Repository<OtpCode>,
 
+    private emailService: EmailService,
+
     private jwtService: JwtService,
+
+
   ) {}
 
   async login(dto: LoginDto) {
@@ -69,9 +74,15 @@ export class AuthService {
   async sendOtp(dto: SendOtpDto) {
     let user = await this.userRepository.findOne({
       where: {
-        phone_number: dto.phone_number,
+        email: dto.email,
       },
     });
+
+    if (user && user.is_email_verified) {
+      throw new BadRequestException(
+        'Email is already registered',
+      );
+    }
 
     if (!user) {
       user = this.userRepository.create({
@@ -86,7 +97,7 @@ export class AuthService {
 
     const recentOtp = await this.otpRepository.findOne({
       where: {
-        phone_number: dto.phone_number,
+        email: dto.email,
         is_used: false,
       },
       order: {
@@ -107,7 +118,7 @@ export class AuthService {
     const otp = this.generateOtp();
 
     const otpRecord = this.otpRepository.create({
-      phone_number: dto.phone_number,
+      email: dto.email,
       otp_code: otp,
       expires_at: new Date(
         Date.now() + 5 * 60 * 1000, // 5 minutes
@@ -117,9 +128,19 @@ export class AuthService {
 
     await this.otpRepository.save(otpRecord);
 
-    return {
-      message: 'OTP generated',
+    if (!user.email) {
+      throw new BadRequestException(
+        'User email is required',
+      );
+    }
+
+    await this.emailService.sendOtp(
+      user.email,
       otp,
+    );
+    
+    return {
+      message: 'OTP sent successfully',
       user_id: user.id,
     };
   }
@@ -127,8 +148,7 @@ export class AuthService {
   async verifyOtp(dto: VerifyOtpDto) {
     const otpRecord = await this.otpRepository.findOne({
       where: {
-        phone_number: dto.phone_number,
-        otp_code: dto.otp,
+        email: dto.email,
       },
       order: {
         created_at: 'DESC',
@@ -136,6 +156,10 @@ export class AuthService {
     });
 
     if (!otpRecord) {
+      throw new UnauthorizedException('Invalid OTP');
+    }
+
+    if (otpRecord.otp_code !== dto.otp) {
       throw new UnauthorizedException('Invalid OTP');
     }
 
@@ -152,7 +176,7 @@ export class AuthService {
 
     const user = await this.userRepository.findOne({
       where: {
-        phone_number: dto.phone_number,
+        email: dto.email
       },
     });
 
@@ -160,12 +184,12 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    user.is_phone_verified = true;
+    user.is_email_verified = true;
     await this.userRepository.save(user);
     
     const payload = {
       sub: user.id,
-      phone_number: user.phone_number,
+      email: user.email,
     };
 
     const accessToken = this.jwtService.sign(payload);
