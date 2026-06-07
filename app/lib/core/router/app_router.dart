@@ -46,6 +46,11 @@ GoRouter createRouter(String initialRoute) {
         path: '/location-permission',
         builder: (context, state) => const LocationPermissionScreen(),
       ),
+      GoRoute(
+        path: '/complete-profile',
+        builder: (context, state) => const CompleteProfileScreen(),
+      ),
+
       ShellRoute(
         builder: (context, state, child) {
           return AppShell(currentLocation: state.matchedLocation, child: child);

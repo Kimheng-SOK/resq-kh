@@ -33,7 +33,13 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     const LocationChip(location: 'Phnom Penh'),
                     GestureDetector(
-                      onTap: () => context.push('/preferences'),
+                      onTap: () async {
+                        await AuthService.logout();
+
+                        if (context.mounted) {
+                          context.go('/splash');
+                        }
+                      },
                       child: Container(
                         width: 44,
                         height: 44,

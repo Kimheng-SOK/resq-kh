@@ -45,7 +45,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (!mounted) return;
 
     if (success) {
-      context.push('/otp', extra: {'phone_number': phone});
+      context.push('/otp', extra: {'email': email});
     } else {
       // Show the actual error from the backend so the user knows what's wrong
       final error = ref.read(authProvider).error;
