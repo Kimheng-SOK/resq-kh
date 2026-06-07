@@ -42,8 +42,6 @@ const List<_CategoryChip> _categories = [
   ),
 ];
 
-/// A horizontal scrollable row of emergency category tiles displayed
-/// inside the DraggableScrollableSheet on the Map screen.
 class SeekHelpRow extends StatefulWidget {
   final String? selectedCategory;
   final ValueChanged<String?> onCategorySelected;
@@ -71,32 +69,29 @@ class _SeekHelpRowState extends State<SeekHelpRow> {
         children: _categories.map((cat) {
           final isSelected = widget.selectedCategory == cat.id;
 
-          return Padding(
-            padding: const EdgeInsets.only(right: 12),
+          return Container(
+            alignment: Alignment.center,
+
             child: GestureDetector(
               onTap: () {
-                // Toggle: if already selected, deselect
-                widget.onCategorySelected(
-                  isSelected ? null : cat.id,
-                );
+                widget.onCategorySelected(isSelected ? null : cat.id);
               },
               child: SizedBox(
-                width: 72,
+                width: 68,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // ── Icon tile ────────────────────────────
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 250),
                       curve: Curves.easeOutCubic,
-                      width: 56,
-                      height: 56,
+                      width: 50,
+                      height: 50,
                       decoration: BoxDecoration(
                         color: isSelected
                             ? cat.color.withAlpha(25)
                             : isDark
-                                ? const Color(0xFF2C2C2C)
-                                : const Color(0xFFF3F3F4),
+                            ? const Color(0xFF2C2C2C)
+                            : const Color(0xFFF3F3F4),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: isSelected
@@ -107,25 +102,27 @@ class _SeekHelpRowState extends State<SeekHelpRow> {
                       ),
                       child: Icon(
                         cat.icon,
-                        color: isSelected ? cat.color : cat.color.withAlpha(180),
+                        color: isSelected
+                            ? cat.color
+                            : cat.color.withAlpha(180),
                         size: 28,
                       ),
                     ),
 
                     const SizedBox(height: 4),
 
-                    // ── Label ────────────────────────────────
                     Text(
                       cat.label,
                       style: TextStyle(
                         fontSize: 12,
-                        fontWeight:
-                            isSelected ? FontWeight.w700 : FontWeight.w500,
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
                         color: isSelected
                             ? cat.color
                             : isDark
-                                ? Colors.white70
-                                : const Color(0xFF1A1C1C),
+                            ? Colors.white70
+                            : const Color(0xFF1A1C1C),
                         fontFamily: 'SF Pro Display',
                       ),
                     ),
