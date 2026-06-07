@@ -1,4 +1,8 @@
-import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
@@ -56,14 +60,17 @@ export class AuthService {
     };
   }
 
-  getProfile(user: { id: string; email: string; role: string; full_name: string | null }) {
+  getProfile(user: {
+    id: string;
+    email: string;
+    role: string;
+    full_name: string | null;
+  }) {
     return user;
   }
 
   private generateOtp(): string {
-    return Math.floor(
-      100000 + Math.random() * 900000,
-    ).toString();
+    return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
   async sendOtp(dto: SendOtpDto) {
@@ -83,7 +90,6 @@ export class AuthService {
       await this.userRepository.save(user);
     }
 
-
     const recentOtp = await this.otpRepository.findOne({
       where: {
         phone_number: dto.phone_number,
@@ -94,15 +100,11 @@ export class AuthService {
       },
     });
 
-    if (
-      recentOtp &&
-      recentOtp.expires_at > new Date()
-    ) {
+    if (recentOtp && recentOtp.expires_at > new Date()) {
       throw new BadRequestException(
         'Please wait before requesting another OTP',
       );
     }
-
 
     const otp = this.generateOtp();
 
@@ -116,6 +118,13 @@ export class AuthService {
     });
 
     await this.otpRepository.save(otpRecord);
+
+    // Development: print OTP to terminal for easy testing
+    console.log('\n══════════════════════════════════════════');
+    console.log(`  OTP for ${dto.phone_number}`);
+    console.log(`  Code: ${otp}`);
+    console.log(`  Expires: ${otpRecord.expires_at.toLocaleString()}`);
+    console.log('══════════════════════════════════════════\n');
 
     return {
       message: 'OTP generated',
@@ -162,7 +171,7 @@ export class AuthService {
 
     user.is_phone_verified = true;
     await this.userRepository.save(user);
-    
+
     const payload = {
       sub: user.id,
       phone_number: user.phone_number,
@@ -182,5 +191,4 @@ export class AuthService {
       },
     };
   }
-
 }

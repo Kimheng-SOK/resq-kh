@@ -41,7 +41,9 @@ export class EmergencyAlert {
   @Column({ type: 'uuid' })
   location_id: string;
 
-  @ManyToOne(() => UserLocation, (location) => location.emergency_alerts)
+  @ManyToOne(() => UserLocation, (location) => location.emergency_alerts, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'location_id' })
   location: UserLocation;
 
