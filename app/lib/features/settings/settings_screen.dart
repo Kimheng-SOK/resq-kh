@@ -31,8 +31,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       confirmMessage: userName,
     );
 
-    // The modal already calls deleteAccount() — if it returned true,
-    // the account was successfully deleted. Just navigate away.
     if (confirmed == true && mounted) {
       context.go('/register');
     }
@@ -43,6 +41,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final dimColor = isDark ? Colors.white54 : AppColors.textSecondary;
+
+    final List<Map<String, dynamic>> _profileItems = [
+      {
+        'icon': Icons.person_outline_rounded,
+        'label': 'Edit Profile',
+        'route': '/profile',
+      },
+      {
+        'icon': Icons.settings_outlined,
+        'label': 'Preferences',
+        'route': '/preferences',
+      },
+    ];
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -67,23 +78,33 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 margin: EdgeInsets.zero,
                 child: Column(
                   children: [
-                    SettingsTile(
-                      icon: Icons.person_outline_rounded,
-                      label: 'Edit Profile',
-                      onTap: () => context.push('/profile'),
-                    ),
-                    const DividerWidget(),
-                    SettingsTile(
-                      icon: Icons.lock_outline_rounded,
-                      label: 'Change Password',
-                      onTap: () {},
-                    ),
-                    const DividerWidget(),
-                    SettingsTile(
-                      icon: Icons.settings_outlined,
-                      label: 'Preferences',
-                      onTap: () => context.push('/preferences'),
-                    ),
+                    // SettingsTile(
+                    //   icon: Icons.person_outline_rounded,
+                    //   label: 'Edit Profile',
+                    //   onTap: () => context.push('/profile'),
+                    // ),
+                    // const DividerWidget(),
+                    // SettingsTile(
+                    //   icon: Icons.lock_outline_rounded,
+                    //   label: 'Change Password',
+                    //   onTap: () {},
+                    // ),
+                    // const DividerWidget(),
+                    // SettingsTile(
+                    //   icon: Icons.settings_outlined,
+                    //   label: 'Preferences',
+                    //   onTap: () => context.push('/preferences'),
+                    // ),
+                    for (int i = 0; i < _profileItems.length; i++) ...[
+                      SettingsTile(
+                        icon: _profileItems[i]['icon'],
+                        label: _profileItems[i]['label'],
+                        onTap: _profileItems[i]['route'] != null
+                            ? () => context.push(_profileItems[i]['route'])
+                            : null,
+                      ),
+                      if (i < _profileItems.length - 1) const DividerWidget(),
+                    ],
                   ],
                 ),
               ),

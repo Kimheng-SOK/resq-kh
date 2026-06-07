@@ -8,7 +8,10 @@ import 'package:app/features/contacts/contact_screen.dart';
 import 'package:app/features/contacts/fire_station_screen.dart';
 import 'package:app/features/contacts/general_contacts_screen.dart';
 import 'package:app/features/contacts/police_screen.dart';
+import 'package:app/features/map/map_detail_screen.dart';
+import 'package:app/features/map/map_screen.dart';
 import 'package:app/features/preference/preference_screen.dart';
+import 'package:app/models/emergency_contact.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -60,7 +63,16 @@ final router = GoRouter(
 
         GoRoute(
           path: '/map',
-          builder: (context, state) => const _RouteBody(title: 'Map'),
+          builder: (context, state) => const MapScreen(),
+          routes: [
+            GoRoute(
+              path: 'detail',
+              builder: (context, state) {
+                final contact = state.extra as EmergencyContact;
+                return MapDetailScreen(contact: contact);
+              },
+            ),
+          ],
         ),
         GoRoute(
           path: '/sos',
@@ -179,19 +191,26 @@ class _AppShellState extends ConsumerState<AppShell> {
       displayName = user.fullName;
     }
 
+    final isMapRoute = widget.currentLocation.startsWith('/map');
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
-          HeaderNavBar(
-            userName: displayName,
-            hasNotification: true,
-            onNotificationTap: () => context.push('/notifications'),
-            onProfileTap: () => context.push('/settings'),
-          ),
+          // Hide the standard header for map routes — the MapScreen
+          // provides its own transparent gradient overlay header.
+          if (!isMapRoute)
+            HeaderNavBar(
+              userName: displayName,
+              hasNotification: true,
+              onNotificationTap: () => context.push('/notifications'),
+              onProfileTap: () => context.push('/settings'),
+            ),
           Expanded(child: widget.child),
           BottomNavBar(
-            currentIndex: widget._currentIndexForLocation(widget.currentLocation),
+            currentIndex: widget._currentIndexForLocation(
+              widget.currentLocation,
+            ),
             onTap: (index) => context.go(widget._locationForIndex(index)),
           ),
         ],

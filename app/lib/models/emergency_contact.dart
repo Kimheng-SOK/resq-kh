@@ -39,6 +39,54 @@ class EmergencyContact {
           : null,
     );
   }
+
+  /// Creates an [EmergencyContact] from the backend /services API response.
+  /// The backend uses `category` (enum), `phone_number`, `latitude`/`longitude`
+  /// (decimal strings), and optional `description`/`distance_km`.
+  factory EmergencyContact.fromServiceJson(Map<String, dynamic> json) {
+    // Map backend category enum to app type string
+    final rawCategory = json['category'] as String? ?? 'contact';
+    final type = switch (rawCategory) {
+      'fire_station' => 'fire',
+      'contact' => 'helpline',
+      _ => rawCategory,
+    };
+
+    return EmergencyContact(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      type: type,
+      phone: (json['phone_number'] as String?) ?? '',
+      address: (json['address'] as String?) ?? '',
+      hours: '24/7', // services are always open
+      services: _servicesForCategory(type),
+      lat: double.parse((json['latitude'] as String?) ?? '0'),
+      lng: double.parse((json['longitude'] as String?) ?? '0'),
+      distanceKm: json['distance_km'] != null
+          ? (json['distance_km'] as num).toDouble()
+          : null,
+    );
+  }
+
+  /// Derives a list of service tags from the category type.
+  static List<String> _servicesForCategory(String type) {
+    switch (type) {
+      case 'police':
+        return ['Emergency Response', 'Crime Reporting', 'Public Order'];
+      case 'hospital':
+        return ['Emergency', 'Surgery', 'ICU', 'Outpatient'];
+      case 'fire':
+        return ['Fire Suppression', 'Rescue', 'Emergency Response'];
+      case 'ambulance':
+        return ['Emergency Medical Transport', 'On-site First Aid'];
+      case 'helpline':
+        return ['Counseling', 'Referral Services'];
+      case 'disaster':
+        return ['Disaster Relief', 'Search & Rescue'];
+      default:
+        return ['Emergency Assistance'];
+    }
+  }
  
   Map<String, dynamic> toJson() {
     return {
