@@ -22,6 +22,8 @@ import '../../widgets/placeholder_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import 'package:app/providers/user_provider.dart';
 
+import '../../features/first_aid/first_aid_screen.dart';
+import '../../features/first_aid/first_aid_detail_screen.dart';
 final router = GoRouter(
   initialLocation: '/splash',
 
@@ -102,7 +104,13 @@ final router = GoRouter(
         ),
         GoRoute(
           path: '/first-aid',
-          builder: (context, state) => const _RouteBody(title: 'First Aid'),
+          builder: (context, state) => const FirstAidScreen(),
+        ),
+        GoRoute(
+          path: '/first-aid/:conditionId',
+          builder: (context, state) => FirstAidDetailScreen(
+            conditionId: state.pathParameters['conditionId']!,
+          ),
         ),
       ],
     ),
