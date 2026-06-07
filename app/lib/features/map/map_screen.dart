@@ -67,8 +67,9 @@ class _MapScreenState extends State<MapScreen> {
       if (categoryId == null || categoryId == 'contacts') {
         _filteredContacts = _allContacts;
       } else {
-        _filteredContacts =
-            _allContacts.where((c) => c.type == categoryId).toList();
+        _filteredContacts = _allContacts
+            .where((c) => c.type == categoryId)
+            .toList();
       }
     });
   }
@@ -153,18 +154,15 @@ class _MapScreenState extends State<MapScreen> {
           // ── Layer 0: Map ──────────────────────────────────
           _buildMapLayer(),
 
-          // ── Layer 4: Header gradient overlay ───────────────
-          _buildHeaderOverlay(theme),
-
           // ── Layer 5: Search bar ────────────────────────────
           _buildSearchBar(theme),
 
           // ── Layer 6: Bottom collapsed indicator ─────────────
-          if (!_isLoading && _errorMessage == null) _buildBottomIndicator(theme),
+          if (!_isLoading && _errorMessage == null)
+            _buildBottomIndicator(theme),
 
           // ── Loading indicator ──────────────────────────────
-          if (_isLoading)
-            const Center(child: CircularProgressIndicator()),
+          if (_isLoading) const Center(child: CircularProgressIndicator()),
 
           // ── Error state ────────────────────────────────────
           if (_errorMessage != null) _buildErrorState(theme),
@@ -190,11 +188,13 @@ class _MapScreenState extends State<MapScreen> {
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
           userAgentPackageName: 'com.resqkh.app',
         ),
-        MarkerLayer(markers: [
-          ..._buildContactMarkers(),
-          ..._buildServiceMarkers(),
-          _buildUserMarker(),
-        ]),
+        MarkerLayer(
+          markers: [
+            ..._buildContactMarkers(),
+            ..._buildServiceMarkers(),
+            _buildUserMarker(),
+          ],
+        ),
         // Hide default attribution for cleaner UI
         const RichAttributionWidget(
           popupInitialDisplayDuration: Duration(seconds: 0),
@@ -204,104 +204,11 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget _buildHeaderOverlay(ThemeData theme) {
-    final isDark = theme.brightness == Brightness.dark;
-
-    return Positioned(
-      top: 0,
-      left: 0,
-      right: 0,
-      child: Container(
-        height: 120,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              (isDark ? Colors.black : Colors.white).withAlpha(230),
-              (isDark ? Colors.black : Colors.white).withAlpha(0),
-            ],
-          ),
-        ),
-        child: SafeArea(
-          bottom: false,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            child: Row(
-              children: [
-                // ── App icon + title ──────────────────────────
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Red SOS icon badge
-                    Container(
-                      width: 31,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: AppColors.red,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(
-                        Icons.medical_services_rounded,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'SOS CAMBODIA',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
-                        color: theme.colorScheme.onSurface,
-                        letterSpacing: -0.6,
-                        fontFamily: 'SF Pro Display',
-                      ),
-                    ),
-                  ],
-                ),
-
-                const Spacer(),
-
-                // ── Settings button ───────────────────────────
-                GestureDetector(
-                  onTap: () => context.push('/settings'),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surface,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: isDark
-                              ? Colors.black54
-                              : AppColors.shadow,
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Icon(
-                      Icons.settings_rounded,
-                      color: isDark ? Colors.white70 : AppColors.textSecondary,
-                      size: 22,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildSearchBar(ThemeData theme) {
     final isDark = theme.brightness == Brightness.dark;
 
     return Positioned(
-      top: 100,
+      top: 5,
       left: 16,
       right: 16,
       child: Container(
@@ -380,8 +287,7 @@ class _MapScreenState extends State<MapScreen> {
         child: Container(
           decoration: BoxDecoration(
             color: theme.colorScheme.surface,
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(24)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             boxShadow: [
               BoxShadow(
                 color: isDark ? Colors.black45 : AppColors.shadow,
@@ -710,10 +616,7 @@ class _ContactsSheetContentState extends State<_ContactsSheetContent> {
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: OutlinedButton.icon(
                           onPressed: widget.onAddContacts,
-                          icon: const Icon(
-                            Icons.person_add_rounded,
-                            size: 20,
-                          ),
+                          icon: const Icon(Icons.person_add_rounded, size: 20),
                           label: const Text(
                             '+ Add contacts',
                             style: TextStyle(
