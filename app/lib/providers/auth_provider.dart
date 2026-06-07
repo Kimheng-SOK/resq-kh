@@ -1,8 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:app/models/user_model.dart';
 import 'package:app/services/api/auth_api_service.dart';
 import 'package:app/services/auth_storage_service.dart';
+import 'package:app/providers/user_provider.dart';
 
-/// Immutable state for the auth flow.
 class AuthState {
   final bool isLoading;
   final String? error;
@@ -18,33 +19,31 @@ class AuthState {
     bool? isLoading,
     String? error,
     bool? isLoggedIn,
+    bool clearError = false,
   }) {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,
-      error: error, // pass null to clear
+      error: clearError ? null : (error ?? this.error),
       isLoggedIn: isLoggedIn ?? this.isLoggedIn,
     );
   }
 }
 
-/// Manages authentication state: OTP flow, token persistence, login state.
 class AuthNotifier extends Notifier<AuthState> {
   @override
   AuthState build() => const AuthState();
 
-  /// Check whether a stored token exists (app startup).
   Future<void> checkAuth() async {
     final token = await AuthStorageService.getToken();
     state = state.copyWith(isLoggedIn: token != null);
   }
 
-  /// Step 1 — send OTP. Returns true on success.
   Future<bool> sendOtp({
     required String fullName,
-    required String email,
+    String? email,
     required String phoneNumber,
   }) async {
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(isLoading: true, clearError: true);
     try {
       await AuthApiService.sendOtp(
         fullName: fullName,
@@ -60,12 +59,11 @@ class AuthNotifier extends Notifier<AuthState> {
     }
   }
 
-  /// Step 2 — verify OTP. Returns the response data on success, null on failure.
   Future<Map<String, dynamic>?> verifyOtp({
     required String phoneNumber,
     required String otp,
   }) async {
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(isLoading: true, clearError: true);
     try {
       final result = await AuthApiService.verifyOtp(
         phoneNumber: phoneNumber,
@@ -74,6 +72,13 @@ class AuthNotifier extends Notifier<AuthState> {
       final token = result['data']?['access_token'] as String?;
       if (token != null) {
         await AuthStorageService.saveToken(token);
+
+        // Seed the user provider with the user data from the OTP response
+        final userData = result['data']?['user'] as Map<String, dynamic>?;
+        if (userData != null) {
+          final user = UserModel.fromJson(userData);
+          await ref.read(userProvider.notifier).setUserFromLogin(user);
+        }
       }
       state = state.copyWith(isLoggedIn: true);
       return result;
@@ -85,14 +90,13 @@ class AuthNotifier extends Notifier<AuthState> {
     }
   }
 
-  /// Log out — clear token and reset state.
   Future<void> logout() async {
-    await AuthStorageService.clearToken();
+    await AuthStorageService.clearAll();
+    ref.read(userProvider.notifier).clearUser();
     state = const AuthState();
   }
 }
 
-/// Riverpod provider for auth state.
 final authProvider = NotifierProvider<AuthNotifier, AuthState>(
   AuthNotifier.new,
 );
