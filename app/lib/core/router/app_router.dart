@@ -6,6 +6,7 @@ import 'package:app/features/contacts/ambulance_screen.dart';
 import 'package:app/features/contacts/contact_screen.dart';
 import 'package:app/features/contacts/fire_station_screen.dart';
 import 'package:app/features/contacts/general_contacts_screen.dart';
+import 'package:app/features/contacts/nearby_places_screen.dart';
 import 'package:app/features/contacts/police_screen.dart';
 import 'package:app/features/preference/preference_screen.dart';
 import 'package:flutter/material.dart';
@@ -32,9 +33,9 @@ GoRouter createRouter(String initialRoute) {
       GoRoute(
         path: '/otp',
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
+          final data = state.extra as Map<String, dynamic>;
 
-          return OtpScreen(phoneNumber: extra['phone_number'] as String);
+          return OtpScreen(email: data['email']);
         },
       ),
 
@@ -76,6 +77,10 @@ GoRouter createRouter(String initialRoute) {
               GoRoute(
                 path: '/fire',
                 builder: (context, state) => const FireStationScreen(),
+              ),
+              GoRoute(
+                path: '/nearby',
+                builder: (context, state) => const NearbyPlacesScreen(),
               ),
             ],
           ),

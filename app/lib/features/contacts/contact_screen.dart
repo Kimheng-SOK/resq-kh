@@ -24,7 +24,16 @@ class ContactsScreen extends StatelessWidget {
           ),
 
           const SizedBox(height: 32),
-
+          _ServiceCard(
+            title: 'Nearby Places',
+            subtitle: 'Services near your location',
+            icon: Icons.location_on,
+            color: Colors.red,
+            onTap: () {
+              context.go('/contacts/nearby');
+            },
+          ),
+          const SizedBox(height: 16),
           _ServiceCard(
             title: 'Police',
             subtitle: 'Request immediate assistance',

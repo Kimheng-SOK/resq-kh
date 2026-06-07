@@ -11,21 +11,21 @@ class Contact {
     required this.relationship,
   });
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'phoneNumber': phoneNumber,
-      'relationship': relationship,
-    };
-  }
-
   factory Contact.fromJson(Map<String, dynamic> json) {
     return Contact(
       id: json['id'],
       name: json['name'],
-      phoneNumber: json['phoneNumber'],
-      relationship: json['relationship'],
+      phoneNumber: json['phone_number'],
+      relationship: json['relationship'] ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'phone_number': phoneNumber,
+      'relationship': relationship,
+    };
   }
 }

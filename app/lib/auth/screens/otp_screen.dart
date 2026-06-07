@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class OtpScreen extends StatefulWidget {
-  final String phoneNumber;
+  final String email;
 
-  const OtpScreen({super.key, required this.phoneNumber});
+  const OtpScreen({super.key, required this.email});
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -37,15 +37,10 @@ class _OtpScreenState extends State<OtpScreen> {
     });
 
     try {
-      final result = await AuthService.verifyOtp(
-        phoneNumber: widget.phoneNumber,
-        otp: otp,
-      );
-
-      debugPrint('RESULT: $result');
-      debugPrint('RESULT TYPE: ${result.runtimeType}');
-
+      final result = await AuthService.verifyOtp(email: widget.email, otp: otp);
       await AuthService.saveToken(result['data']['access_token']);
+
+      await AuthService.saveUserId(result['data']['user']['id']);
 
       if (!mounted) return;
 
@@ -70,80 +65,87 @@ class _OtpScreenState extends State<OtpScreen> {
 
       appBar: AppBar(title: const Text('Verify OTP'), centerTitle: true),
 
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-
-        child: Column(
-          children: [
-            const SizedBox(height: 40),
-
-            const Icon(Icons.sms, size: 100, color: Color(0xFFD32F2F)),
-
-            const SizedBox(height: 24),
-
-            const Text(
-              'Verification Code',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: const EdgeInsets.all(24),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height,
             ),
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
 
-            const SizedBox(height: 12),
+                const Icon(Icons.sms, size: 100, color: Color(0xFFD32F2F)),
 
-            const Text(
-              'Enter the OTP sent to your phone number',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
-            ),
+                const SizedBox(height: 24),
 
-            const SizedBox(height: 40),
-
-            TextField(
-              controller: _otpController,
-              keyboardType: TextInputType.number,
-              textAlign: TextAlign.center,
-              maxLength: 6,
-              decoration: InputDecoration(
-                labelText: 'OTP',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                const Text(
+                  'Verification Code',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
-              ),
-            ),
 
-            const SizedBox(height: 24),
+                const SizedBox(height: 12),
 
-            SizedBox(
-              width: double.infinity,
-              height: 55,
+                const Text(
+                  'Enter the OTP sent to your phone number',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey),
+                ),
 
-              child: ElevatedButton(
-                onPressed: isLoading ? null : _verifyOtp,
+                const SizedBox(height: 40),
 
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFD32F2F),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                TextField(
+                  controller: _otpController,
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  maxLength: 6,
+                  decoration: InputDecoration(
+                    labelText: 'OTP',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
 
-                child: isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        'Verify OTP',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                const SizedBox(height: 24),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 55,
+
+                  child: ElevatedButton(
+                    onPressed: isLoading ? null : _verifyOtp,
+
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFD32F2F),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-              ),
-            ),
+                    ),
 
-            const SizedBox(height: 16),
+                    child: isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            'Verify OTP',
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          ),
+                  ),
+                ),
 
-            TextButton(
-              onPressed: () {
-                // TODO:
-                // Resend OTP
-              },
-              child: const Text('Resend OTP'),
+                const SizedBox(height: 16),
+
+                TextButton(
+                  onPressed: () {
+                    // TODO:
+                    // Resend OTP
+                  },
+                  child: const Text('Resend OTP'),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

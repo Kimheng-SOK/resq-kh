@@ -1,6 +1,6 @@
 import 'package:app/widgets/refresh_drag_pop_widget.dart';
 import 'package:flutter/material.dart';
-import 'service_model.dart';
+import 'models/service_model.dart';
 import 'widgets/service_card.dart';
 
 class AmbulanceScreen extends StatelessWidget {

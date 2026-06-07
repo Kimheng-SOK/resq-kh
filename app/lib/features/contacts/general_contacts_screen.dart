@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:app/features/contacts/contacts_model.dart';
+import 'package:app/features/contacts/models/contacts_model.dart';
 import 'widgets/contact_card.dart';
-import 'contacts_storage.dart';
+import 'package:app/services/contact_service.dart';
 
 class GeneralContactsScreen extends StatefulWidget {
   const GeneralContactsScreen({super.key});
@@ -21,39 +21,24 @@ class _GeneralContactsScreenState extends State<GeneralContactsScreen> {
 
   // load contact
   Future<void> _loadContacts() async {
-    final loadedContacts = await ContactsStorage.loadContacts();
+    try {
+      final result = await ContactService.getContacts();
 
-    if (loadedContacts.isEmpty) {
-      contacts = [
-        Contact(
-          id: '1',
-          name: 'Mom',
-          phoneNumber: '012345678',
-          relationship: 'Mother',
-        ),
-        Contact(
-          id: '2',
-          name: 'Dad',
-          phoneNumber: '098765432',
-          relationship: 'Father',
-        ),
-      ];
+      contacts = result.map<Contact>((e) => Contact.fromJson(e)).toList();
 
-      await ContactsStorage.saveContacts(contacts);
-    } else {
-      contacts = loadedContacts;
+      setState(() {});
+    } catch (e) {
+      debugPrint(
+        '============================================= LOAD CONTACT ERROR: $e',
+      );
     }
-
-    setState(() {});
   }
 
   // Delete
   Future<void> _deleteContact(String id) async {
-    setState(() {
-      contacts.removeWhere((contact) => contact.id == id);
-    });
+    await ContactService.deleteContact(id);
 
-    await ContactsStorage.saveContacts(contacts);
+    await _loadContacts();
   }
 
   Future<void> _confirmDelete(String id) async {
@@ -88,17 +73,14 @@ class _GeneralContactsScreenState extends State<GeneralContactsScreen> {
 
   // Edit
   Future<void> _updateContact(Contact updatedContact) async {
-    final index = contacts.indexWhere(
-      (contact) => contact.id == updatedContact.id,
+    await ContactService.updateContact(
+      contactId: updatedContact.id,
+      name: updatedContact.name,
+      phoneNumber: updatedContact.phoneNumber,
+      relationship: updatedContact.relationship,
     );
 
-    if (index == -1) return;
-
-    setState(() {
-      contacts[index] = updatedContact;
-    });
-
-    await ContactsStorage.saveContacts(contacts);
+    await _loadContacts();
   }
 
   Future<void> _showEditContactDialog(Contact contact) async {
@@ -230,18 +212,15 @@ class _GeneralContactsScreenState extends State<GeneralContactsScreen> {
                   return;
                 }
 
-                setState(() {
-                  contacts.add(
-                    Contact(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      name: name,
-                      phoneNumber: phone,
-                      relationship: relationship,
-                    ),
-                  );
-                });
+                await ContactService.addContact(
+                  name: name,
+                  phoneNumber: phone,
+                  relationship: relationship,
+                );
 
-                await ContactsStorage.saveContacts(contacts);
+                await _loadContacts();
+
+                if (!mounted) return;
 
                 Navigator.pop(context);
               },

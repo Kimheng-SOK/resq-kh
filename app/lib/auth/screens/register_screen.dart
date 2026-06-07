@@ -28,9 +28,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final email = _emailController.text.trim();
     final phone = _phoneController.text.trim();
 
-    if (name.isEmpty || phone.isEmpty) {
+    if (name.isEmpty || phone.isEmpty || email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Name and Phone Number are required')),
+        const SnackBar(
+          content: Text('Name, Email & Phone Number are required'),
+        ),
       );
       return;
     }
@@ -49,7 +51,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (!mounted) return;
 
       if (success) {
-        context.push('/otp', extra: {'phone_number': phone});
+        context.push('/otp', extra: {'email': email});
       }
     } catch (e) {
       ScaffoldMessenger.of(
@@ -120,7 +122,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
-                  labelText: 'Email (Optional)',
+                  labelText: 'Email (Required)',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
