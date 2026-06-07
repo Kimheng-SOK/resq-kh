@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_color.dart';
 import '../../core/utils/service_utils.dart';
 import '../../models/emergency_contact.dart';
+import '../../services/api/services_api_service.dart';
 import '../../services/emergency_repository.dart';
 import 'widgets/contact_profile_marker.dart';
 import 'widgets/service_marker.dart';
@@ -13,8 +14,6 @@ import 'widgets/user_location_marker.dart';
 import 'widgets/seek_help_row.dart';
 import 'widgets/emergency_contact_tile.dart';
 
-/// The primary Map screen showing emergency service locations on an
-/// OpenStreetMap, with a draggable bottom sheet listing contacts.
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
 
@@ -31,9 +30,10 @@ class _MapScreenState extends State<MapScreen> {
   String? _errorMessage;
 
   String? _selectedCategory;
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
   final MapController _mapController = MapController();
 
-  // Phnom Penh center
   static const LatLng _defaultCenter = LatLng(11.5564, 104.9282);
   static const double _defaultZoom = 14.0;
 
@@ -43,42 +43,96 @@ class _MapScreenState extends State<MapScreen> {
     _loadContacts();
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   Future<void> _loadContacts() async {
     try {
-      final contacts = await _repository.getAll();
+      // Try the backend API first
+      final contacts = await ServicesApiService.fetchServices(
+        lat: _defaultCenter.latitude,
+        lng: _defaultCenter.longitude,
+        radius: 50,
+      );
       if (!mounted) return;
       setState(() {
         _allContacts = contacts;
         _filteredContacts = contacts;
         _isLoading = false;
       });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _errorMessage = e.toString();
-        _isLoading = false;
-      });
+    } catch (_) {
+      // Fallback to local JSON if API is unreachable
+      try {
+        final contacts = await _repository.getAll();
+        if (!mounted) return;
+        setState(() {
+          _allContacts = contacts;
+          _filteredContacts = contacts;
+          _isLoading = false;
+        });
+      } catch (e) {
+        if (!mounted) return;
+        setState(() {
+          _errorMessage = e.toString();
+          _isLoading = false;
+        });
+      }
     }
+  }
+
+  /// Applies both category and text-search filters together.
+  List<EmergencyContact> _applyFilters({
+    required String query,
+    required String? categoryId,
+  }) {
+    var results = _allContacts;
+
+    // Category filter
+    if (categoryId != null && categoryId != 'contacts') {
+      results = results.where((c) => c.type == categoryId).toList();
+    }
+
+    // Text search — matches name, type, address, phone
+    if (query.isNotEmpty) {
+      final q = query.toLowerCase();
+      results = results.where((c) {
+        return c.name.toLowerCase().contains(q) ||
+            c.type.toLowerCase().contains(q) ||
+            c.address.toLowerCase().contains(q) ||
+            c.phone.contains(q);
+      }).toList();
+    }
+
+    return results;
+  }
+
+  void _onSearchChanged(String query) {
+    setState(() {
+      _searchQuery = query;
+      _filteredContacts = _applyFilters(
+        query: query,
+        categoryId: _selectedCategory,
+      );
+    });
   }
 
   void _onCategorySelected(String? categoryId) {
     setState(() {
       _selectedCategory = categoryId;
-      if (categoryId == null || categoryId == 'contacts') {
-        _filteredContacts = _allContacts;
-      } else {
-        _filteredContacts = _allContacts
-            .where((c) => c.type == categoryId)
-            .toList();
-      }
+      _filteredContacts = _applyFilters(
+        query: _searchQuery,
+        categoryId: categoryId,
+      );
     });
   }
-
-  // ── Markers ──────────────────────────────────────────────────
 
   List<Marker> _buildContactMarkers() {
     return _filteredContacts.map((contact) {
       final color = ServiceUtils.colorForType(contact.type);
+      final icon = ServiceUtils.iconForType(contact.type);
       final initials = _initials(contact.name);
 
       return Marker(
@@ -88,6 +142,7 @@ class _MapScreenState extends State<MapScreen> {
         child: ContactProfileMarker(
           initials: initials,
           color: color,
+          icon: icon,
           onTap: () => _onContactTap(contact),
         ),
       );
@@ -95,7 +150,6 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   List<Marker> _buildServiceMarkers() {
-    // Deduplicate by type — show one service marker per category
     final seenTypes = <String>{};
     final uniqueByType = _filteredContacts.where((c) {
       if (seenTypes.contains(c.type)) return false;
@@ -141,8 +195,6 @@ class _MapScreenState extends State<MapScreen> {
     return name.isNotEmpty ? name[0].toUpperCase() : '?';
   }
 
-  // ── Build ────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -151,27 +203,20 @@ class _MapScreenState extends State<MapScreen> {
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          // ── Layer 0: Map ──────────────────────────────────
           _buildMapLayer(),
 
-          // ── Layer 5: Search bar ────────────────────────────
           _buildSearchBar(theme),
 
-          // ── Layer 6: Bottom collapsed indicator ─────────────
           if (!_isLoading && _errorMessage == null)
             _buildBottomIndicator(theme),
 
-          // ── Loading indicator ──────────────────────────────
           if (_isLoading) const Center(child: CircularProgressIndicator()),
 
-          // ── Error state ────────────────────────────────────
           if (_errorMessage != null) _buildErrorState(theme),
         ],
       ),
     );
   }
-
-  // ── Layer builders ───────────────────────────────────────────
 
   Widget _buildMapLayer() {
     return FlutterMap(
@@ -235,11 +280,13 @@ class _MapScreenState extends State<MapScreen> {
             const SizedBox(width: 8),
             Expanded(
               child: TextField(
+                controller: _searchController,
+                onChanged: _onSearchChanged,
                 decoration: InputDecoration(
-                  hintText: 'Search here',
+                  hintText: 'Search contacts, services...',
                   hintStyle: TextStyle(
                     color: isDark ? Colors.white38 : const Color(0xFF9CA3AF),
-                    fontSize: 16,
+                    fontSize: 14,
                     fontFamily: 'SF Pro Display',
                   ),
                   border: InputBorder.none,
@@ -253,16 +300,32 @@ class _MapScreenState extends State<MapScreen> {
                 ),
               ),
             ),
-            Icon(
-              Icons.mic_rounded,
-              color: isDark ? Colors.white54 : AppColors.textSecondary,
-              size: 22,
-            ),
+            // Clear button — shown when search is active
+            if (_searchQuery.isNotEmpty)
+              GestureDetector(
+                onTap: () {
+                  _searchController.clear();
+                  _onSearchChanged('');
+                },
+                child: Icon(
+                  Icons.close_rounded,
+                  color: isDark ? Colors.white54 : AppColors.textSecondary,
+                  size: 20,
+                ),
+              ),
             const SizedBox(width: 8),
-            Icon(
-              Icons.tune_rounded,
-              color: isDark ? Colors.white54 : AppColors.textSecondary,
-              size: 22,
+            // Tune icon — shows active filter indicator
+            GestureDetector(
+              onTap: () => _showContactsSheet(context),
+              child: Icon(
+                Icons.tune_rounded,
+                color: _selectedCategory != null
+                    ? AppColors.red
+                    : isDark
+                        ? Colors.white54
+                        : AppColors.textSecondary,
+                size: 22,
+              ),
             ),
             const SizedBox(width: 12),
           ],
@@ -270,8 +333,6 @@ class _MapScreenState extends State<MapScreen> {
       ),
     );
   }
-
-  // ── Bottom indicator (collapsed tab) ───────────────────────────
 
   Widget _buildBottomIndicator(ThemeData theme) {
     final isDark = theme.brightness == Brightness.dark;
@@ -325,14 +386,25 @@ class _MapScreenState extends State<MapScreen> {
                     ),
                   ),
                   const Spacer(),
-                  Text(
-                    '${_filteredContacts.length} nearby',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: isDark ? Colors.white54 : AppColors.textSecondary,
-                      fontFamily: 'SF Pro Display',
+                  if (_searchQuery.isNotEmpty)
+                    Text(
+                      '"$_searchQuery" · ${_filteredContacts.length}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: AppColors.red,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'SF Pro Display',
+                      ),
+                    )
+                  else
+                    Text(
+                      '${_filteredContacts.length} nearby',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: isDark ? Colors.white54 : AppColors.textSecondary,
+                        fontFamily: 'SF Pro Display',
+                      ),
                     ),
-                  ),
                   const SizedBox(width: 4),
                   Icon(
                     Icons.keyboard_arrow_up_rounded,
@@ -347,8 +419,6 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  // ── Modal bottom sheet (same smooth drag as delete modal) ──────
-
   void _showContactsSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -357,6 +427,8 @@ class _MapScreenState extends State<MapScreen> {
       builder: (sheetContext) {
         return _ContactsSheetContent(
           allContacts: _allContacts,
+          initialSearchQuery: _searchQuery,
+          initialCategory: _selectedCategory,
           onContactTap: (contact) {
             Navigator.pop(sheetContext);
             _onContactTap(contact);
@@ -365,10 +437,12 @@ class _MapScreenState extends State<MapScreen> {
             Navigator.pop(sheetContext);
             context.push('/contacts');
           },
+          onSearchChanged: (query) {
+            _onSearchChanged(query);
+          },
           onCategoryChanged: (categoryId) {
             _onCategorySelected(categoryId);
           },
-          initialCategory: _selectedCategory,
         );
       },
     );
@@ -423,23 +497,23 @@ class _MapScreenState extends State<MapScreen> {
   }
 }
 
-// ── Contacts Sheet Content ─────────────────────────────────────────
-
-/// The content inside the modal bottom sheet, with its own local state
-/// for category filtering so the sheet rebuilds instantly on tap.
 class _ContactsSheetContent extends StatefulWidget {
   final List<EmergencyContact> allContacts;
   final ValueChanged<EmergencyContact> onContactTap;
   final VoidCallback onAddContacts;
   final ValueChanged<String?> onCategoryChanged;
+  final ValueChanged<String> onSearchChanged;
   final String? initialCategory;
+  final String initialSearchQuery;
 
   const _ContactsSheetContent({
     required this.allContacts,
     required this.onContactTap,
     required this.onAddContacts,
     required this.onCategoryChanged,
+    required this.onSearchChanged,
     this.initialCategory,
+    this.initialSearchQuery = '',
   });
 
   @override
@@ -448,26 +522,59 @@ class _ContactsSheetContent extends StatefulWidget {
 
 class _ContactsSheetContentState extends State<_ContactsSheetContent> {
   late String? _selectedCategory;
+  late String _searchQuery;
   late List<EmergencyContact> _filtered;
+  final TextEditingController _sheetSearchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _selectedCategory = widget.initialCategory;
-    _filtered = _applyFilter(_selectedCategory);
+    _searchQuery = widget.initialSearchQuery;
+    _sheetSearchController.text = widget.initialSearchQuery;
+    _filtered = _applyFilters();
   }
 
-  List<EmergencyContact> _applyFilter(String? categoryId) {
-    if (categoryId == null || categoryId == 'contacts') {
-      return widget.allContacts;
+  @override
+  void dispose() {
+    _sheetSearchController.dispose();
+    super.dispose();
+  }
+
+  List<EmergencyContact> _applyFilters() {
+    var results = widget.allContacts;
+
+    // Category filter
+    if (_selectedCategory != null && _selectedCategory != 'contacts') {
+      results = results.where((c) => c.type == _selectedCategory).toList();
     }
-    return widget.allContacts.where((c) => c.type == categoryId).toList();
+
+    // Text search
+    if (_searchQuery.isNotEmpty) {
+      final q = _searchQuery.toLowerCase();
+      results = results.where((c) {
+        return c.name.toLowerCase().contains(q) ||
+            c.type.toLowerCase().contains(q) ||
+            c.address.toLowerCase().contains(q) ||
+            c.phone.contains(q);
+      }).toList();
+    }
+
+    return results;
+  }
+
+  void _onSearchChanged(String query) {
+    setState(() {
+      _searchQuery = query;
+      _filtered = _applyFilters();
+    });
+    widget.onSearchChanged(query);
   }
 
   void _onCategoryTap(String? categoryId) {
     setState(() {
       _selectedCategory = categoryId;
-      _filtered = _applyFilter(categoryId);
+      _filtered = _applyFilters();
     });
     widget.onCategoryChanged(categoryId);
   }
@@ -486,7 +593,6 @@ class _ContactsSheetContentState extends State<_ContactsSheetContent> {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // ── Handle bar (match delete modal style) ──────
             Container(
               width: 40,
               height: 4,
@@ -497,7 +603,6 @@ class _ContactsSheetContentState extends State<_ContactsSheetContent> {
               ),
             ),
 
-            // ── Content card ───────────────────────────────
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -510,7 +615,69 @@ class _ContactsSheetContentState extends State<_ContactsSheetContent> {
                     controller: scrollController,
                     padding: const EdgeInsets.fromLTRB(0, 20, 0, 8),
                     children: [
-                      // ── "Seek Help" header + chevron ────
+                      // ── Search bar inside the sheet ──────────
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Container(
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF2C2C2C)
+                                : const Color(0xFFF3F3F4),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: TextField(
+                            controller: _sheetSearchController,
+                            onChanged: _onSearchChanged,
+                            decoration: InputDecoration(
+                              hintText: 'Search contacts, services...',
+                              hintStyle: TextStyle(
+                                color: isDark
+                                    ? Colors.white38
+                                    : const Color(0xFF9CA3AF),
+                                fontSize: 14,
+                                fontFamily: 'SF Pro Display',
+                              ),
+                              prefixIcon: Icon(
+                                Icons.search_rounded,
+                                color: isDark
+                                    ? Colors.white54
+                                    : AppColors.textSecondary,
+                                size: 20,
+                              ),
+                              suffixIcon: _searchQuery.isNotEmpty
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        _sheetSearchController.clear();
+                                        _onSearchChanged('');
+                                      },
+                                      child: Icon(
+                                        Icons.close_rounded,
+                                        color: isDark
+                                            ? Colors.white54
+                                            : AppColors.textSecondary,
+                                        size: 18,
+                                      ),
+                                    )
+                                  : null,
+                              border: InputBorder.none,
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                              ),
+                            ),
+                            style: TextStyle(
+                              color: theme.colorScheme.onSurface,
+                              fontSize: 15,
+                              fontFamily: 'SF Pro Display',
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // ── "Seek Help" header ────────────────────
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Row(
@@ -525,6 +692,17 @@ class _ContactsSheetContentState extends State<_ContactsSheetContent> {
                               ),
                             ),
                             const Spacer(),
+                            Text(
+                              '${_filtered.length} found',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: isDark
+                                    ? Colors.white54
+                                    : AppColors.textSecondary,
+                                fontFamily: 'SF Pro Display',
+                              ),
+                            ),
+                            const SizedBox(width: 4),
                             Icon(
                               Icons.chevron_right_rounded,
                               color: isDark
@@ -537,7 +715,6 @@ class _ContactsSheetContentState extends State<_ContactsSheetContent> {
 
                       const SizedBox(height: 12),
 
-                      // ── Category chips ──────────────────
                       SeekHelpRow(
                         selectedCategory: _selectedCategory,
                         onCategorySelected: _onCategoryTap,
@@ -545,12 +722,10 @@ class _ContactsSheetContentState extends State<_ContactsSheetContent> {
 
                       const SizedBox(height: 16),
 
-                      // ── Divider ─────────────────────────
                       const Divider(height: 1, indent: 24, endIndent: 24),
 
                       const SizedBox(height: 16),
 
-                      // ── "EMERGENCY CONTACTS" header ─────
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Text(
@@ -567,7 +742,6 @@ class _ContactsSheetContentState extends State<_ContactsSheetContent> {
 
                       const SizedBox(height: 4),
 
-                      // ── Contact list ────────────────────
                       ..._filtered.map(
                         (contact) => Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -588,7 +762,6 @@ class _ContactsSheetContentState extends State<_ContactsSheetContent> {
                         ),
                       ),
 
-                      // ── Empty state ─────────────────────
                       if (_filtered.isEmpty)
                         Padding(
                           padding: const EdgeInsets.symmetric(
@@ -596,29 +769,44 @@ class _ContactsSheetContentState extends State<_ContactsSheetContent> {
                             vertical: 32,
                           ),
                           child: Center(
-                            child: Text(
-                              'No contacts found for this category.',
-                              style: TextStyle(
-                                color: isDark
-                                    ? Colors.white54
-                                    : AppColors.textSecondary,
-                                fontSize: 15,
-                                fontFamily: 'SF Pro Display',
-                              ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.search_off_rounded,
+                                  size: 40,
+                                  color: isDark
+                                      ? Colors.white38
+                                      : AppColors.textSecondary,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  _searchQuery.isNotEmpty
+                                      ? 'No results for "$_searchQuery"'
+                                      : 'No contacts in this category.',
+                                  style: TextStyle(
+                                    color: isDark
+                                        ? Colors.white54
+                                        : AppColors.textSecondary,
+                                    fontSize: 15,
+                                    fontFamily: 'SF Pro Display',
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
                             ),
                           ),
                         ),
 
                       const SizedBox(height: 8),
 
-                      // ── "+ Add contacts" button ─────────
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: OutlinedButton.icon(
                           onPressed: widget.onAddContacts,
                           icon: const Icon(Icons.person_add_rounded, size: 20),
                           label: const Text(
-                            '+ Add contacts',
+                            'Add contacts',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
