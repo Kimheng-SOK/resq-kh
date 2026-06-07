@@ -17,6 +17,11 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
+  async findAll() {
+    const users = await this.userRepository.find();
+    return users;
+  }
+
   async findOne(id: string) {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
@@ -29,5 +34,10 @@ export class UsersService {
     const user = await this.findOne(id);
     Object.assign(user, dto);
     return this.userRepository.save(user);
+  }
+
+  async remove(id: string) {
+    const user = await this.findOne(id);
+    return this.userRepository.remove(user);
   }
 }

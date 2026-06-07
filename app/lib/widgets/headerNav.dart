@@ -8,12 +8,12 @@ class HeaderNavBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onProfileTap;
 
   const HeaderNavBar({
-    Key? key,
+    super.key,
     required this.userName,
     this.hasNotification = false,
     this.onNotificationTap,
     this.onProfileTap,
-  }) : super(key: key);
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(50);

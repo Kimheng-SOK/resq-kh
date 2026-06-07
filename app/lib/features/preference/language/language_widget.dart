@@ -1,6 +1,6 @@
 import 'package:app/features/preference/language/card_language.dart';
 import 'package:flutter/material.dart';
-import 'package:app/core/services/country_code.dart';
+import 'package:app/core/utils/country_code.dart';
 import 'package:app/features/preference/language/diver_widget.dart';
 
 class LanguageCard extends StatelessWidget {

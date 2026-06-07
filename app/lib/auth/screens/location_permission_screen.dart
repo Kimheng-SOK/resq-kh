@@ -38,11 +38,11 @@ class LocationPermissionScreen extends StatelessWidget {
 
     if (!context.mounted) return;
 
-    context.go('/');
+    context.go('/complete-profile');
   }
 
   void _skip(BuildContext context) {
-    context.go('/');
+    context.go('/complete-profile');
   }
 
   @override

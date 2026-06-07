@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:app/services/auth_service.dart';
+import 'package:app/providers/auth_provider.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-  bool isLoading = false;
 
   @override
   void dispose() {
@@ -25,44 +25,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _continue() async {
     final name = _nameController.text.trim();
-    final email = _emailController.text.trim();
+    final emailText = _emailController.text.trim();
     final phone = _phoneController.text.trim();
 
-    if (name.isEmpty || phone.isEmpty || email.isEmpty) {
+    if (name.isEmpty || phone.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Name, Email & Phone Number are required'),
-        ),
+        const SnackBar(content: Text('Name and Phone Number are required')),
       );
       return;
     }
 
-    setState(() {
-      isLoading = true;
-    });
+    // Email is optional — pass null if nothing was entered
+    final email = emailText.isEmpty ? null : emailText;
 
-    try {
-      final success = await AuthService.sendOtp(
-        fullName: name,
-        email: email,
-        phoneNumber: phone,
+    final success = await ref
+        .read(authProvider.notifier)
+        .sendOtp(fullName: name, email: email, phoneNumber: phone);
+
+    if (!mounted) return;
+
+    if (success) {
+      context.push('/otp', extra: {'phone_number': phone});
+    } else {
+      // Show the actual error from the backend so the user knows what's wrong
+      final error = ref.read(authProvider).error;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error ?? 'Failed to send OTP. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
       );
-
-      if (!mounted) return;
-
-      if (success) {
-        context.push('/otp', extra: {'email': email});
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
-    } finally {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
     }
   }
 
@@ -122,7 +114,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
-                  labelText: 'Email (Required)',
+                  labelText: 'Email (Optional)',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -157,7 +149,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
 
-                  child: isLoading
+                  child: ref.watch(authProvider).isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
                       : const Text(
                           'Continue',

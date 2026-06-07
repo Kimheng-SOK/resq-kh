@@ -16,12 +16,9 @@ class LocationState {
   });
 }
 
-// --- Notifier ---
-
 class LocationNotifier extends Notifier<LocationState> {
   @override
   LocationState build() {
-    // Mock GPS: hard-coded to BKK1, Phnom Penh
     return const LocationState(
       city: 'Phnom Penh',
       district: 'BKK1',
@@ -30,8 +27,6 @@ class LocationNotifier extends Notifier<LocationState> {
     );
   }
 }
-
-// --- Provider ---
 
 final locationProvider = NotifierProvider<LocationNotifier, LocationState>(
   LocationNotifier.new,

@@ -10,7 +10,7 @@ export class SendOtpDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsEmail()
-  email!: string;
+  email?: string;
 
   @ApiProperty()
   @IsString()

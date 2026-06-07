@@ -1,4 +1,8 @@
-import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
@@ -61,14 +65,17 @@ export class AuthService {
     };
   }
 
-  getProfile(user: { id: string; email: string; role: string; full_name: string | null }) {
+  getProfile(user: {
+    id: string;
+    email: string;
+    role: string;
+    full_name: string | null;
+  }) {
     return user;
   }
 
   private generateOtp(): string {
-    return Math.floor(
-      100000 + Math.random() * 900000,
-    ).toString();
+    return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
   async sendOtp(dto: SendOtpDto) {
@@ -94,7 +101,6 @@ export class AuthService {
       await this.userRepository.save(user);
     }
 
-
     const recentOtp = await this.otpRepository.findOne({
       where: {
         email: dto.email,
@@ -105,15 +111,11 @@ export class AuthService {
       },
     });
 
-    if (
-      recentOtp &&
-      recentOtp.expires_at > new Date()
-    ) {
+    if (recentOtp && recentOtp.expires_at > new Date()) {
       throw new BadRequestException(
         'Please wait before requesting another OTP',
       );
     }
-
 
     const otp = this.generateOtp();
 
@@ -186,7 +188,7 @@ export class AuthService {
 
     user.is_email_verified = true;
     await this.userRepository.save(user);
-    
+
     const payload = {
       sub: user.id,
       email: user.email,
@@ -205,5 +207,4 @@ export class AuthService {
       },
     };
   }
-
 }

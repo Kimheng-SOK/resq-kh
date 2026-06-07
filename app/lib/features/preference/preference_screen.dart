@@ -6,8 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:app/core/theme/app_color.dart';
 import 'package:app/core/theme/theme_controller.dart';
-import 'package:app/core/services/refresh_service.dart';
-import 'package:app/core/services/storage_service.dart';
+import 'package:app/services/refresh_service.dart';
+import 'package:app/services/storage_service.dart';
 import 'package:app/features/preference/theme/theme_widget.dart';
 
 class PreferenceScreen extends StatefulWidget {

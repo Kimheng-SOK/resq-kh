@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:app/core/services/country_code.dart';
+import 'package:app/core/utils/country_code.dart';
 import 'package:country_flags/country_flags.dart';
 
 class CardLanguage extends StatelessWidget {
