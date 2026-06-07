@@ -38,18 +38,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     // Email is optional — pass null if nothing was entered
     final email = emailText.isEmpty ? null : emailText;
 
-    final success = await ref.read(authProvider.notifier).sendOtp(
-      fullName: name,
-      email: email,
-      phoneNumber: phone,
-    );
+    final success = await ref
+        .read(authProvider.notifier)
+        .sendOtp(fullName: name, email: email, phoneNumber: phone);
 
     if (!mounted) return;
 
     if (success) {
       context.push('/otp', extra: {'phone_number': phone});
     } else {
-      // Show the actual error from the backend so the user knows what's wrong
       final error = ref.read(authProvider).error;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

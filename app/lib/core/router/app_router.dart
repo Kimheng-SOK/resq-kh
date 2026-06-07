@@ -191,7 +191,9 @@ class _AppShellState extends ConsumerState<AppShell> {
           ),
           Expanded(child: widget.child),
           BottomNavBar(
-            currentIndex: widget._currentIndexForLocation(widget.currentLocation),
+            currentIndex: widget._currentIndexForLocation(
+              widget.currentLocation,
+            ),
             onTap: (index) => context.go(widget._locationForIndex(index)),
           ),
         ],
