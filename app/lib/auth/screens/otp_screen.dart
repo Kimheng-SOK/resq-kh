@@ -31,10 +31,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       return;
     }
 
-    final result = await ref.read(authProvider.notifier).verifyOtp(
-      phoneNumber: widget.phoneNumber,
-      otp: otp,
-    );
+    final result = await ref
+        .read(authProvider.notifier)
+        .verifyOtp(phoneNumber: widget.phoneNumber, otp: otp);
 
     if (result == null) {
       // error is already set in the provider
@@ -104,7 +103,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               height: 55,
 
               child: ElevatedButton(
-                onPressed: ref.watch(authProvider).isLoading ? null : _verifyOtp,
+                onPressed: ref.watch(authProvider).isLoading
+                    ? null
+                    : _verifyOtp,
 
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFD32F2F),
@@ -126,8 +127,12 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
             TextButton(
               onPressed: () {
-                // TODO:
-                // Resend OTP
+                ref
+                    .read(authProvider.notifier)
+                    .verifyOtp(
+                      phoneNumber: widget.phoneNumber,
+                      otp: '', // empty OTP to trigger resend
+                    );
               },
               child: const Text('Resend OTP'),
             ),

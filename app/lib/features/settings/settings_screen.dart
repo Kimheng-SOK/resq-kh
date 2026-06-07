@@ -2,7 +2,7 @@ import 'package:app/services/refresh_service.dart';
 import 'package:app/core/theme/app_color.dart';
 import 'package:app/features/settings/widgets/delete_modal_sheet.dart';
 import 'package:app/features/settings/widgets/section_header_widget.dart';
-import 'package:app/providers/auth_provider.dart';
+import 'package:app/providers/user_provider.dart';
 import 'package:app/widgets/refresh_drag_pop_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,16 +22,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _emailAlerts = false;
 
   Future<void> _handleDeleteAccount() async {
+    // Use the actual user's name for the confirmation message
+    final userState = ref.read(userProvider);
+    final userName = userState.user?.fullName ?? 'USER';
+
     final confirmed = await showDeleteAccountSheet(
       context,
-      confirmMessage: 'SOK KIMEHNG',
+      confirmMessage: userName,
     );
 
+    // The modal already calls deleteAccount() — if it returned true,
+    // the account was successfully deleted. Just navigate away.
     if (confirmed == true && mounted) {
-      await ref.read(authProvider.notifier).logout();
-      if (mounted) {
-        context.go('/login');
-      }
+      context.go('/register');
     }
   }
 
@@ -130,7 +133,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     SettingsTile(
                       icon: Icons.medical_information_outlined,
                       label: 'Medical Info',
-                      onTap: () {},
+                      onTap: () => context.push(
+                        '/complete-profile',
+                        extra: {'editing': true},
+                      ),
                     ),
                     const DividerWidget(),
                     SettingsTile(

@@ -25,7 +25,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   Future<void> _continue() async {
     final name = _nameController.text.trim();
-    final email = _emailController.text.trim();
+    final emailText = _emailController.text.trim();
     final phone = _phoneController.text.trim();
 
     if (name.isEmpty || phone.isEmpty) {
@@ -34,6 +34,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       );
       return;
     }
+
+    // Email is optional — pass null if nothing was entered
+    final email = emailText.isEmpty ? null : emailText;
 
     final success = await ref.read(authProvider.notifier).sendOtp(
       fullName: name,
@@ -45,6 +48,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     if (success) {
       context.push('/otp', extra: {'phone_number': phone});
+    } else {
+      // Show the actual error from the backend so the user knows what's wrong
+      final error = ref.read(authProvider).error;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error ?? 'Failed to send OTP. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 

@@ -9,11 +9,11 @@ class LocationPermissionScreen extends StatelessWidget {
     // Request location permission
     // Save user location to backend
 
-    context.go('/');
+    context.go('/complete-profile');
   }
 
   void _skip(BuildContext context) {
-    context.go('/');
+    context.go('/complete-profile');
   }
 
   @override

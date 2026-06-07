@@ -1,3 +1,4 @@
+import 'package:app/auth/screens/complete_profile_screen.dart';
 import 'package:app/auth/screens/location_permission_screen.dart';
 import 'package:app/auth/screens/otp_screen.dart';
 import 'package:app/auth/screens/register_screen.dart';
@@ -9,12 +10,14 @@ import 'package:app/features/contacts/general_contacts_screen.dart';
 import 'package:app/features/contacts/police_screen.dart';
 import 'package:app/features/preference/preference_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/home/home_screen.dart';
 import '../../widgets/bottomNav.dart';
 import '../../widgets/headerNav.dart';
 import '../../widgets/placeholder_screen.dart';
 import '../../features/settings/settings_screen.dart';
+import 'package:app/providers/user_provider.dart';
 
 final router = GoRouter(
   initialLocation: '/splash',
@@ -39,6 +42,14 @@ final router = GoRouter(
     GoRoute(
       path: '/location-permission',
       builder: (context, state) => const LocationPermissionScreen(),
+    ),
+    GoRoute(
+      path: '/complete-profile',
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final editing = extra?['editing'] as bool? ?? false;
+        return CompleteProfileScreen(editing: editing);
+      },
     ),
     ShellRoute(
       builder: (context, state, child) {
@@ -103,7 +114,7 @@ final router = GoRouter(
   ],
 );
 
-class AppShell extends StatelessWidget {
+class AppShell extends ConsumerStatefulWidget {
   final String currentLocation;
   final Widget child;
 
@@ -113,8 +124,6 @@ class AppShell extends StatelessWidget {
     required this.child,
   });
 
-  /// Maps a route location to the corresponding BottomNavBar external index.
-  /// External index layout: 0=Home, 1=Map, 2=SOS, 3=Contacts, 4=First Aid
   int _currentIndexForLocation(String location) {
     if (location.startsWith('/contacts')) return 3;
     if (location.startsWith('/map')) return 1;
@@ -124,8 +133,6 @@ class AppShell extends StatelessWidget {
     return 0;
   }
 
-  /// Converts a BottomNavBar external index back to a route location.
-  /// External index layout: 0=Home, 1=Map, 2=SOS, 3=Contacts, 4=First Aid
   String _locationForIndex(int index) {
     switch (index) {
       case 1:
@@ -142,21 +149,50 @@ class AppShell extends StatelessWidget {
   }
 
   @override
+  ConsumerState<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends ConsumerState<AppShell> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch the user profile for the header display + offline caching.
+    // No redirect here — the splash screen handles the initial routing.
+    ref.read(userProvider.notifier).fetchProfile();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final userState = ref.watch(userProvider);
+
+    // If the token became invalid (401), redirect to register
+    ref.listen(userProvider.select((s) => s.needsReAuth), (_, needsReAuth) {
+      if (needsReAuth == true) {
+        context.go('/register');
+      }
+    });
+
+    // Extract a display name from the profile safely
+    String displayName = 'GUEST';
+    final user = userState.user;
+    if (user != null && user.fullName.isNotEmpty) {
+      displayName = user.fullName;
+    }
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
           HeaderNavBar(
-            userName: 'SOK KIMHENG',
+            userName: displayName,
             hasNotification: true,
             onNotificationTap: () => context.push('/notifications'),
             onProfileTap: () => context.push('/settings'),
           ),
-          Expanded(child: child),
+          Expanded(child: widget.child),
           BottomNavBar(
-            currentIndex: _currentIndexForLocation(currentLocation),
-            onTap: (index) => context.go(_locationForIndex(index)),
+            currentIndex: widget._currentIndexForLocation(widget.currentLocation),
+            onTap: (index) => context.go(widget._locationForIndex(index)),
           ),
         ],
       ),
