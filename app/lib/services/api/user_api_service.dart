@@ -4,7 +4,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class UserApiService {
-  static final String baseUrl = dotenv.get('API_BASE_URL');
+  static final String baseUrl = dotenv.get(
+    'API_BASE_URL',
+    fallback: 'http://localhost:3000',
+  );
 
   /// Helper: the backend TransformInterceptor wraps all responses in
   /// `{ statusCode, message, data: {...} }`.  Extract the inner payload.
