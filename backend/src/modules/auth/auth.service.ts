@@ -30,8 +30,6 @@ export class AuthService {
     private emailService: EmailService,
 
     private jwtService: JwtService,
-
-
   ) {}
 
   async login(dto: LoginDto) {
@@ -79,16 +77,15 @@ export class AuthService {
   }
 
   async sendOtp(dto: SendOtpDto) {
+    const hasEmail = !!dto.email;
     let user = await this.userRepository.findOne({
-      where: {
-        email: dto.email,
-      },
+      where: hasEmail
+        ? { email: dto.email }
+        : { phone_number: dto.phone_number },
     });
 
-    if (user && user.is_email_verified) {
-      throw new BadRequestException(
-        'Email is already registered',
-      );
+    if (user && hasEmail && user.is_email_verified) {
+      throw new BadRequestException('Email is already registered');
     }
 
     if (!user) {
@@ -97,18 +94,19 @@ export class AuthService {
         email: dto.email,
         phone_number: dto.phone_number,
       });
-
       await this.userRepository.save(user);
     }
 
+    const recentOtpWhere: Record<string, unknown> = { is_used: false };
+    if (hasEmail) {
+      recentOtpWhere.email = dto.email;
+    } else {
+      recentOtpWhere.phone_number = dto.phone_number;
+    }
+
     const recentOtp = await this.otpRepository.findOne({
-      where: {
-        email: dto.email,
-        is_used: false,
-      },
-      order: {
-        created_at: 'DESC',
-      },
+      where: recentOtpWhere,
+      order: { created_at: 'DESC' },
     });
 
     if (recentOtp && recentOtp.expires_at > new Date()) {
@@ -118,29 +116,22 @@ export class AuthService {
     }
 
     const otp = this.generateOtp();
+    console.log('Generated OTP:', otp); // Log the generated OTP for debugging
 
     const otpRecord = this.otpRepository.create({
       email: dto.email,
+      phone_number: dto.phone_number,
       otp_code: otp,
-      expires_at: new Date(
-        Date.now() + 5 * 60 * 1000, // 5 minutes
-      ),
+      expires_at: new Date(Date.now() + 5 * 60 * 1000),
       is_used: false,
     });
 
     await this.otpRepository.save(otpRecord);
 
-    if (!user.email) {
-      throw new BadRequestException(
-        'User email is required',
-      );
+    if (hasEmail) {
+      await this.emailService.sendOtp(dto.email!, otp);
     }
 
-    await this.emailService.sendOtp(
-      user.email,
-      otp,
-    );
-    
     return {
       message: 'OTP sent successfully',
       user_id: user.id,
@@ -148,13 +139,18 @@ export class AuthService {
   }
 
   async verifyOtp(dto: VerifyOtpDto) {
+    const hasEmail = !!dto.email;
+
+    const otpWhere: Record<string, unknown> = {};
+    if (hasEmail) {
+      otpWhere.email = dto.email;
+    } else {
+      otpWhere.phone_number = dto.phone_number;
+    }
+
     const otpRecord = await this.otpRepository.findOne({
-      where: {
-        email: dto.email,
-      },
-      order: {
-        created_at: 'DESC',
-      },
+      where: otpWhere,
+      order: { created_at: 'DESC' },
     });
 
     if (!otpRecord) {
@@ -176,10 +172,15 @@ export class AuthService {
     otpRecord.is_used = true;
     await this.otpRepository.save(otpRecord);
 
+    const userWhere: Record<string, unknown> = {};
+    if (hasEmail) {
+      userWhere.email = dto.email;
+    } else {
+      userWhere.phone_number = dto.phone_number;
+    }
+
     const user = await this.userRepository.findOne({
-      where: {
-        email: dto.email
-      },
+      where: userWhere,
     });
 
     if (!user) {
