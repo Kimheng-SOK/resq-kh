@@ -2,10 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'downward_triangle_painter.dart';
 
-/// A map marker showing a contact's profile photo, service icon, or
-/// initials fallback with a downward-pointing caret.
-///
-/// Priority: [imageUrl] > [icon] > [initials] text.
 class ContactProfileMarker extends StatelessWidget {
   final String? imageUrl;
   final String initials;
@@ -67,7 +63,6 @@ class ContactProfileMarker extends StatelessWidget {
                 : _buildFallbackAvatar(),
           ),
 
-          // ── Downward caret ──────────────────────────────────
           CustomPaint(
             size: const Size(16, 8),
             painter: DownwardTrianglePainter(

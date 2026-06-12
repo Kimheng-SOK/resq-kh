@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'downward_triangle_painter.dart';
 
-/// A map marker for emergency service locations (hospitals, police stations,
-/// fire stations, etc.). Renders a colored rounded square with an icon and
-/// a downward-pointing caret.
 class ServiceMarker extends StatelessWidget {
   final IconData icon;
   final Color color;

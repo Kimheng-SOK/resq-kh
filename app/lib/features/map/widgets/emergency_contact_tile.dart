@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_color.dart';
 import '../../../models/emergency_contact.dart';
 
-/// A single row in the emergency contacts list inside the
-/// DraggableScrollableSheet on the Map screen.
 class EmergencyContactTile extends StatelessWidget {
   final EmergencyContact contact;
   final VoidCallback? onTap;
@@ -16,7 +14,6 @@ class EmergencyContactTile extends StatelessWidget {
     this.onNotifyTap,
   });
 
-  /// Maps a contact type to a display color for the avatar.
   static Color _colorForType(String type) {
     switch (type) {
       case 'police':

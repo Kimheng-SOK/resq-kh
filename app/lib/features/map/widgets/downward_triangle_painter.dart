@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Paints a small filled downward-pointing triangle used as a map pin caret
-/// below contact and service markers.
 class DownwardTrianglePainter extends CustomPainter {
   final Color color;
 
