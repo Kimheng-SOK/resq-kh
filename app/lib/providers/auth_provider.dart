@@ -77,6 +77,7 @@ class AuthNotifier extends Notifier<AuthState> {
         final userData = result['data']?['user'] as Map<String, dynamic>?;
         if (userData != null) {
           final user = UserModel.fromJson(userData);
+          await AuthStorageService.saveUserId(user.id);
           await ref.read(userProvider.notifier).setUserFromLogin(user);
         }
       }

@@ -46,7 +46,10 @@ class _OtpScreenState extends State<OtpScreen> {
       );
       final data = result['data'] as Map<String, dynamic>;
       await AuthStorageService.saveToken(data['access_token'] as String);
-      await AuthStorageService.saveUserId(data['user']['id'] as String);
+      final userId = (data['user'] as Map<String, dynamic>?)?['id'] as String?;
+      if (userId != null) {
+        await AuthStorageService.saveUserId(userId);
+      }
 
       if (!mounted) return;
 

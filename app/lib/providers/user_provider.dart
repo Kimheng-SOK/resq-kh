@@ -59,6 +59,7 @@ class UserNotifier extends Notifier<UserState> {
       final profile = await UserApiService.fetchUserProfile(token);
       // Cache for offline use
       await AuthStorageService.saveUser(profile);
+      await AuthStorageService.saveUserId(profile.id);
       state = state.copyWith(user: profile);
       return profile;
     } catch (e) {

@@ -61,7 +61,11 @@ class AuthStorageService {
 
   static Future<String?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('user_id');
+    final userId = prefs.getString('user_id');
+    if (userId != null) return userId;
+    // Fall back to the cached user profile
+    final cached = await getCachedUser();
+    return cached?.id;
   }
 
   /// Clear all auth-related data (token + cached user + user ID).
