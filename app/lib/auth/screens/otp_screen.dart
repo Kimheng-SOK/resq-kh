@@ -1,19 +1,20 @@
+import 'package:app/services/auth_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:app/providers/auth_provider.dart';
 
-class OtpScreen extends ConsumerStatefulWidget {
-  final String phoneNumber;
+class OtpScreen extends StatefulWidget {
+  final String email;
 
-  const OtpScreen({super.key, required this.phoneNumber});
+  const OtpScreen({super.key, required this.email});
 
   @override
-  ConsumerState<OtpScreen> createState() => _OtpScreenState();
+  State<OtpScreen> createState() => _OtpScreenState();
 }
 
-class _OtpScreenState extends ConsumerState<OtpScreen> {
+class _OtpScreenState extends State<OtpScreen> {
   final _otpController = TextEditingController();
+
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -31,23 +32,30 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       return;
     }
 
-    final result = await ref
-        .read(authProvider.notifier)
-        .verifyOtp(phoneNumber: widget.phoneNumber, otp: otp);
+    setState(() {
+      isLoading = true;
+    });
 
-    if (result == null) {
-      // error is already set in the provider
-      final error = ref.read(authProvider).error;
-      if (error != null && mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(error)));
+    try {
+      final result = await AuthService.verifyOtp(email: widget.email, otp: otp);
+      await AuthService.saveToken(result['data']['access_token']);
+
+      await AuthService.saveUserId(result['data']['user']['id']);
+
+      if (!mounted) return;
+
+      context.go('/location-permission');
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
       }
-      return;
     }
-
-    if (!mounted) return;
-    context.go('/location-permission');
   }
 
   @override
@@ -57,86 +65,87 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
       appBar: AppBar(title: const Text('Verify OTP'), centerTitle: true),
 
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-
-        child: Column(
-          children: [
-            const SizedBox(height: 40),
-
-            const Icon(Icons.sms, size: 100, color: Color(0xFFD32F2F)),
-
-            const SizedBox(height: 24),
-
-            const Text(
-              'Verification Code',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: const EdgeInsets.all(24),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height,
             ),
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
 
-            const SizedBox(height: 12),
+                const Icon(Icons.sms, size: 100, color: Color(0xFFD32F2F)),
 
-            const Text(
-              'Enter the OTP sent to your phone number',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
-            ),
+                const SizedBox(height: 24),
 
-            const SizedBox(height: 40),
-
-            TextField(
-              controller: _otpController,
-              keyboardType: TextInputType.number,
-              textAlign: TextAlign.center,
-              maxLength: 6,
-              decoration: InputDecoration(
-                labelText: 'OTP',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                const Text(
+                  'Verification Code',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
-              ),
-            ),
 
-            const SizedBox(height: 24),
+                const SizedBox(height: 12),
 
-            SizedBox(
-              width: double.infinity,
-              height: 55,
+                const Text(
+                  'Enter the OTP sent to your phone number',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey),
+                ),
 
-              child: ElevatedButton(
-                onPressed: ref.watch(authProvider).isLoading
-                    ? null
-                    : _verifyOtp,
+                const SizedBox(height: 40),
 
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFD32F2F),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                TextField(
+                  controller: _otpController,
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  maxLength: 6,
+                  decoration: InputDecoration(
+                    labelText: 'OTP',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
 
-                child: ref.watch(authProvider).isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        'Verify OTP',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                const SizedBox(height: 24),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 55,
+
+                  child: ElevatedButton(
+                    onPressed: isLoading ? null : _verifyOtp,
+
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFD32F2F),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-              ),
-            ),
+                    ),
 
-            const SizedBox(height: 16),
+                    child: isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            'Verify OTP',
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          ),
+                  ),
+                ),
 
-            TextButton(
-              onPressed: () {
-                ref
-                    .read(authProvider.notifier)
-                    .verifyOtp(
-                      phoneNumber: widget.phoneNumber,
-                      otp: '', // empty OTP to trigger resend
-                    );
-              },
-              child: const Text('Resend OTP'),
+                const SizedBox(height: 16),
+
+                TextButton(
+                  onPressed: () {
+                    // TODO:
+                    // Resend OTP
+                  },
+                  child: const Text('Resend OTP'),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

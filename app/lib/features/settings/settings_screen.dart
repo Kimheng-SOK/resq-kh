@@ -7,6 +7,7 @@ import 'package:app/widgets/refresh_drag_pop_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'widgets/setting_tile_widget.dart';
 import 'widgets/diver_widget.dart';
 
@@ -164,6 +165,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       icon: Icons.contacts_outlined,
                       label: 'Emergency Contacts',
                       onTap: () {},
+                    ),
+                    const DividerWidget(),
+                    SettingsTile(
+                      icon: Icons.location_on_outlined,
+                      label: 'Location Permission',
+                      onTap: () async {
+                        await openAppSettings();
+                      },
                     ),
                   ],
                 ),
