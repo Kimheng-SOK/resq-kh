@@ -41,7 +41,10 @@ GoRouter createRouter(String initialRoute) {
         builder: (context, state) {
           final data = state.extra as Map<String, dynamic>;
 
-          return OtpScreen(email: data['email']);
+          return OtpScreen(
+            email: data['email'] as String?,
+            phoneNumber: data['phone_number'] as String,
+          );
         },
       ),
 

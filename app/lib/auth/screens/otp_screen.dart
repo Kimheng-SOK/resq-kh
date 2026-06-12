@@ -1,11 +1,13 @@
-import 'package:app/services/auth_service.dart';
+import 'package:app/services/api/auth_api_service.dart';
+import 'package:app/services/auth_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class OtpScreen extends StatefulWidget {
-  final String email;
+  final String? email;
+  final String phoneNumber;
 
-  const OtpScreen({super.key, required this.email});
+  const OtpScreen({super.key, this.email, required this.phoneNumber});
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -37,10 +39,14 @@ class _OtpScreenState extends State<OtpScreen> {
     });
 
     try {
-      final result = await AuthService.verifyOtp(email: widget.email, otp: otp);
-      await AuthService.saveToken(result['data']['access_token']);
-
-      await AuthService.saveUserId(result['data']['user']['id']);
+      final result = await AuthApiService.verifyOtp(
+        email: widget.email,
+        phoneNumber: widget.phoneNumber,
+        otp: otp,
+      );
+      final data = result['data'] as Map<String, dynamic>;
+      await AuthStorageService.saveToken(data['access_token'] as String);
+      await AuthStorageService.saveUserId(data['user']['id'] as String);
 
       if (!mounted) return;
 

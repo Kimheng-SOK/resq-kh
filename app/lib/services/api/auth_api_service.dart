@@ -60,15 +60,25 @@ class AuthApiService {
   }
 
   /// Verifies the OTP for the given phone number.
+  /// [email] is optional — pass it when the user provided one during registration.
   /// Returns the raw JSON response map on success, throws on failure.
   static Future<Map<String, dynamic>> verifyOtp({
     required String phoneNumber,
+    String? email,
     required String otp,
   }) async {
+    final body = <String, dynamic>{
+      'phone_number': phoneNumber,
+      'otp': otp,
+    };
+    if (email != null && email.isNotEmpty) {
+      body['email'] = email;
+    }
+
     final response = await http.post(
       Uri.parse('$baseUrl/auth/verify-otp'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'phone_number': phoneNumber, 'otp': otp}),
+      body: jsonEncode(body),
     );
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
