@@ -1,3 +1,4 @@
+import 'package:app/models/user_model.dart';
 import 'package:app/services/api/auth_api_service.dart';
 import 'package:app/services/auth_storage_service.dart';
 import 'package:flutter/material.dart';
@@ -45,10 +46,16 @@ class _OtpScreenState extends State<OtpScreen> {
         otp: otp,
       );
       final data = result['data'] as Map<String, dynamic>;
-      await AuthStorageService.saveToken(data['access_token'] as String);
-      final userId = (data['user'] as Map<String, dynamic>?)?['id'] as String?;
-      if (userId != null) {
-        await AuthStorageService.saveUserId(userId);
+      final token = data['access_token'] as String;
+      await AuthStorageService.saveToken(token);
+
+      // Cache the full user profile immediately so the header shows the
+      // user's name even if the backend profile fetch is slow/offline.
+      final userJson = data['user'] as Map<String, dynamic>?;
+      if (userJson != null) {
+        final user = UserModel.fromJson(userJson);
+        await AuthStorageService.saveUser(user);
+        await AuthStorageService.saveUserId(user.id);
       }
 
       if (!mounted) return;
