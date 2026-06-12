@@ -52,10 +52,23 @@ class AuthStorageService {
     await prefs.remove(_userKey);
   }
 
-  /// Clear all auth-related data (token + cached user).
+  // ── User ID (convenience) ───────────────────────────────────────
+
+  static Future<void> saveUserId(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_id', userId);
+  }
+
+  static Future<String?> getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_id');
+  }
+
+  /// Clear all auth-related data (token + cached user + user ID).
   static Future<void> clearAll() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
     await prefs.remove(_userKey);
+    await prefs.remove('user_id');
   }
 }

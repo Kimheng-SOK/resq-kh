@@ -6,7 +6,7 @@ import 'package:app/widgets/refresh_drag_pop_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_color.dart';
-import 'package:app/services/auth_service.dart';
+import 'package:app/services/auth_storage_service.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -34,7 +34,7 @@ class HomeScreen extends StatelessWidget {
                     const LocationChip(location: 'Phnom Penh'),
                     GestureDetector(
                       onTap: () async {
-                        await AuthService.logout();
+                        await AuthStorageService.clearAll();
 
                         if (context.mounted) {
                           context.go('/splash');

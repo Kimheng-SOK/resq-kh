@@ -1,12 +1,16 @@
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'auth_service.dart';
+import 'auth_storage_service.dart';
 
 class ContactService {
-  static const String baseUrl = 'http://10.204.16.151:3000';
+  static final String baseUrl = dotenv.get(
+    'API_BASE_URL',
+    fallback: 'http://localhost:3000',
+  );
 
   static Future<List<dynamic>> getContacts() async {
-    final userId = await AuthService.getUserId();
+    final userId = await AuthStorageService.getUserId();
 
     if (userId == null) {
       throw Exception('User not logged in');
@@ -30,7 +34,7 @@ class ContactService {
     required String phoneNumber,
     required String relationship,
   }) async {
-    final userId = await AuthService.getUserId();
+    final userId = await AuthStorageService.getUserId();
 
     if (userId == null) {
       throw Exception('User not logged in');
@@ -57,7 +61,7 @@ class ContactService {
     required String phoneNumber,
     required String relationship,
   }) async {
-    final userId = await AuthService.getUserId();
+    final userId = await AuthStorageService.getUserId();
 
     if (userId == null) {
       throw Exception('User not logged in');
@@ -79,7 +83,7 @@ class ContactService {
   }
 
   static Future<void> deleteContact(String contactId) async {
-    final userId = await AuthService.getUserId();
+    final userId = await AuthStorageService.getUserId();
 
     if (userId == null) {
       throw Exception('User not logged in');
