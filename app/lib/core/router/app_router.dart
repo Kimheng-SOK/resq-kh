@@ -1,4 +1,5 @@
 import 'package:app/auth/screens/complete_profile_screen.dart';
+import 'package:app/auth/screens/edit_profile_screen.dart';
 import 'package:app/auth/screens/location_permission_screen.dart';
 import 'package:app/auth/screens/otp_screen.dart';
 import 'package:app/auth/screens/register_screen.dart';
@@ -54,7 +55,12 @@ GoRouter createRouter(String initialRoute) {
       ),
       GoRoute(
         path: '/complete-profile',
-        builder: (context, state) => const CompleteProfileScreen(),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return CompleteProfileScreen(
+            editing: extra?['editing'] as bool? ?? false,
+          );
+        },
       ),
 
       ShellRoute(
@@ -115,7 +121,7 @@ GoRouter createRouter(String initialRoute) {
       ),
       GoRoute(
         path: '/profile',
-        builder: (context, state) => const PlaceholderScreen(title: 'Profile'),
+        builder: (context, state) => const EditProfileScreen(),
       ),
       GoRoute(
         path: '/notifications',

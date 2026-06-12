@@ -1,7 +1,8 @@
+import 'package:app/core/theme/app_color.dart';
+import 'package:app/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:app/providers/user_provider.dart';
 
 /// Screen for collecting/editing medical information.
 ///
@@ -38,18 +39,15 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
 
   Future<void> _loadProfile() async {
     try {
-      // Fetch the full user profile to check completion status
       final user = await ref.read(userProvider.notifier).fetchProfile();
 
       if (!mounted) return;
 
       if (user != null) {
-        // Pre-fill existing data
         _bloodGroup = user.bloodType;
         _allergiesController.text = user.allergies ?? '';
         _medicalController.text = user.medicalConditions ?? '';
 
-        // In completion mode, auto-skip if profile is already complete
         if (!widget.editing && user.isProfileComplete) {
           context.go('/');
           return;
@@ -65,24 +63,20 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
   }
 
   Future<void> _saveAndContinue() async {
-    // Only blood type is required — allergies and medical conditions are optional
     if (_bloodGroup == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select your blood type'),
-        ),
+        const SnackBar(content: Text('Please select your blood type')),
       );
       return;
     }
 
     final allergiesText = _allergiesController.text.trim();
+    final medicalText = _medicalController.text.trim();
 
     final updated = await ref.read(userProvider.notifier).updateProfile(
       bloodGroup: _bloodGroup,
       allergies: allergiesText.isEmpty ? null : allergiesText,
-      medicalConditions: _medicalController.text.trim().isEmpty
-          ? null
-          : _medicalController.text.trim(),
+      medicalConditions: medicalText.isEmpty ? null : medicalText,
     );
 
     if (!mounted) return;
@@ -112,167 +106,321 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final isLoading = ref.watch(userProvider).isLoading || _isChecking;
 
+    final inputBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: isDark ? Colors.white12 : AppColors.border),
+    );
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(widget.editing ? 'Edit Medical Info' : 'Complete Your Profile'),
+        title: Text(widget.editing ? 'Edit Medical Info' : 'Medical Information'),
         centerTitle: true,
-        leading:
-            widget.editing
-                ? IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_rounded, size: 20),
-                    onPressed: () => context.pop(),
-                  )
-                : null,
+        leading: widget.editing
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back_ios_rounded, size: 20),
+                onPressed: () => context.pop(),
+              )
+            : null,
       ),
       body: SafeArea(
-        child:
-            _isChecking
-                ? const Center(child: CircularProgressIndicator())
-                : SingleChildScrollView(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const SizedBox(height: 20),
-
-                        const Icon(
-                          Icons.medical_information_outlined,
-                          size: 100,
-                          color: Color(0xFFD32F2F),
+        child: _isChecking
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // ── Emergency Info Banner ──────────────────────
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? AppColors.redDark.withAlpha(40)
+                            : const Color(0xFFFFF3F3),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: isDark
+                              ? AppColors.redDark.withAlpha(100)
+                              : AppColors.red.withAlpha(50),
                         ),
-
-                        const SizedBox(height: 24),
-
-                        Text(
-                          widget.editing
-                              ? 'Update Medical Info'
-                              : 'Medical Information',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-
-                        const SizedBox(height: 8),
-
-                        const Text(
-                          'This information helps emergency responders\nprovide the right assistance quickly.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.grey, fontSize: 14),
-                        ),
-
-                        const SizedBox(height: 40),
-
-                        // ── Blood Type ─────────────────────────────
-                        DropdownButtonFormField<String>(
-                          initialValue: _bloodGroup,
-                          decoration: InputDecoration(
-                            labelText: 'Blood Type *',
-                            border: OutlineInputBorder(
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 42,
+                            height: 42,
+                            decoration: BoxDecoration(
+                              color: AppColors.red.withAlpha(isDark ? 40 : 20),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            prefixIcon: const Icon(Icons.bloodtype_outlined),
-                          ),
-                          items:
-                              _bloodGroups.map((bg) {
-                                return DropdownMenuItem(
-                                  value: bg,
-                                  child: Text(bg),
-                                );
-                              }).toList(),
-                          onChanged: (v) =>
-                              setState(() => _bloodGroup = v),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // ── Allergies ──────────────────────────────
-                        TextField(
-                          controller: _allergiesController,
-                          maxLines: 2,
-                          decoration: InputDecoration(
-                            labelText: 'Allergies (Optional)',
-                            hintText: 'e.g., Penicillin, Peanuts, Latex',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                            child: const Icon(
+                              Icons.medical_information_outlined,
+                              color: AppColors.red,
+                              size: 24,
                             ),
-                            prefixIcon: const Icon(Icons.warning_amber_rounded),
                           ),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // ── Medical Conditions ─────────────────────
-                        TextField(
-                          controller: _medicalController,
-                          maxLines: 3,
-                          decoration: InputDecoration(
-                            labelText: 'Medical Conditions (Optional)',
-                            hintText:
-                                'e.g., Asthma, Diabetes, Heart condition',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            prefixIcon: const Icon(Icons.note_alt_outlined),
-                          ),
-                        ),
-
-                        const SizedBox(height: 40),
-
-                        // ── Save Button ────────────────────────────
-                        SizedBox(
-                          height: 55,
-                          child: ElevatedButton(
-                            onPressed: isLoading ? null : _saveAndContinue,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFD32F2F),
-                              disabledBackgroundColor: const Color(
-                                0xFFD32F2F,
-                              ).withAlpha(100),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child:
-                                isLoading
-                                    ? const CircularProgressIndicator(
-                                        color: Colors.white,
-                                      )
-                                    : Text(
-                                        widget.editing
-                                            ? 'Save Changes'
-                                            : 'Save & Continue',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                          ),
-                        ),
-
-                        // ── Skip (completion mode only) ───────────
-                        if (!widget.editing) ...[
-                          const SizedBox(height: 16),
-                          TextButton(
-                            onPressed:
-                                isLoading ? null : () => context.go('/'),
-                            child: const Text(
-                              'Skip for now',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
-                              ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Emergency Info',
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    color: AppColors.red,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'This helps emergency responders provide the right assistance quickly.',
+                                  style: TextStyle(
+                                    color: isDark
+                                        ? Colors.white54
+                                        : AppColors.textSecondary,
+                                    fontSize: 12,
+                                    height: 1.3,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
-                      ],
+                      ),
                     ),
-                  ),
+
+                    const SizedBox(height: 24),
+
+                    // ── Blood Type Card ────────────────────────────
+                    _buildSectionHeader(
+                      theme,
+                      icon: Icons.bloodtype_outlined,
+                      title: 'Blood Type',
+                      required: true,
+                    ),
+                    const SizedBox(height: 10),
+                    Card(
+                      margin: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(14),
+                        child: Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: _bloodGroups.map((bg) {
+                            final selected = _bloodGroup == bg;
+                            return GestureDetector(
+                              onTap: () => setState(() => _bloodGroup = bg),
+                              child: Container(
+                                width: 68,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: selected
+                                      ? AppColors.red
+                                      : isDark
+                                          ? Colors.white.withValues(alpha: 0.06)
+                                          : const Color(0xFFF5F5F5),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: selected
+                                        ? AppColors.red
+                                        : isDark
+                                            ? Colors.white12
+                                            : AppColors.border,
+                                    width: selected ? 2 : 1,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    bg,
+                                    style: TextStyle(
+                                      color: selected
+                                          ? Colors.white
+                                          : isDark
+                                              ? Colors.white70
+                                              : AppColors.textPrimary,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // ── Allergies Card ─────────────────────────────
+                    _buildSectionHeader(
+                      theme,
+                      icon: Icons.warning_amber_rounded,
+                      title: 'Allergies',
+                      required: false,
+                    ),
+                    const SizedBox(height: 10),
+                    Card(
+                      margin: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: TextField(
+                          controller: _allergiesController,
+                          maxLines: 2,
+                          decoration: InputDecoration(
+                            labelText: 'Known allergies',
+                            hintText: 'e.g., Penicillin, Peanuts, Latex',
+                            hintStyle: TextStyle(
+                              color: isDark
+                                  ? Colors.white24
+                                  : AppColors.textSecondary.withAlpha(120),
+                              fontSize: 14,
+                            ),
+                            border: inputBorder,
+                            prefixIcon: const Icon(
+                              Icons.warning_amber_rounded,
+                              size: 22,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // ── Medical Conditions Card ────────────────────
+                    _buildSectionHeader(
+                      theme,
+                      icon: Icons.note_alt_outlined,
+                      title: 'Medical Conditions',
+                      required: false,
+                    ),
+                    const SizedBox(height: 10),
+                    Card(
+                      margin: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: TextField(
+                          controller: _medicalController,
+                          maxLines: 3,
+                          decoration: InputDecoration(
+                            labelText: 'Ongoing conditions',
+                            hintText: 'e.g., Asthma, Diabetes, Heart condition',
+                            hintStyle: TextStyle(
+                              color: isDark
+                                  ? Colors.white24
+                                  : AppColors.textSecondary.withAlpha(120),
+                              fontSize: 14,
+                            ),
+                            border: inputBorder,
+                            prefixIcon: const Icon(
+                              Icons.note_alt_outlined,
+                              size: 22,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 36),
+
+                    // ── Save Button ────────────────────────────────
+                    SizedBox(
+                      height: 55,
+                      child: ElevatedButton(
+                        onPressed: isLoading ? null : _saveAndContinue,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.red,
+                          disabledBackgroundColor:
+                              AppColors.red.withAlpha(100),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: isLoading
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                            : Text(
+                                widget.editing ? 'Save Changes' : 'Save & Continue',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 17,
+                                ),
+                              ),
+                      ),
+                    ),
+
+                    if (!widget.editing) ...[
+                      const SizedBox(height: 14),
+                      TextButton(
+                        onPressed: isLoading ? null : () => context.go('/'),
+                        child: const Text(
+                          'Skip for now',
+                          style: TextStyle(fontSize: 15, color: Colors.grey),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
       ),
+    );
+  }
+
+  Widget _buildSectionHeader(
+    ThemeData theme, {
+    required IconData icon,
+    required String title,
+    required bool required,
+  }) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: AppColors.red),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+            fontSize: 15,
+          ),
+        ),
+        if (required) ...[
+          const SizedBox(width: 4),
+          const Text(
+            '*',
+            style: TextStyle(color: AppColors.red, fontSize: 16),
+          ),
+        ],
+        const Spacer(),
+        if (!required)
+          Text(
+            'Optional',
+            style: TextStyle(
+              color: AppColors.textSecondary.withAlpha(150),
+              fontSize: 12,
+            ),
+          ),
+      ],
     );
   }
 }
