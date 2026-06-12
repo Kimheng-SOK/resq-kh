@@ -4,12 +4,10 @@ import 'package:app/auth/screens/location_permission_screen.dart';
 import 'package:app/auth/screens/otp_screen.dart';
 import 'package:app/auth/screens/register_screen.dart';
 import 'package:app/auth/screens/splash_screen.dart';
-import 'package:app/features/contacts/ambulance_screen.dart';
 import 'package:app/features/contacts/contact_screen.dart';
-import 'package:app/features/contacts/fire_station_screen.dart';
 import 'package:app/features/contacts/general_contacts_screen.dart';
 import 'package:app/features/contacts/nearby_places_screen.dart';
-import 'package:app/features/contacts/police_screen.dart';
+import 'package:app/features/contacts/service_contacts_screen.dart';
 import 'package:app/features/map/map_detail_screen.dart';
 import 'package:app/features/map/map_screen.dart';
 import 'package:app/features/preference/preference_screen.dart';
@@ -97,15 +95,24 @@ GoRouter createRouter(String initialRoute) {
               ),
               GoRoute(
                 path: '/police',
-                builder: (context, state) => const PoliceScreen(),
+                builder: (context, state) => const ServiceContactsScreen(
+                  category: 'police',
+                  title: 'Police Services',
+                ),
               ),
               GoRoute(
                 path: '/ambulance',
-                builder: (context, state) => const AmbulanceScreen(),
+                builder: (context, state) => const ServiceContactsScreen(
+                  category: 'ambulance',
+                  title: 'Ambulance Services',
+                ),
               ),
               GoRoute(
                 path: '/fire',
-                builder: (context, state) => const FireStationScreen(),
+                builder: (context, state) => const ServiceContactsScreen(
+                  category: 'fire_station',
+                  title: 'Fire Station Services',
+                ),
               ),
               GoRoute(
                 path: '/nearby',

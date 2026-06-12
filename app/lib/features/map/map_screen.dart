@@ -5,8 +5,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_color.dart';
 import '../../core/utils/service_utils.dart';
+import '../../features/contacts/models/contacts_model.dart';
 import '../../models/emergency_contact.dart';
 import '../../services/api/services_api_service.dart';
+import '../../services/contact_service.dart';
 import '../../services/emergency_repository.dart';
 import 'widgets/contact_profile_marker.dart';
 import 'widgets/service_marker.dart';
@@ -51,16 +53,23 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _loadContacts() async {
     try {
-      // Try the backend API first
-      final contacts = await ServicesApiService.fetchServices(
-        lat: _defaultCenter.latitude,
-        lng: _defaultCenter.longitude,
-        radius: 50,
-      );
+      // Fetch backend services and personal contacts in parallel
+      final results = await Future.wait(<Future<List<EmergencyContact>>>[
+        ServicesApiService.fetchServices(
+          lat: _defaultCenter.latitude,
+          lng: _defaultCenter.longitude,
+          radius: 50,
+        ),
+        _loadPersonalContacts(),
+      ]);
+
+      final services = results[0];
+      final personal = results[1];
+
       if (!mounted) return;
       setState(() {
-        _allContacts = contacts;
-        _filteredContacts = contacts;
+        _allContacts = [...services, ...personal];
+        _filteredContacts = _allContacts;
         _isLoading = false;
       });
     } catch (_) {
@@ -81,6 +90,31 @@ class _MapScreenState extends State<MapScreen> {
         });
       }
     }
+  }
+
+  /// Fetches the user's personal emergency contacts and converts them
+  /// to [EmergencyContact] instances for display in the map sheet.
+  Future<List<EmergencyContact>> _loadPersonalContacts() async {
+    try {
+      final contacts = await ContactService.getContacts();
+      return contacts.map((c) => _contactToEmergency(c)).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  EmergencyContact _contactToEmergency(Contact contact) {
+    return EmergencyContact(
+      id: contact.id,
+      name: contact.name,
+      type: 'contact',
+      phone: contact.phoneNumber,
+      address: contact.relationship,
+      hours: '',
+      services: const [],
+      lat: 0,
+      lng: 0,
+    );
   }
 
   /// Applies both category and text-search filters together.
@@ -130,7 +164,9 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   List<Marker> _buildContactMarkers() {
-    return _filteredContacts.map((contact) {
+    return _filteredContacts
+        .where((c) => c.lat != 0 || c.lng != 0)
+        .map((contact) {
       final color = ServiceUtils.colorForType(contact.type);
       final icon = ServiceUtils.iconForType(contact.type);
       final initials = _initials(contact.name);
@@ -151,7 +187,9 @@ class _MapScreenState extends State<MapScreen> {
 
   List<Marker> _buildServiceMarkers() {
     final seenTypes = <String>{};
-    final uniqueByType = _filteredContacts.where((c) {
+    final uniqueByType = _filteredContacts
+        .where((c) => c.lat != 0 || c.lng != 0)
+        .where((c) {
       if (seenTypes.contains(c.type)) return false;
       seenTypes.add(c.type);
       return true;
@@ -184,6 +222,13 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _onContactTap(EmergencyContact contact) {
+    if (contact.lat == 0 && contact.lng == 0) {
+      // Personal contact without location — can't show on map
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${contact.name} has no location on map')),
+      );
+      return;
+    }
     context.push('/map/detail', extra: contact);
   }
 

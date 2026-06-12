@@ -1,117 +1,107 @@
+import 'package:app/core/theme/app_color.dart';
+import 'package:app/core/utils/launcher_helper.dart';
 import 'package:app/features/contacts/models/contacts_model.dart';
 import 'package:flutter/material.dart';
 
 class ContactCard extends StatelessWidget {
   final Contact contact;
-  final VoidCallback onDelete;
-  final VoidCallback onEdit;
+  final VoidCallback? onDelete;
+  final VoidCallback? onEdit;
+  final VoidCallback? onTap;
 
   const ContactCard({
     super.key,
     required this.contact,
-    required this.onDelete,
-    required this.onEdit,
+    this.onDelete,
+    this.onEdit,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final initials = contact.name.isNotEmpty
-        ? contact.name.substring(0, 1).toUpperCase()
+        ? contact.name[0].toUpperCase()
         : '?';
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: const Color(0xFFD32F2F),
-              child: Text(
-                initials,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              // ── Avatar ──────────────────────────────────────
+              CircleAvatar(
+                radius: 24,
+                backgroundColor: AppColors.red,
+                child: Text(
+                  initials,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
-            ),
 
-            const SizedBox(width: 16),
+              const SizedBox(width: 14),
 
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    contact.name,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-
-                  const SizedBox(height: 6),
-
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFEBEE),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      contact.relationship,
-                      style: const TextStyle(
-                        color: Color(0xFFD32F2F),
+              // ── Name + Phone ────────────────────────────────
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      contact.name,
+                      style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
+                        fontSize: 16,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  Row(
-                    children: [
-                      const Icon(Icons.phone, size: 18, color: Colors.grey),
-                      const SizedBox(width: 6),
-                      Text(
-                        contact.phoneNumber,
-                        style: const TextStyle(color: Colors.black87),
-                      ),
-                    ],
-                  ),
-                ],
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.phone_rounded,
+                          size: 14,
+                          color: isDark ? Colors.white38 : AppColors.textSecondary,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          contact.phoneNumber,
+                          style: TextStyle(
+                            color: isDark ? Colors.white54 : AppColors.textSecondary,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
 
-            Column(
-              children: [
-                IconButton(
-                  onPressed: onEdit,
-                  icon: const Icon(Icons.edit, color: Colors.blue),
+              // ── Call button ─────────────────────────────────
+              SizedBox(
+                width: 44,
+                height: 44,
+                child: IconButton(
+                  onPressed: () => LauncherHelper.makeCall(contact.phoneNumber),
+                  icon: const Icon(Icons.phone_rounded),
+                  color: AppColors.success,
+                  iconSize: 22,
+                  tooltip: 'Call ${contact.name}',
                 ),
-                IconButton(
-                  onPressed: onDelete,
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                ),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
