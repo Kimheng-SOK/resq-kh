@@ -12,6 +12,10 @@ class ResQApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Create the router once — it must not be recreated inside the
+    // Consumer builder, otherwise theme changes reset navigation.
+    final router = createRouter(initialRoute);
+
     return ChangeNotifierProvider<ThemeController>(
       create: (_) => ThemeController()..loadThemeMode(),
       child: Consumer<ThemeController>(
@@ -22,7 +26,7 @@ class ResQApp extends StatelessWidget {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: themeController.themeMode,
-            routerConfig: createRouter(initialRoute),
+            routerConfig: router,
           );
         },
       ),
