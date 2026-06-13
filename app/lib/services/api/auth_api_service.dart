@@ -1,14 +1,11 @@
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'api_config.dart';
 
 /// Pure HTTP service for authentication API calls.
 /// Throws raw exceptions — callers are responsible for handling them.
 class AuthApiService {
-  static final String baseUrl = dotenv.get(
-    'API_BASE_URL',
-    fallback: 'http://localhost:3000',
-  );
+  static String get baseUrl => ApiConfig.baseUrl;
 
   /// Sends an OTP to the given phone number.
   /// [email] is optional — pass `null` or omit if the user didn't provide one.
@@ -67,10 +64,7 @@ class AuthApiService {
     String? email,
     required String otp,
   }) async {
-    final body = <String, dynamic>{
-      'phone_number': phoneNumber,
-      'otp': otp,
-    };
+    final body = <String, dynamic>{'phone_number': phoneNumber, 'otp': otp};
     if (email != null && email.isNotEmpty) {
       body['email'] = email;
     }

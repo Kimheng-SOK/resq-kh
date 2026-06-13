@@ -84,10 +84,6 @@ export class AuthService {
         : { phone_number: dto.phone_number },
     });
 
-    if (user && hasEmail && user.is_email_verified) {
-      throw new BadRequestException('Email is already registered');
-    }
-
     if (!user) {
       user = this.userRepository.create({
         full_name: dto.full_name,
@@ -186,9 +182,6 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
-
-    user.is_email_verified = true;
-    await this.userRepository.save(user);
 
     const payload = {
       sub: user.id,
