@@ -4,7 +4,7 @@ import * as bcrypt from 'bcryptjs';
 import { Admin, AdminRole } from '../../modules/admins/entities/admin.entity';
 import { EmergencyType } from '../../modules/emergency-types/entities/emergency-type.entity';
 import { Service, ServiceCategory } from '../../modules/services/entities/service.entity';
-import { FirstAidTopic } from '../../modules/first-aid/entities/first-aid-topic.entity';
+import { FirstAidSeverity, FirstAidTopic } from '../../modules/first-aid/entities/first-aid-topic.entity';
 import { FirstAidStep } from '../../modules/first-aid/entities/first-aid-step.entity';
 import { FirstAidTranslation } from '../../modules/first-aid/entities/first-aid-translation.entity';
 import { FirstAidStepTranslation } from '../../modules/first-aid/entities/first-aid-step-translation.entity';
@@ -237,103 +237,218 @@ async function seed() {
       slug: 'cpr',
       icon_name: 'heart',
       sort_order: 1,
+      severity: FirstAidSeverity.CRITICAL,
       title: 'CPR (Cardiopulmonary Resuscitation)',
-      summary: 'Life-saving technique for cardiac arrest.',
+      summary: 'Unconscious, not breathing, or only gasping.',
       steps: [
-        { step_number: 1, instruction: 'Check responsiveness and breathing.' },
-        { step_number: 2, instruction: 'Call emergency services immediately.' },
-        { step_number: 3, instruction: 'Begin chest compressions: 100-120 per minute, 5-6 cm deep.' },
-        { step_number: 4, instruction: 'Give rescue breaths if trained (30:2 ratio).' },
-      ],
-    },
-    {
-      slug: 'choking',
-      icon_name: 'warning',
-      sort_order: 2,
-      title: 'Choking',
-      summary: 'Airway obstruction first aid.',
-      steps: [
-        { step_number: 1, instruction: 'Encourage coughing if the person can cough.' },
-        { step_number: 2, instruction: 'Give 5 back blows between shoulder blades.' },
-        { step_number: 3, instruction: 'Give 5 abdominal thrusts (Heimlich maneuver).' },
-        { step_number: 4, instruction: 'Alternate back blows and abdominal thrusts until cleared.' },
-      ],
-    },
-    {
-      slug: 'burns',
-      icon_name: 'fire',
-      sort_order: 3,
-      title: 'Burns',
-      summary: 'Treatment for thermal burns.',
-      steps: [
-        { step_number: 1, instruction: 'Cool the burn under cool running water for 20 minutes.', is_warning: false },
-        { step_number: 2, instruction: 'Remove jewelry near the burn before swelling.', is_warning: false },
-        { step_number: 3, instruction: 'Cover with sterile non-stick dressing.', is_warning: false },
-        { step_number: 4, instruction: 'Do NOT apply ice, butter, or ointments.', is_warning: true },
+        {
+          step_number: 1,
+          is_warning: false,
+          image_url: 'images/first_aid/cpr_step1.jpg',
+          instruction: 'Tap shoulders firmly and shout "Are you okay?" If no response, call 119 immediately.',
+        },
+        {
+          step_number: 2,
+          is_warning: false,
+          image_url: 'images/first_aid/cpr_step2.jpg',
+          instruction: 'Place the heel of your hand on the center of the chest. Push hard and fast — at least 5cm deep, 100–120 times per minute.',
+        },
+        {
+          step_number: 3,
+          is_warning: false,
+          image_url: 'images/first_aid/cpr_step3.jpg',
+          instruction: 'After 30 compressions, tilt head back, lift chin, and give 2 rescue breaths lasting 1 second each.',
+        },
+        {
+          step_number: 4,
+          is_warning: true,
+          image_url: 'images/first_aid/cpr_step4.jpg',
+          instruction: 'Do NOT stop CPR until emergency services arrive or an AED becomes available.',
+        },
       ],
     },
     {
       slug: 'bleeding',
       icon_name: 'blood',
-      sort_order: 4,
+      sort_order: 2,
+      severity: FirstAidSeverity.CRITICAL,
       title: 'Severe Bleeding',
-      summary: 'Control external bleeding.',
+      summary: "Pulsing or steady flow of blood that won't stop.",
       steps: [
-        { step_number: 1, instruction: 'Apply direct pressure with a clean cloth.' },
-        { step_number: 2, instruction: 'Elevate the injured limb if possible.' },
-        { step_number: 3, instruction: 'Do not remove embedded objects.' },
-        { step_number: 4, instruction: 'Seek emergency medical help immediately.' },
+        {
+          step_number: 1,
+          is_warning: false,
+          image_url: 'images/first_aid/bleeding_step1.jpg',
+          instruction: 'Press firmly on the wound using a clean cloth. Maintain constant pressure — do not lift to check.',
+        },
+        {
+          step_number: 2,
+          is_warning: false,
+          image_url: 'images/first_aid/bleeding_step2.jpg',
+          instruction: 'Raise the injured area above the level of the heart to slow blood flow to the wound.',
+        },
+        {
+          step_number: 3,
+          is_warning: false,
+          image_url: 'images/first_aid/bleeding_step3.jpg',
+          instruction: 'Once bleeding slows, secure the cloth with a bandage. If blood soaks through, add more on top — do not remove.',
+        },
+        {
+          step_number: 4,
+          is_warning: true,
+          image_url: 'images/first_aid/bleeding_step4.jpg',
+          instruction: 'Do NOT remove an object embedded in a wound. Build padding around it instead — removing it can cause more bleeding.',
+        },
+      ],
+    },
+    {
+      slug: 'choking',
+      icon_name: 'warning',
+      sort_order: 3,
+      severity: FirstAidSeverity.URGENT,
+      title: 'Choking',
+      summary: 'Unable to speak, cough, or breathe effectively.',
+      steps: [
+        {
+          step_number: 1,
+          is_warning: false,
+          image_url: 'images/first_aid/choking_step1.jpg',
+          instruction: 'If the person can cough forcefully, encourage them to keep coughing. Only intervene if they cannot cough, speak, or breathe.',
+        },
+        {
+          step_number: 2,
+          is_warning: false,
+          image_url: 'images/first_aid/choking_step2.jpg',
+          instruction: 'Lean the person forward and give 5 firm blows between the shoulder blades with the heel of your hand.',
+        },
+        {
+          step_number: 3,
+          is_warning: false,
+          image_url: 'images/first_aid/choking_step3.jpg',
+          instruction: 'Stand behind the person, make a fist above the navel, and thrust inward and upward sharply. Repeat up to 5 times.',
+        },
+        {
+          step_number: 4,
+          is_warning: true,
+          image_url: 'images/first_aid/choking_step4.jpg',
+          instruction: 'Do NOT perform blind finger sweeps in the mouth. Only remove an object if you can clearly see it.',
+        },
+      ],
+    },
+    {
+      slug: 'burns',
+      icon_name: 'fire',
+      sort_order: 4,
+      severity: FirstAidSeverity.URGENT,
+      title: 'Burns',
+      summary: 'Skin damage from heat, chemicals, or electricity.',
+      steps: [
+        {
+          step_number: 1,
+          is_warning: false,
+          image_url: 'images/first_aid/burn_step1.jpg',
+          instruction: 'Cool the burn under cool (not cold) running water for at least 10 minutes.',
+        },
+        {
+          step_number: 2,
+          is_warning: false,
+          image_url: 'images/first_aid/burn_step2.jpg',
+          instruction: 'Remove jewelry or tight items near the burn before swelling occurs.',
+        },
+        {
+          step_number: 3,
+          is_warning: false,
+          image_url: 'images/first_aid/burn_step3.jpg',
+          instruction: 'Cover loosely with a clean non-fluffy material such as cling film or a clean plastic bag.',
+        },
+        {
+          step_number: 4,
+          is_warning: true,
+          image_url: 'images/first_aid/burn_step4.jpg',
+          instruction: 'Do NOT use ice, butter, or toothpaste on a burn. Do NOT burst any blisters.',
+        },
       ],
     },
     {
       slug: 'fractures',
       icon_name: 'bone',
       sort_order: 5,
+      severity: FirstAidSeverity.STABLE,
       title: 'Fractures',
-      summary: 'Suspected broken bone care.',
+      summary: 'Suspected broken bone — keep still and call for help.',
       steps: [
-        { step_number: 1, instruction: 'Keep the person still and calm.' },
-        { step_number: 2, instruction: 'Immobilize the injured area.' },
-        { step_number: 3, instruction: 'Apply ice wrapped in cloth to reduce swelling.' },
-        { step_number: 4, instruction: 'Do not try to realign the bone.' },
+        {
+          step_number: 1,
+          is_warning: false,
+          image_url: 'images/first_aid/fracture_step1.jpg',
+          instruction: 'Keep the injured area still. Do not try to straighten the bone or push it back in.',
+        },
+        {
+          step_number: 2,
+          is_warning: false,
+          image_url: 'images/first_aid/fracture_step2.jpg',
+          instruction: 'Support the limb in the position found using a sling or improvised padding.',
+        },
+        {
+          step_number: 3,
+          is_warning: false,
+          image_url: 'images/first_aid/fracture_step3.jpg',
+          instruction: 'Apply ice wrapped in a cloth to reduce swelling. Do not apply ice directly to skin.',
+        },
+        {
+          step_number: 4,
+          is_warning: true,
+          image_url: 'images/first_aid/fracture_step4.jpg',
+          instruction: 'Do NOT give food or drink to the person in case they need surgery.',
+        },
       ],
     },
   ];
 
   for (const t of topics) {
-    let topic = await topicRepo.findOne({ where: { slug: t.slug } });
-    if (!topic) {
-      topic = await topicRepo.save(
-        topicRepo.create({
-          slug: t.slug,
-          icon_name: t.icon_name,
-          sort_order: t.sort_order,
+    // let topic = await topicRepo.findOne({ where: { slug: t.slug } });
+    await topicRepo.delete({ slug: t.slug });
+    const topic = await topicRepo.save(
+      topicRepo.create({
+        slug: t.slug,
+        icon_name: t.icon_name,
+        sort_order: t.sort_order,
+        severity: t.severity as FirstAidSeverity,
+      }),
+    );
+    // if (topic) {
+    //   topic = await topicRepo.save(
+    //     topicRepo.create({
+    //       slug: t.slug,
+    //       icon_name: t.icon_name,
+    //       sort_order: t.sort_order,
+    //       severity: t.severity as FirstAidSeverity,
+    //     }),
+    //   );
+    await topicTranslationRepo.save(
+      topicTranslationRepo.create({
+        topic_id: topic!.id,
+        language_code: 'en',
+        title: t.title,
+        summary: t.summary,
+      }),
+    );
+    for (const s of t.steps) {
+      const step = await stepRepo.save(
+        stepRepo.create({
+          topic_id: topic!.id,
+          step_number: s.step_number,
+          is_warning: 'is_warning' in s ? s.is_warning : false,
+          image_url: s.image_url ?? null, 
         }),
       );
-      await topicTranslationRepo.save(
-        topicTranslationRepo.create({
-          topic_id: topic.id,
+      await stepTranslationRepo.save(
+        stepTranslationRepo.create({
+          step_id: step.id,
           language_code: 'en',
-          title: t.title,
-          summary: t.summary,
+          instruction: s.instruction,
         }),
       );
-      for (const s of t.steps) {
-        const step = await stepRepo.save(
-          stepRepo.create({
-            topic_id: topic.id,
-            step_number: s.step_number,
-            is_warning: 'is_warning' in s ? s.is_warning : false,
-          }),
-        );
-        await stepTranslationRepo.save(
-          stepTranslationRepo.create({
-            step_id: step.id,
-            language_code: 'en',
-            instruction: s.instruction,
-          }),
-        );
-      }
     }
   }
   console.log('First aid topics seeded');

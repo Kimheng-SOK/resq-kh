@@ -9,6 +9,12 @@ import {
 import { FirstAidStep } from './first-aid-step.entity';
 import { FirstAidTranslation } from './first-aid-translation.entity';
 
+export enum FirstAidSeverity {
+  CRITICAL = 'critical',
+  URGENT = 'urgent',
+  STABLE = 'stable',
+}
+
 @Entity('first_aid_topics')
 export class FirstAidTopic {
   @PrimaryGeneratedColumn('uuid')
@@ -19,6 +25,13 @@ export class FirstAidTopic {
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   icon_name: string | null;
+
+  @Column({
+    type: 'enum',
+    enum: FirstAidSeverity,
+    default: FirstAidSeverity.STABLE,
+  })
+  severity: FirstAidSeverity;
 
   @Column({ type: 'int', default: 0 })
   sort_order: number;

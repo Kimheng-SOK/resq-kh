@@ -4,11 +4,7 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onBack;
   final VoidCallback? onSettings;
 
-  const TopAppBar({
-    super.key,
-    this.onBack,
-    this.onSettings,
-  });
+  const TopAppBar({super.key, this.onBack, this.onSettings});
 
   @override
   Size get preferredSize => const Size.fromHeight(48);
@@ -20,9 +16,13 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       scrolledUnderElevation: 0,
       automaticallyImplyLeading: false,
+      centerTitle: false,
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(2),
-        child: Container(height: 2, color: const Color.fromARGB(255, 255, 255, 255)),
+        child: Container(
+          height: 2,
+          color: const Color.fromARGB(255, 255, 255, 255),
+        ),
       ),
       titleSpacing: 24,
       title: Semantics(
@@ -33,21 +33,17 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
-                Icons.arrow_back,
-                color: Color(0xFFAF101A),
-                size: 16,
-              ),
+              const Icon(Icons.arrow_back, color: Color(0xFFAF101A), size: 16),
               const SizedBox(width: 8),
               Text(
                 'SOS CAMBODIA',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: const Color(0xFFAF101A),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                      height: 1.0,
-                      letterSpacing: -0.5,
-                    ),
+                  color: const Color(0xFFAF101A),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  height: 1.0,
+                  letterSpacing: -0.5,
+                ),
               ),
             ],
           ),

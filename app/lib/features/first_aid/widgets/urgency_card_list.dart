@@ -1,90 +1,79 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:app/providers/first_aid_provider.dart';
 import 'urgency_card.dart';
 
-class _Condition {
-  final String id;
-  final String title;
-  final String description;
-  final Widget icon;
-  final Severity severity;
-  final String severityLabel;
-
-  const _Condition({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.icon,
-    required this.severity,
-    required this.severityLabel,
-  });
+// Maps icon_name from database to Flutter IconData
+IconData _iconForName(String? iconName) {
+  switch (iconName) {
+    case 'heart':   return Icons.favorite;
+    case 'warning': return Icons.warning_amber_rounded;
+    case 'fire':    return Icons.local_fire_department;
+    case 'blood':   return Icons.water_drop;
+    case 'bone':    return Icons.accessibility_new;
+    default:        return Icons.medical_services;
+  }
 }
 
-const _conditions = [
-  _Condition(
-    id: 'cardiac-arrest',
-    title: 'CARDIAC ARREST',
-    description: 'Unconscious, not breathing, or only gasping.',
-    icon: Icon(Icons.favorite, color: Colors.white, size: 36),
-    severity: Severity.critical,
-    severityLabel: 'CRITICAL',
-  ),
-  _Condition(
-    id: 'heavy-bleeding',
-    title: 'HEAVY BLEEDING',
-    description: "Pulsing or steady flow of blood that won't stop.",
-    icon: Icon(Icons.water_drop, color: Colors.white, size: 32),
-    severity: Severity.critical,
-    severityLabel: 'CRITICAL',
-  ),
-  _Condition(
-    id: 'choking',
-    title: 'CHOKING',
-    description: 'Unable to speak, cough, or breathe effectively.',
-    icon: Icon(Icons.air, color: Colors.white, size: 32),
-    severity: Severity.urgent,
-    severityLabel: 'URGENT',
-  ),
-  _Condition(
-    id: 'unconscious',
-    title: 'UNCONSCIOUS',
-    description: 'Non-responsive but breathing normally.',
-    icon: Icon(Icons.hotel, color: Colors.white, size: 32),
-    severity: Severity.stable,
-    severityLabel: 'STABLE?',
-  ),
-  _Condition(
-    id: 'snake-bite',
-    title: 'SNAKE BITE',
-    description: 'Pain, swelling, or other symptoms after a snake bite.',
-    icon: Icon(Icons.bug_report, color: Colors.white, size: 32),
-    severity: Severity.urgent,
-    severityLabel: 'URGENT',
-  ),
-];
+// Maps severity string from database to Severity enum
+Severity _parseSeverity(String? severity) {
+  switch (severity) {
+    case 'critical': return Severity.critical;
+    case 'urgent':   return Severity.urgent;
+    default:         return Severity.stable;
+  }
+}
 
-class UrgencyCardsList extends StatelessWidget {
-  final void Function(String id)? onSelect;
+class UrgencyCardsList extends ConsumerWidget {
+  final void Function(String slug)? onSelect;
 
   const UrgencyCardsList({super.key, this.onSelect});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(firstAidProvider);
+
+    if (state.isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(color: Color(0xFFAF101A)),
+      );
+    }
+
+    if (state.error != null) {
+      return Center(
+        child: Text(
+          'Failed to load: ${state.error}',
+          style: const TextStyle(color: Color(0xFFAF101A)),
+        ),
+      );
+    }
+
+    if (state.topics.isEmpty) {
+      return const Center(child: Text('No conditions available.'));
+    }
+
     return Column(
-      children: _conditions
-          .map(
-            (c) => Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: UrgencyCard(
-                title: c.title,
-                description: c.description,
-                icon: c.icon,
-                severity: c.severity,
-                severityLabel: c.severityLabel,
-                onStart: () => onSelect?.call(c.id),
-              ),
+      children: state.topics.map((topic) {
+        final translation = topic.translations.isNotEmpty
+            ? topic.translations.first
+            : null;
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: UrgencyCard(
+            title: (translation?.title ?? topic.slug).toUpperCase(),
+            description: translation?.summary ?? '',
+            icon: Icon(
+              _iconForName(topic.iconName),
+              color: Colors.white,
+              size: 32,
             ),
-          )
-          .toList(),
+            severity: _parseSeverity(topic.severity),
+            //severityLabel: (topic.severity ?? 'stable').toUpperCase(),
+            onStart: () => onSelect?.call(topic.slug),
+          ),
+        );
+      }).toList(),
     );
   }
 }

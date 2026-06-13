@@ -18,6 +18,59 @@ class StepCard extends StatelessWidget {
     this.isLast = false,
   });
 
+  // ← new method to handle both asset and network images
+  Widget _buildImage() {
+    if (imageUrl.isEmpty) return const SizedBox.shrink();
+
+    final imageWidget = imageUrl.startsWith('images/')
+        ? Image.asset(
+            'assets/$imageUrl',
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => const Center(
+              child: Icon(
+                Icons.broken_image_outlined,
+                color: Color(0xFF5B403D),
+              ),
+            ),
+          )
+        : Image.network(
+            imageUrl,
+            fit: BoxFit.cover,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: Color(0xFFAF101A),
+                  strokeWidth: 2,
+                ),
+              );
+            },
+            errorBuilder: (context, error, stackTrace) => const Center(
+              child: Icon(
+                Icons.broken_image_outlined,
+                color: Color(0xFF5B403D),
+              ),
+            ),
+          );
+
+    return Semantics(
+      label: imageAlt,
+      image: true,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color(0xFFDDE2E6), width: 1),
+          color: const Color(0xFFFAFAFA),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: AspectRatio(
+          aspectRatio: 276 / 142,
+          child: imageWidget,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -89,47 +142,12 @@ class StepCard extends StatelessWidget {
                     height: 28 / 18,
                   ),
                 ),
-                const SizedBox(height: 12),
 
-                // Image
-                Semantics(
-                  label: imageAlt,
-                  image: true,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(0xFFDDE2E6),
-                        width: 1,
-                      ),
-                      color: const Color(0xFFFAFAFA),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: AspectRatio(
-                      aspectRatio: 276 / 142,
-                      child: Image.network(
-                        imageUrl,
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return const Center(
-                            child: CircularProgressIndicator(
-                              color: Color(0xFFAF101A),
-                              strokeWidth: 2,
-                            ),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Center(
-                          child: Icon(
-                            Icons.broken_image_outlined,
-                            color: Color(0xFF5B403D),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                // Image — only shows if imageUrl is not empty
+                if (imageUrl.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  _buildImage(),
+                ],
               ],
             ),
           ),

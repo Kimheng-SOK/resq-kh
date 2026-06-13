@@ -29,7 +29,6 @@ class UrgencyCard extends StatefulWidget {
   final String description;
   final Widget icon;
   final Severity severity;
-  final String severityLabel;
   final VoidCallback? onStart;
 
   const UrgencyCard({
@@ -38,7 +37,6 @@ class UrgencyCard extends StatefulWidget {
     required this.description,
     required this.icon,
     required this.severity,
-    required this.severityLabel,
     this.onStart,
   });
 
@@ -91,7 +89,7 @@ class _UrgencyCardState extends State<UrgencyCard> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 child: Text(
-                  widget.severityLabel,
+                  widget.severity.name.toUpperCase(),
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
