@@ -43,7 +43,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final isDark = theme.brightness == Brightness.dark;
     final dimColor = isDark ? Colors.white54 : AppColors.textSecondary;
 
-    final List<Map<String, dynamic>> _profileItems = [
+    final List<Map<String, dynamic>> profileItems = [
       {
         'icon': Icons.person_outline_rounded,
         'label': 'Edit Profile',
@@ -96,15 +96,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     //   label: 'Preferences',
                     //   onTap: () => context.push('/preferences'),
                     // ),
-                    for (int i = 0; i < _profileItems.length; i++) ...[
+                    for (int i = 0; i < profileItems.length; i++) ...[
                       SettingsTile(
-                        icon: _profileItems[i]['icon'],
-                        label: _profileItems[i]['label'],
-                        onTap: _profileItems[i]['route'] != null
-                            ? () => context.push(_profileItems[i]['route'])
+                        icon: profileItems[i]['icon'],
+                        label: profileItems[i]['label'],
+                        onTap: profileItems[i]['route'] != null
+                            ? () => context.push(profileItems[i]['route'])
                             : null,
                       ),
-                      if (i < _profileItems.length - 1) const DividerWidget(),
+                      if (i < profileItems.length - 1) const DividerWidget(),
                     ],
                   ],
                 ),

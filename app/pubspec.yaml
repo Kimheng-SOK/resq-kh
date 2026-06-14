@@ -25,6 +25,7 @@ dependencies:
   cached_network_image: ^3.4.1
   flutter_staggered_animations: ^1.1.1
   confetti: ^0.7.0
+  material_symbols_icons: ^4.2928.1
 
   flutter_localizations:
     sdk: flutter
@@ -43,6 +44,6 @@ flutter:
   generate: true
 
   assets:
-    - assets/images/
+    - assets/images/first_aid/
     - assets/data/contacts.json
-    - .env
+    - assets/.env
