@@ -10,7 +10,6 @@ import '../../models/emergency_contact.dart';
 import '../../services/api/services_api_service.dart';
 import '../../services/contact_service.dart';
 import '../../services/emergency_repository.dart';
-import 'widgets/contact_profile_marker.dart';
 import 'widgets/service_marker.dart';
 import 'widgets/user_location_marker.dart';
 import 'widgets/seek_help_row.dart';
@@ -163,46 +162,17 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  List<Marker> _buildContactMarkers() {
+  List<Marker> _buildMarkers() {
     return _filteredContacts
         .where((c) => c.lat != 0 || c.lng != 0)
         .map((contact) {
       final color = ServiceUtils.colorForType(contact.type);
       final icon = ServiceUtils.iconForType(contact.type);
-      final initials = _initials(contact.name);
 
       return Marker(
         point: LatLng(contact.lat, contact.lng),
-        width: 48,
-        height: 56,
-        child: ContactProfileMarker(
-          initials: initials,
-          color: color,
-          icon: icon,
-          onTap: () => _onContactTap(contact),
-        ),
-      );
-    }).toList();
-  }
-
-  List<Marker> _buildServiceMarkers() {
-    final seenTypes = <String>{};
-    final uniqueByType = _filteredContacts
-        .where((c) => c.lat != 0 || c.lng != 0)
-        .where((c) {
-      if (seenTypes.contains(c.type)) return false;
-      seenTypes.add(c.type);
-      return true;
-    }).toList();
-
-    return uniqueByType.map((contact) {
-      final color = ServiceUtils.colorForType(contact.type);
-      final icon = ServiceUtils.iconForType(contact.type);
-
-      return Marker(
-        point: LatLng(contact.lat, contact.lng),
-        width: 36,
-        height: 48,
+        width: 40,
+        height: 52,
         child: ServiceMarker(
           icon: icon,
           color: color,
@@ -230,14 +200,6 @@ class _MapScreenState extends State<MapScreen> {
       return;
     }
     context.push('/map/detail', extra: contact);
-  }
-
-  static String _initials(String name) {
-    final parts = name.trim().split(RegExp(r'\s+'));
-    if (parts.length >= 2) {
-      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
-    }
-    return name.isNotEmpty ? name[0].toUpperCase() : '?';
   }
 
   @override
@@ -280,8 +242,7 @@ class _MapScreenState extends State<MapScreen> {
         ),
         MarkerLayer(
           markers: [
-            ..._buildContactMarkers(),
-            ..._buildServiceMarkers(),
+            ..._buildMarkers(),
             _buildUserMarker(),
           ],
         ),
