@@ -44,6 +44,6 @@ flutter:
   generate: true
 
   assets:
+    - .env
     - assets/images/first_aid/
     - assets/data/contacts.json
-    - assets/.env

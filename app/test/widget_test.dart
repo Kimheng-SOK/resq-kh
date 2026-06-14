@@ -9,7 +9,7 @@ void main() {
   ) async {
     await dotenv.load();
 
-    await tester.pumpWidget(const ResQApp());
+    await tester.pumpWidget(const ResQApp(initialRoute: '/'));
     // Pump past the 2-second splash screen delay + navigation
     await tester.pump(const Duration(seconds: 3));
     await tester.pump(const Duration(seconds: 1));
