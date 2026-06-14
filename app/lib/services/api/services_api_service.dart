@@ -1,13 +1,10 @@
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import '../../models/emergency_contact.dart';
+import 'api_config.dart';
 
 class ServicesApiService {
-  static final String baseUrl = dotenv.get(
-    'API_BASE_URL',
-    fallback: 'http://localhost:3000',
-  );
+  static String get baseUrl => ApiConfig.baseUrl;
 
   static dynamic _unwrap(Map<String, dynamic> response) {
     if (response.containsKey('data')) {

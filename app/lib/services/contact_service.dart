@@ -1,13 +1,36 @@
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'api/api_config.dart';
 import 'auth_storage_service.dart';
 
 class ContactService {
-  static final String baseUrl = dotenv.get(
-    'API_BASE_URL',
-    fallback: 'http://localhost:3000',
-  );
+  static String get baseUrl => ApiConfig.baseUrl;
+
+  static Future<Map<String, String>> _headers() async {
+    final headers = {'Content-Type': 'application/json'};
+    final token = await AuthStorageService.getToken();
+    if (token != null && token.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+    return headers;
+  }
+
+  static List<dynamic> parseContactsPayload(String body) {
+    final decoded = jsonDecode(body);
+
+    if (decoded is List) {
+      return decoded;
+    }
+
+    if (decoded is Map<String, dynamic>) {
+      final data = decoded['data'];
+      if (data is List) {
+        return data;
+      }
+    }
+
+    throw Exception('Unexpected contacts response format');
+  }
 
   static Future<List<dynamic>> getContacts() async {
     final userId = await AuthStorageService.getUserId();
@@ -18,15 +41,14 @@ class ContactService {
 
     final response = await http.get(
       Uri.parse('$baseUrl/users/$userId/contacts'),
+      headers: await _headers(),
     );
 
-    if (response.statusCode == 200) {
-      final json = jsonDecode(response.body);
-
-      return json['data'];
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception('Failed to load contacts (${response.statusCode})');
     }
 
-    throw Exception('Failed to load contacts');
+    return parseContactsPayload(response.body);
   }
 
   static Future<void> addContact({
@@ -42,7 +64,7 @@ class ContactService {
 
     final response = await http.post(
       Uri.parse('$baseUrl/users/$userId/contacts'),
-      headers: {'Content-Type': 'application/json'},
+      headers: await _headers(),
       body: jsonEncode({
         'name': name,
         'phone_number': phoneNumber,
@@ -69,7 +91,7 @@ class ContactService {
 
     final response = await http.patch(
       Uri.parse('$baseUrl/users/$userId/contacts/$contactId'),
-      headers: {'Content-Type': 'application/json'},
+      headers: await _headers(),
       body: jsonEncode({
         'name': name,
         'phone_number': phoneNumber,
@@ -91,6 +113,7 @@ class ContactService {
 
     final response = await http.delete(
       Uri.parse('$baseUrl/users/$userId/contacts/$contactId'),
+      headers: await _headers(),
     );
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
