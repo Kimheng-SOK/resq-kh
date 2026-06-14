@@ -20,7 +20,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool _isHandlingAction = false;
+  String? _loadingCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       label: 'Police Station',
                       icon: Icons.local_police_rounded,
                       color: AppColors.police,
-                      isLoading: _isHandlingAction,
+                      isLoading: _loadingCategory == 'police',
                       onTap: () => _handleServiceTap(
                         context,
                         'police',
@@ -113,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       label: 'Hospital',
                       icon: Icons.local_hospital_rounded,
                       color: AppColors.hospital,
-                      isLoading: _isHandlingAction,
+                      isLoading: _loadingCategory == 'hospital',
                       onTap: () =>
                           _handleServiceTap(context, 'hospital', 'Hospital'),
                     ),
@@ -121,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       label: 'Fire Station',
                       icon: Icons.local_fire_department_rounded,
                       color: AppColors.fire,
-                      isLoading: _isHandlingAction,
+                      isLoading: _loadingCategory == 'fire',
                       onTap: () =>
                           _handleServiceTap(context, 'fire', 'Fire Station'),
                     ),
@@ -129,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       label: 'Ambulance',
                       icon: Icons.airport_shuttle_rounded,
                       color: AppColors.ambulance,
-                      isLoading: _isHandlingAction,
+                      isLoading: _loadingCategory == 'ambulance',
                       onTap: () =>
                           _handleServiceTap(context, 'ambulance', 'Ambulance'),
                     ),
@@ -137,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       label: 'Contact',
                       icon: Icons.contacts_rounded,
                       color: AppColors.red,
-                      isLoading: _isHandlingAction,
+                      isLoading: _loadingCategory == 'contact',
                       onTap: () => _handleGeneralContactTap(context),
                     ),
                     QuickActionTile(
@@ -163,10 +163,12 @@ class _HomeScreenState extends State<HomeScreen> {
     String category,
     String label,
   ) async {
-    if (_isHandlingAction) return;
+    if (_loadingCategory != null) return;
 
     final messenger = ScaffoldMessenger.of(context);
-    setState(() => _isHandlingAction = true);
+    setState(() {
+      _loadingCategory = category;
+    });
 
     try {
       final contacts = await EmergencyRepository().getByType(category);
@@ -207,16 +209,20 @@ class _HomeScreenState extends State<HomeScreen> {
       _showMessage(messenger, 'Unable to place the call right now.');
     } finally {
       if (mounted) {
-        setState(() => _isHandlingAction = false);
+        setState(() {
+          _loadingCategory = null;
+        });
       }
     }
   }
 
   Future<void> _handleGeneralContactTap(BuildContext context) async {
-    if (_isHandlingAction) return;
+    if (_loadingCategory != null) return;
 
     final messenger = ScaffoldMessenger.of(context);
-    setState(() => _isHandlingAction = true);
+    setState(() {
+      _loadingCategory = 'contact';
+    });
 
     try {
       final payload = await ContactService.getContacts();
@@ -243,7 +249,9 @@ class _HomeScreenState extends State<HomeScreen> {
       _showMessage(messenger, 'Unable to load your saved contacts right now.');
     } finally {
       if (mounted) {
-        setState(() => _isHandlingAction = false);
+        setState(() {
+          _loadingCategory = null;
+        });
       }
     }
   }
