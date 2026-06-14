@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_color.dart';
 
-/// Shared service-type helpers used by map markers, contacts, and detail screens.
 class ServiceUtils {
   ServiceUtils._();
 
-  /// Returns an icon that represents the given service type.
+  /// Returns the icon for the given service type.
   static IconData iconForType(String type) {
     switch (type) {
       case 'police':
@@ -13,6 +12,7 @@ class ServiceUtils {
       case 'hospital':
         return Icons.local_hospital_rounded;
       case 'fire':
+      case 'fire_station':
         return Icons.local_fire_department_rounded;
       case 'ambulance':
         return Icons.airport_shuttle_rounded;
@@ -20,12 +20,16 @@ class ServiceUtils {
         return Icons.phone_in_talk_rounded;
       case 'disaster':
         return Icons.warning_rounded;
+      case 'nearby':
+        return Icons.place_rounded;
+      case 'general':
+        return Icons.people_rounded;
       default:
         return Icons.location_on_rounded;
     }
   }
 
-  /// Returns a display color for the given service type.
+  /// Returns the display color for the given service type.
   static Color colorForType(String type) {
     switch (type) {
       case 'police':
@@ -33,6 +37,7 @@ class ServiceUtils {
       case 'hospital':
         return AppColors.hospital;
       case 'fire':
+      case 'fire_station':
         return AppColors.fire;
       case 'ambulance':
         return AppColors.ambulance;
@@ -40,6 +45,10 @@ class ServiceUtils {
         return AppColors.success;
       case 'disaster':
         return AppColors.warning;
+      case 'nearby':
+        return AppColors.nearby;
+      case 'general':
+        return AppColors.general;
       default:
         return AppColors.textSecondary;
     }
@@ -53,6 +62,7 @@ class ServiceUtils {
       case 'hospital':
         return 'Hospital';
       case 'fire':
+      case 'fire_station':
         return 'Fire Station';
       case 'ambulance':
         return 'Ambulance';
@@ -60,6 +70,10 @@ class ServiceUtils {
         return 'Helpline';
       case 'disaster':
         return 'Disaster Response';
+      case 'nearby':
+        return 'Nearby Places';
+      case 'general':
+        return 'General Contact';
       default:
         return 'Service';
     }

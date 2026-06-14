@@ -8,6 +8,7 @@ import 'package:app/features/contacts/ambulance_screen.dart';
 import 'package:app/features/contacts/contact_screen.dart';
 import 'package:app/features/contacts/fire_station_screen.dart';
 import 'package:app/features/contacts/general_contacts_screen.dart';
+import 'package:app/features/contacts/hospital_screen.dart';
 import 'package:app/features/contacts/nearby_places_screen.dart';
 import 'package:app/features/contacts/police_screen.dart';
 import 'package:app/features/map/map_detail_screen.dart';
@@ -26,8 +27,9 @@ import 'package:app/providers/user_provider.dart';
 import '../../features/first_aid/first_aid_screen.dart';
 import '../../features/first_aid/first_aid_detail_screen.dart';
 
-final router = GoRouter(
-  initialLocation: '/splash',
+GoRouter createRouter(String initialRoute) {
+  return GoRouter(
+    initialLocation: initialRoute,
   routes: [
     GoRoute(
       path: '/splash',
@@ -106,6 +108,10 @@ final router = GoRouter(
               builder: (context, state) => const AmbulanceScreen(),
             ),
             GoRoute(
+              path: '/hospital',
+              builder: (context, state) => const HospitalScreen(),
+            ),
+            GoRoute(
               path: '/fire',
               builder: (context, state) => const FireStationScreen(),
             ),
@@ -145,7 +151,8 @@ final router = GoRouter(
       builder: (context, state) => const PreferenceScreen(),
     ),
   ],
-);
+  );
+}
 
 class AppShell extends ConsumerStatefulWidget {
   final String currentLocation;

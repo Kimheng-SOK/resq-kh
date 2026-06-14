@@ -23,7 +23,9 @@ class AppColors {
   static const Color police = Color(0xFF1565C0);
   static const Color hospital = Color(0xFFD32F2F);
   static const Color fire = Color(0xFFE65100);
-  static const Color ambulance = Color(0xFFF9A825);
+  static const Color ambulance = Color(0xFFE53935);
+  static const Color nearby = Color(0xFF00897B);
+  static const Color general = Color(0xFF43A047);
 
   // Misc
   static const Color border = Color(0xFFDDDDDD);

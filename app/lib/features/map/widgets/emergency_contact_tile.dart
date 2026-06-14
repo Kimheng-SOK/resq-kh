@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_color.dart';
+import '../../../core/utils/service_utils.dart';
 import '../../../models/emergency_contact.dart';
 
 class EmergencyContactTile extends StatelessWidget {
@@ -14,25 +15,6 @@ class EmergencyContactTile extends StatelessWidget {
     this.onNotifyTap,
   });
 
-  static Color _colorForType(String type) {
-    switch (type) {
-      case 'police':
-        return AppColors.police;
-      case 'hospital':
-        return AppColors.hospital;
-      case 'fire':
-        return AppColors.fire;
-      case 'ambulance':
-        return AppColors.ambulance;
-      case 'helpline':
-        return AppColors.success;
-      case 'disaster':
-        return AppColors.warning;
-      default:
-        return AppColors.textSecondary;
-    }
-  }
-
   /// Generates initials from a contact name (up to 2 characters).
   static String _initials(String name) {
     final parts = name.trim().split(RegExp(r'\s+'));
@@ -46,7 +28,7 @@ class EmergencyContactTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final color = _colorForType(contact.type);
+    final color = ServiceUtils.colorForType(contact.type);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),

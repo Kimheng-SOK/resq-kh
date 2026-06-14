@@ -1,3 +1,4 @@
+import 'package:app/core/utils/service_utils.dart';
 import 'package:app/widgets/refresh_drag_pop_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -25,20 +26,20 @@ class ContactsScreen extends StatelessWidget {
 
           const SizedBox(height: 32),
           _ServiceCard(
-            title: 'Nearby Places',
+            title: ServiceUtils.labelForType('nearby'),
             subtitle: 'Services near your location',
-            icon: Icons.location_on,
-            color: Colors.red,
+            icon: ServiceUtils.iconForType('nearby'),
+            color: ServiceUtils.colorForType('nearby'),
             onTap: () {
               context.go('/contacts/nearby');
             },
           ),
           const SizedBox(height: 16),
           _ServiceCard(
-            title: 'Police',
+            title: ServiceUtils.labelForType('police'),
             subtitle: 'Request immediate assistance',
-            icon: Icons.local_police,
-            color: Colors.blue,
+            icon: ServiceUtils.iconForType('police'),
+            color: ServiceUtils.colorForType('police'),
             onTap: () {
               context.go('/contacts/police');
             },
@@ -47,10 +48,22 @@ class ContactsScreen extends StatelessWidget {
           const SizedBox(height: 16),
 
           _ServiceCard(
-            title: 'Ambulance',
+            title: ServiceUtils.labelForType('hospital'),
+            subtitle: 'Emergency rooms & trauma centers',
+            icon: ServiceUtils.iconForType('hospital'),
+            color: ServiceUtils.colorForType('hospital'),
+            onTap: () {
+              context.go('/contacts/hospital');
+            },
+          ),
+
+          const SizedBox(height: 16),
+
+          _ServiceCard(
+            title: ServiceUtils.labelForType('ambulance'),
             subtitle: 'Medical & paramedics',
-            icon: Icons.medical_services,
-            color: Colors.red,
+            icon: ServiceUtils.iconForType('ambulance'),
+            color: ServiceUtils.colorForType('ambulance'),
             onTap: () {
               context.go('/contacts/ambulance');
             },
@@ -59,10 +72,10 @@ class ContactsScreen extends StatelessWidget {
           const SizedBox(height: 16),
 
           _ServiceCard(
-            title: 'Fire Station',
+            title: ServiceUtils.labelForType('fire'),
             subtitle: 'Fire & rescue emergencies',
-            icon: Icons.local_fire_department,
-            color: Colors.orange,
+            icon: ServiceUtils.iconForType('fire'),
+            color: ServiceUtils.colorForType('fire'),
             onTap: () {
               context.go('/contacts/fire');
             },
@@ -71,10 +84,10 @@ class ContactsScreen extends StatelessWidget {
           const SizedBox(height: 16),
 
           _ServiceCard(
-            title: 'General Contact',
+            title: ServiceUtils.labelForType('general'),
             subtitle: 'Personal emergency contacts',
-            icon: Icons.people,
-            color: Colors.green,
+            icon: ServiceUtils.iconForType('general'),
+            color: ServiceUtils.colorForType('general'),
             onTap: () {
               context.go('/contacts/general');
             },
