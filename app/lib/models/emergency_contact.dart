@@ -52,14 +52,21 @@ class EmergencyContact {
       _ => rawCategory,
     };
 
+    // Parse services from server; fall back to derived list if server
+    // doesn't provide them yet.
+    final serverServices = json['services'];
+    final services = serverServices is List
+        ? serverServices.map((s) => s.toString()).toList()
+        : _servicesForCategory(type);
+
     return EmergencyContact(
       id: json['id'] as String,
       name: json['name'] as String,
       type: type,
       phone: (json['phone_number'] as String?) ?? '',
       address: (json['address'] as String?) ?? '',
-      hours: '24/7', // services are always open
-      services: _servicesForCategory(type),
+      hours: (json['hours'] as String?) ?? '24/7',
+      services: services,
       lat: double.parse((json['latitude'] as String?) ?? '0'),
       lng: double.parse((json['longitude'] as String?) ?? '0'),
       distanceKm: json['distance_km'] != null
