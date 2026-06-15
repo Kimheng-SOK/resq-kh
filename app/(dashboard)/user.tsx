@@ -1,6 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { auth, signOut } from '@/lib/auth';
-import Image from 'next/image';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,11 +7,36 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import Link from 'next/link';
+import { logoutAction } from '@/lib/auth-client';
+import { getSession } from '@/lib/session';
+
+function getInitials(name: string | null): string {
+  if (!name) return '?';
+  return name
+    .split(' ')
+    .map((p) => p[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+}
+
+function getRoleBadgeClass(role: string): string {
+  switch (role) {
+    case 'super_admin':
+      return 'bg-purple-100 text-purple-800';
+    case 'moderator':
+      return 'bg-blue-100 text-blue-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
+}
 
 export async function User() {
-  let session = await auth();
-  let user = session?.user;
+  const session = await getSession();
+
+  if (!session) {
+    return null;
+  }
 
   return (
     <DropdownMenu>
@@ -23,37 +46,30 @@ export async function User() {
           size="icon"
           className="overflow-hidden rounded-full"
         >
-          <Image
-            src={user?.image ?? '/placeholder-user.jpg'}
-            width={36}
-            height={36}
-            alt="Avatar"
-            className="overflow-hidden rounded-full"
-          />
+          <span className="flex h-full w-full items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
+            {getInitials(session.full_name)}
+          </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>Settings</DropdownMenuItem>
-        <DropdownMenuItem>Support</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        {user ? (
-          <DropdownMenuItem>
-            <form
-              action={async () => {
-                'use server';
-                await signOut();
-              }}
+        <DropdownMenuLabel>
+          <div className="flex flex-col gap-1">
+            <span>{session.full_name || session.email}</span>
+            <span
+              className={`inline-flex w-fit items-center rounded-full px-2 py-0.5 text-xs font-medium ${getRoleBadgeClass(session.role)}`}
             >
-              <button type="submit">Sign Out</button>
-            </form>
-          </DropdownMenuItem>
-        ) : (
-          <DropdownMenuItem>
-            <Link href="/login">Sign In</Link>
-          </DropdownMenuItem>
-        )}
+              {session.role.replace('_', ' ')}
+            </span>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>
+          <form action={logoutAction} className="w-full">
+            <button type="submit" className="w-full text-left">
+              Sign Out
+            </button>
+          </form>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

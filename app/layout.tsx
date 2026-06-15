@@ -1,11 +1,9 @@
 import './globals.css';
 
-import { Analytics } from '@vercel/analytics/react';
-
 export const metadata = {
-  title: 'Next.js App Router + NextAuth + Tailwind CSS',
+  title: 'ResQ Admin — Emergency Response Platform',
   description:
-    'A user admin dashboard configured with Next.js, Postgres, NextAuth, Tailwind CSS, TypeScript, and Prettier.'
+    'Admin dashboard for the ResQ emergency response platform. Manage users, emergency alerts, services, and first aid content.'
 };
 
 export default function RootLayout({
@@ -16,7 +14,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="flex min-h-screen w-full flex-col">{children}</body>
-      <Analytics />
     </html>
   );
 }
