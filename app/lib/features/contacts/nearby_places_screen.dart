@@ -66,7 +66,12 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
     try {
       _nearbyRadiusKm = await LocationPreferencesService.getRadius();
       final position = await LocationService.getCurrentLocation();
+      print(position);
 
+      print(
+        '======================================================== Lat=${position?.latitude}, '
+        '========================================================Lng=${position?.longitude}',
+      );
       final center = position != null
           ? LatLng(position.latitude, position.longitude)
           : _defaultCenter;
@@ -85,6 +90,7 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
         _filteredServices = _applySearch(services, _searchQuery);
         _isLoading = false;
       });
+      _mapController.move(center, _mapController.camera.zoom);
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -92,6 +98,19 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
         _isLoading = false;
       });
     }
+  }
+
+  Future<void> _refreshLocation() async {
+    await _loadServices();
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Location updated'),
+        duration: Duration(seconds: 1),
+      ),
+    );
   }
 
   List<EmergencyContact> _applySearch(
@@ -417,6 +436,23 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
                   size: 20,
                 ),
               ),
+            const SizedBox(width: 8),
+
+            GestureDetector(
+              onTap: _refreshLocation,
+              child: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: AppColors.red.withAlpha(20),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.my_location_rounded,
+                  size: 18,
+                  color: AppColors.red,
+                ),
+              ),
+            ),
             const SizedBox(width: 12),
           ],
         ),

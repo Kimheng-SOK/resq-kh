@@ -103,7 +103,10 @@ class _ServiceContactsScreenState extends State<ServiceContactsScreen> {
 
               // Type badge
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: color.withAlpha(20),
                   borderRadius: BorderRadius.circular(20),
@@ -130,8 +133,10 @@ class _ServiceContactsScreenState extends State<ServiceContactsScreen> {
 
               // Services row
               if (contact.services.isNotEmpty)
-                _infoRow(Icons.medical_services_outlined,
-                    contact.services.join(', ')),
+                _infoRow(
+                  Icons.medical_services_outlined,
+                  contact.services.join(', '),
+                ),
 
               const SizedBox(height: 8),
 
@@ -153,11 +158,17 @@ class _ServiceContactsScreenState extends State<ServiceContactsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Phone',
-                              style: TextStyle(fontSize: 12, color: Colors.grey)),
-                          Text(contact.phone,
-                              style: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w600)),
+                          const Text(
+                            'Phone',
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          ),
+                          Text(
+                            contact.phone,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -194,8 +205,9 @@ class _ServiceContactsScreenState extends State<ServiceContactsScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () =>
-                          LauncherHelper.openMap('${contact.lat},${contact.lng}'),
+                      onPressed: () => LauncherHelper.openMap(
+                        '${contact.lat},${contact.lng}',
+                      ),
                       icon: const Icon(Icons.directions_rounded, size: 18),
                       label: const Text('Directions'),
                       style: OutlinedButton.styleFrom(
@@ -249,7 +261,9 @@ class _ServiceContactsScreenState extends State<ServiceContactsScreen> {
             child: Text(
               text,
               style: const TextStyle(
-                  fontSize: 13, color: AppColors.textSecondary),
+                fontSize: 13,
+                color: AppColors.textSecondary,
+              ),
             ),
           ),
         ],
@@ -263,14 +277,14 @@ class _ServiceContactsScreenState extends State<ServiceContactsScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded, size: 20),
-          onPressed: () => context.pop(),
-        ),
-      ),
+      // appBar: AppBar(
+      //   title: Text(widget.title),
+      //   centerTitle: true,
+      //   leading: IconButton(
+      //     icon: const Icon(Icons.arrow_back_ios_rounded, size: 20),
+      //     onPressed: () => context.pop(),
+      //   ),
+      // ),
       body: RefreshDragPopWidget(
         onRefresh: _load,
         child: _buildBody(theme, isDark),
@@ -287,13 +301,18 @@ class _ServiceContactsScreenState extends State<ServiceContactsScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline_rounded, size: 48, color: Colors.grey),
+            const Icon(
+              Icons.error_outline_rounded,
+              size: 48,
+              color: Colors.grey,
+            ),
             const SizedBox(height: 12),
-            Text('Could not load services',
-                style: theme.textTheme.titleMedium),
+            Text('Could not load services', style: theme.textTheme.titleMedium),
             const SizedBox(height: 8),
-            Text(_error!,
-                style: const TextStyle(color: Colors.grey, fontSize: 13)),
+            Text(
+              _error!,
+              style: const TextStyle(color: Colors.grey, fontSize: 13),
+            ),
             const SizedBox(height: 16),
             ElevatedButton(onPressed: _load, child: const Text('Retry')),
           ],
@@ -302,99 +321,133 @@ class _ServiceContactsScreenState extends State<ServiceContactsScreen> {
     }
     if (_services.isEmpty) {
       return const Center(
-        child: Text('No services found.',
-            style: TextStyle(color: Colors.grey, fontSize: 15)),
+        child: Text(
+          'No services found.',
+          style: TextStyle(color: Colors.grey, fontSize: 15),
+        ),
       );
     }
-    return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(0, 8, 0, 16),
-      itemCount: _services.length,
-      itemBuilder: (context, index) {
-        final contact = _services[index];
-        final color = ServiceUtils.colorForType(contact.type);
-        final initials = contact.name.isNotEmpty
-            ? contact.name[0].toUpperCase()
-            : '?';
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      children: [
+        Row(
+          children: [
+            IconButton(
+              onPressed: () => context.pop(),
+              icon: const Icon(Icons.arrow_back_ios_rounded),
+            ),
+            const SizedBox(width: 4),
+            Expanded(
+              child: Text(
+                widget.title,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
 
-        return Card(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12)),
-          child: InkWell(
-            onTap: () => _showDetail(contact),
-            borderRadius: BorderRadius.circular(12),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 24,
-                    backgroundColor: color,
-                    child: Text(
-                      initials,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
+        const SizedBox(height: 12),
+
+        ..._services.map((contact) {
+          final color = ServiceUtils.colorForType(contact.type);
+          final initials = contact.name.isNotEmpty
+              ? contact.name[0].toUpperCase()
+              : '?';
+
+          return Card(
+            margin: const EdgeInsets.only(bottom: 8),
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: InkWell(
+              onTap: () => _showDetail(contact),
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 24,
+                      backgroundColor: color,
+                      child: Text(
+                        initials,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          contact.name,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
+
+                    const SizedBox(width: 14),
+
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            contact.name,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Icon(Icons.phone_rounded,
+
+                          const SizedBox(height: 4),
+
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.phone_rounded,
                                 size: 14,
                                 color: isDark
                                     ? Colors.white38
-                                    : AppColors.textSecondary),
-                            const SizedBox(width: 4),
-                            Text(
-                              contact.phone,
-                              style: TextStyle(
-                                color: isDark
-                                    ? Colors.white54
                                     : AppColors.textSecondary,
-                                fontSize: 14,
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+
+                              const SizedBox(width: 4),
+
+                              Text(
+                                contact.phone,
+                                style: TextStyle(
+                                  color: isDark
+                                      ? Colors.white54
+                                      : AppColors.textSecondary,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 44,
-                    height: 44,
-                    child: IconButton(
-                      onPressed: () =>
-                          LauncherHelper.makeCall(contact.phone),
-                      icon: const Icon(Icons.phone_rounded),
-                      color: AppColors.success,
-                      iconSize: 22,
-                      tooltip: 'Call ${contact.name}',
+
+                    SizedBox(
+                      width: 44,
+                      height: 44,
+                      child: IconButton(
+                        onPressed: () => LauncherHelper.makeCall(contact.phone),
+                        icon: const Icon(Icons.phone_rounded),
+                        color: AppColors.success,
+                        iconSize: 22,
+                        tooltip: 'Call ${contact.name}',
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        }),
+      ],
     );
   }
 }

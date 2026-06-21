@@ -238,6 +238,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       label: 'Nearby Search Radius',
                       onTap: () => _showRadiusDialog(context),
                     ),
+                    const DividerWidget(),
+                    SettingsTile(
+                      icon: Icons.location_on_outlined,
+                      label: 'Location Permission',
+                      onTap: () async {
+                        await openAppSettings();
+                      },
+                    ),
                   ],
                 ),
               ),
