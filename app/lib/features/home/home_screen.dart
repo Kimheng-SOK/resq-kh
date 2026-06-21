@@ -90,68 +90,82 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                  childAspectRatio: 1.08,
-                  children: [
-                    QuickActionTile(
-                      label: 'Police Station',
-                      icon: Icons.local_police_rounded,
-                      color: AppColors.police,
-                      isLoading: _loadingCategory == 'police',
-                      onTap: () => _handleServiceTap(
-                        context,
-                        'police',
-                        'Police Station',
-                      ),
-                    ),
-                    QuickActionTile(
-                      label: 'Hospital',
-                      icon: Icons.local_hospital_rounded,
-                      color: AppColors.hospital,
-                      isLoading: _loadingCategory == 'hospital',
-                      onTap: () =>
-                          _handleServiceTap(context, 'hospital', 'Hospital'),
-                    ),
-                    QuickActionTile(
-                      label: 'Fire Station',
-                      icon: Icons.local_fire_department_rounded,
-                      color: AppColors.fire,
-                      isLoading: _loadingCategory == 'fire',
-                      onTap: () =>
-                          _handleServiceTap(context, 'fire', 'Fire Station'),
-                    ),
-                    QuickActionTile(
-                      label: 'Ambulance',
-                      icon: Icons.airport_shuttle_rounded,
-                      color: AppColors.ambulance,
-                      isLoading: _loadingCategory == 'ambulance',
-                      onTap: () =>
-                          _handleServiceTap(context, 'ambulance', 'Ambulance'),
-                    ),
-                    QuickActionTile(
-                      label: 'Contact',
-                      icon: Icons.contacts_rounded,
-                      color: AppColors.red,
-                      isLoading: _loadingCategory == 'contact',
-                      onTap: () => _handleGeneralContactTap(context),
-                    ),
-                    QuickActionTile(
-                      label: 'Nearby',
-                      icon: Icons.map_rounded,
-                      color: Colors.teal,
-                      isLoading: false,
-                      onTap: () => context.push('/contacts/nearby'),
-                    ),
-                  ],
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final crossAxisCount = constraints.maxWidth < 400 ? 2 : 3;
+                    return GridView.count(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                      childAspectRatio: 0.9,
+                      children: [
+                        QuickActionTile(
+                          label: 'Police Station',
+                          icon: Icons.local_police_rounded,
+                          color: AppColors.police,
+                          isLoading: _loadingCategory == 'police',
+                          onTap: () => _handleServiceTap(
+                            context,
+                            'police',
+                            'Police Station',
+                          ),
+                        ),
+                        QuickActionTile(
+                          label: 'Hospital',
+                          icon: Icons.local_hospital_rounded,
+                          color: AppColors.hospital,
+                          isLoading: _loadingCategory == 'hospital',
+                          onTap: () => _handleServiceTap(
+                            context,
+                            'hospital',
+                            'Hospital',
+                          ),
+                        ),
+                        QuickActionTile(
+                          label: 'Fire Station',
+                          icon: Icons.local_fire_department_rounded,
+                          color: AppColors.fire,
+                          isLoading: _loadingCategory == 'fire',
+                          onTap: () => _handleServiceTap(
+                            context,
+                            'fire',
+                            'Fire Station',
+                          ),
+                        ),
+                        QuickActionTile(
+                          label: 'Ambulance',
+                          icon: Icons.airport_shuttle_rounded,
+                          color: AppColors.ambulance,
+                          isLoading: _loadingCategory == 'ambulance',
+                          onTap: () => _handleServiceTap(
+                            context,
+                            'ambulance',
+                            'Ambulance',
+                          ),
+                        ),
+                        QuickActionTile(
+                          label: 'Contact',
+                          icon: Icons.contacts_rounded,
+                          color: AppColors.red,
+                          isLoading: _loadingCategory == 'contact',
+                          onTap: () => _handleGeneralContactTap(context),
+                        ),
+                        QuickActionTile(
+                          label: 'Nearby',
+                          icon: Icons.map_rounded,
+                          color: Colors.teal,
+                          isLoading: false,
+                          onTap: () => context.push('/contacts/nearby'),
+                        ),
+                      ],
+                    );
+                  },
                 ),
-                const SizedBox(height: 24),
               ],
             ),
+            const SizedBox(height: 26),
           ],
         ),
       ),

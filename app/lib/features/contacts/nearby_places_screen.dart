@@ -6,12 +6,16 @@ import 'package:app/features/map/widgets/service_marker.dart';
 import 'package:app/features/map/widgets/user_location_marker.dart';
 import 'package:app/models/emergency_contact.dart';
 import 'package:app/services/api/services_api_service.dart';
+import 'package:app/services/location_preferences_service.dart';
+import 'package:app/services/location_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:app/providers/radius_provider.dart';
 
-class NearbyPlacesScreen extends StatefulWidget {
+class NearbyPlacesScreen extends ConsumerStatefulWidget {
   final String? category;
   final String title;
 
@@ -22,11 +26,11 @@ class NearbyPlacesScreen extends StatefulWidget {
   });
 
   @override
-  State<NearbyPlacesScreen> createState() => _NearbyPlacesScreenState();
+  ConsumerState<NearbyPlacesScreen> createState() => _NearbyPlacesScreenState();
 }
 
-class _NearbyPlacesScreenState extends State<NearbyPlacesScreen> {
-  static const double _nearbyRadiusKm = 5;
+class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
+  double _nearbyRadiusKm = 5;
   static const LatLng _defaultCenter = LatLng(11.5564, 104.9282);
   static const double _defaultZoom = 14.0;
 
@@ -39,6 +43,7 @@ class _NearbyPlacesScreenState extends State<NearbyPlacesScreen> {
   bool _isLoading = true;
   String? _errorMessage;
   String _searchQuery = '';
+  double? _lastRadius;
 
   @override
   void initState() {
@@ -59,7 +64,12 @@ class _NearbyPlacesScreenState extends State<NearbyPlacesScreen> {
     });
 
     try {
-      const center = _defaultCenter;
+      _nearbyRadiusKm = await LocationPreferencesService.getRadius();
+      final position = await LocationService.getCurrentLocation();
+
+      final center = position != null
+          ? LatLng(position.latitude, position.longitude)
+          : _defaultCenter;
 
       final services = await ServicesApiService.fetchServices(
         category: widget.category,
@@ -272,7 +282,17 @@ class _NearbyPlacesScreenState extends State<NearbyPlacesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final radius = ref.watch(radiusProvider);
     final theme = Theme.of(context);
+    if (_lastRadius != radius) {
+      _lastRadius = radius;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _loadServices();
+        }
+      });
+    }
 
     return Scaffold(
       resizeToAvoidBottomInset: false,

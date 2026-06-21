@@ -1,3 +1,5 @@
+import 'package:app/providers/radius_provider.dart';
+import 'package:app/services/location_preferences_service.dart';
 import 'package:app/services/refresh_service.dart';
 import 'package:app/core/theme/app_color.dart';
 import 'package:app/features/settings/widgets/delete_modal_sheet.dart';
@@ -35,6 +37,70 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (confirmed == true && mounted) {
       context.go('/register');
     }
+  }
+
+  Future<void> _showRadiusDialog(BuildContext context) async {
+    double selectedRadius = await LocationPreferencesService.getRadius();
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text('Nearby Search Radius'),
+          content: StatefulBuilder(
+            builder: (context, setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('${selectedRadius.toStringAsFixed(1)} km'),
+
+                  Slider(
+                    value: selectedRadius,
+                    min: 0.5,
+                    max: 20,
+                    divisions: 39,
+                    label: '${selectedRadius.toStringAsFixed(1)} km',
+                    onChanged: (value) {
+                      setState(() {
+                        selectedRadius = value;
+                      });
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await LocationPreferencesService.saveRadius(selectedRadius);
+
+                ref.read(radiusProvider.notifier).state = selectedRadius;
+
+                Navigator.pop(ctx);
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRadius();
+  }
+
+  Future<void> _loadRadius() async {
+    final radius = await LocationPreferencesService.getRadius();
+
+    ref.read(radiusProvider.notifier).state = radius;
   }
 
   @override
@@ -168,11 +234,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                     const DividerWidget(),
                     SettingsTile(
-                      icon: Icons.location_on_outlined,
-                      label: 'Location Permission',
-                      onTap: () async {
-                        await openAppSettings();
-                      },
+                      icon: Icons.location_searching_rounded,
+                      label: 'Nearby Search Radius',
+                      onTap: () => _showRadiusDialog(context),
                     ),
                   ],
                 ),
