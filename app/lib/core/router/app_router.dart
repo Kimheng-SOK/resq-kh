@@ -30,127 +30,127 @@ import '../../features/first_aid/first_aid_detail_screen.dart';
 GoRouter createRouter(String initialRoute) {
   return GoRouter(
     initialLocation: initialRoute,
-  routes: [
-    GoRoute(
-      path: '/splash',
-      builder: (context, state) => const SplashScreen(),
-    ),
+    routes: [
+      GoRoute(
+        path: '/splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
 
-    GoRoute(
-      path: '/register',
-      builder: (context, state) => const RegisterScreen(),
-    ),
+      GoRoute(
+        path: '/register',
+        builder: (context, state) => const RegisterScreen(),
+      ),
 
-    GoRoute(
-      path: '/otp',
-      builder: (context, state) {
-        final data = state.extra as Map<String, dynamic>;
+      GoRoute(
+        path: '/otp',
+        builder: (context, state) {
+          final data = state.extra as Map<String, dynamic>;
 
-        return OtpScreen(
-          email: data['email'] as String?,
-          phoneNumber: data['phone_number'] as String,
-        );
-      },
-    ),
+          return OtpScreen(
+            email: data['email'] as String?,
+            phoneNumber: data['phone_number'] as String,
+          );
+        },
+      ),
 
-    GoRoute(
-      path: '/location-permission',
-      builder: (context, state) => const LocationPermissionScreen(),
-    ),
-    GoRoute(
-      path: '/complete-profile',
-      builder: (context, state) {
-        final extra = state.extra as Map<String, dynamic>?;
-        return CompleteProfileScreen(
-          editing: extra?['editing'] as bool? ?? false,
-        );
-      },
-    ),
+      GoRoute(
+        path: '/location-permission',
+        builder: (context, state) => const LocationPermissionScreen(),
+      ),
+      GoRoute(
+        path: '/complete-profile',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return CompleteProfileScreen(
+            editing: extra?['editing'] as bool? ?? false,
+          );
+        },
+      ),
 
-    ShellRoute(
-      builder: (context, state, child) {
-        return AppShell(currentLocation: state.matchedLocation, child: child);
-      },
-      routes: [
-        GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+      ShellRoute(
+        builder: (context, state, child) {
+          return AppShell(currentLocation: state.matchedLocation, child: child);
+        },
+        routes: [
+          GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
 
-        GoRoute(
-          path: '/map',
-          builder: (context, state) => const MapScreen(),
-          routes: [
-            GoRoute(
-              path: 'detail',
-              builder: (context, state) {
-                final contact = state.extra as EmergencyContact;
-                return MapDetailScreen(contact: contact);
-              },
-            ),
-          ],
-        ),
-        GoRoute(
-          path: '/sos',
-          builder: (context, state) => const _RouteBody(title: 'SOS'),
-        ),
-        GoRoute(
-          path: '/contacts',
-          builder: (context, state) => const ContactsScreen(),
-          routes: [
-            GoRoute(
-              path: '/general',
-              builder: (context, state) => const GeneralContactsScreen(),
-            ),
-            GoRoute(
-              path: '/police',
-              builder: (context, state) => const PoliceScreen(),
-            ),
-            GoRoute(
-              path: '/ambulance',
-              builder: (context, state) => const AmbulanceScreen(),
-            ),
-            GoRoute(
-              path: '/hospital',
-              builder: (context, state) => const HospitalScreen(),
-            ),
-            GoRoute(
-              path: '/fire',
-              builder: (context, state) => const FireStationScreen(),
-            ),
-            GoRoute(
-              path: '/nearby',
-              builder: (context, state) => const NearbyPlacesScreen(),
-            ),
-          ],
-        ),
-        GoRoute(
-          path: '/first-aid',
-          builder: (context, state) => const FirstAidScreen(),
-        ),
-        GoRoute(
-          path: '/first-aid/:conditionId',
-          builder: (context, state) => FirstAidDetailScreen(
-            conditionId: state.pathParameters['conditionId']!,
+          GoRoute(
+            path: '/map',
+            builder: (context, state) => const MapScreen(),
+            routes: [
+              GoRoute(
+                path: 'detail',
+                builder: (context, state) {
+                  final contact = state.extra as EmergencyContact;
+                  return MapDetailScreen(contact: contact);
+                },
+              ),
+            ],
           ),
-        ),
-      ],
-    ),
-    GoRoute(
-      path: '/profile',
-      builder: (context, state) => const EditProfileScreen(),
-    ),
-    GoRoute(
-      path: '/notifications',
-      builder: (context, state) =>
-          const PlaceholderScreen(title: 'Notifications'),
-    ),
-    GoRoute(
-      path: '/settings',
-      builder: (context, state) => const SettingsScreen(),
-    ),
-    GoRoute(
-      path: '/preferences',
-      builder: (context, state) => const PreferenceScreen(),
-    ),
-  ],
+          GoRoute(
+            path: '/sos',
+            builder: (context, state) => const _RouteBody(title: 'SOS'),
+          ),
+          GoRoute(
+            path: '/contacts',
+            builder: (context, state) => const ContactsScreen(),
+            routes: [
+              GoRoute(
+                path: '/general',
+                builder: (context, state) => const GeneralContactsScreen(),
+              ),
+              GoRoute(
+                path: '/police',
+                builder: (context, state) => const PoliceScreen(),
+              ),
+              GoRoute(
+                path: '/ambulance',
+                builder: (context, state) => const AmbulanceScreen(),
+              ),
+              GoRoute(
+                path: '/hospital',
+                builder: (context, state) => const HospitalScreen(),
+              ),
+              GoRoute(
+                path: '/fire',
+                builder: (context, state) => const FireStationScreen(),
+              ),
+              GoRoute(
+                path: '/nearby',
+                builder: (context, state) => const NearbyPlacesScreen(),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/first-aid',
+            builder: (context, state) => const FirstAidScreen(),
+          ),
+          GoRoute(
+            path: '/first-aid/:conditionId',
+            builder: (context, state) => FirstAidDetailScreen(
+              conditionId: state.pathParameters['conditionId']!,
+            ),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/profile',
+        builder: (context, state) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) =>
+            const PlaceholderScreen(title: 'Notifications'),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/preferences',
+        builder: (context, state) => const PreferenceScreen(),
+      ),
+    ],
   );
 }
 

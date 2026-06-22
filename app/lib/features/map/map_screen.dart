@@ -1,3 +1,4 @@
+import 'package:app/services/location_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -35,13 +36,17 @@ class _MapScreenState extends State<MapScreen> {
   final TextEditingController _searchController = TextEditingController();
   final MapController _mapController = MapController();
 
-  static const LatLng _defaultCenter = LatLng(11.5564, 104.9282);
+  static const LatLng _fallbackCenter = LatLng(11.5564, 104.9282);
+  LatLng _userLocation = _fallbackCenter;
   static const double _defaultZoom = 14.0;
 
   @override
   void initState() {
     super.initState();
-    _loadContacts();
+
+    _loadCurrentLocation().then((_) {
+      _loadContacts();
+    });
   }
 
   @override
@@ -50,13 +55,29 @@ class _MapScreenState extends State<MapScreen> {
     super.dispose();
   }
 
+  Future<void> _loadCurrentLocation() async {
+    final position = await LocationService.getCurrentLocation();
+
+    if (position == null) return;
+
+    final location = LatLng(position.latitude, position.longitude);
+
+    if (!mounted) return;
+
+    setState(() {
+      _userLocation = location;
+    });
+
+    _mapController.move(location, 15);
+  }
+
   Future<void> _loadContacts() async {
     try {
       // Fetch backend services and personal contacts in parallel
       final results = await Future.wait(<Future<List<EmergencyContact>>>[
         ServicesApiService.fetchServices(
-          lat: _defaultCenter.latitude,
-          lng: _defaultCenter.longitude,
+          lat: _userLocation.latitude,
+          lng: _userLocation.longitude,
           radius: 50,
         ),
         _loadPersonalContacts(),
@@ -163,9 +184,9 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   List<Marker> _buildMarkers() {
-    return _filteredContacts
-        .where((c) => c.lat != 0 || c.lng != 0)
-        .map((contact) {
+    return _filteredContacts.where((c) => c.lat != 0 || c.lng != 0).map((
+      contact,
+    ) {
       final color = ServiceUtils.colorForType(contact.type);
       final icon = ServiceUtils.iconForType(contact.type);
 
@@ -183,8 +204,8 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Marker _buildUserMarker() {
-    return const Marker(
-      point: _defaultCenter,
+    return Marker(
+      point: _userLocation,
       width: 32,
       height: 32,
       child: UserLocationMarker(),
@@ -229,7 +250,7 @@ class _MapScreenState extends State<MapScreen> {
     return FlutterMap(
       mapController: _mapController,
       options: MapOptions(
-        initialCenter: _defaultCenter,
+        initialCenter: _userLocation,
         initialZoom: _defaultZoom,
         interactionOptions: const InteractionOptions(
           flags: InteractiveFlag.all,
@@ -240,12 +261,7 @@ class _MapScreenState extends State<MapScreen> {
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
           userAgentPackageName: 'com.resqkh.app',
         ),
-        MarkerLayer(
-          markers: [
-            ..._buildMarkers(),
-            _buildUserMarker(),
-          ],
-        ),
+        MarkerLayer(markers: [..._buildMarkers(), _buildUserMarker()]),
         // Hide default attribution for cleaner UI
         const RichAttributionWidget(
           popupInitialDisplayDuration: Duration(seconds: 0),
@@ -259,7 +275,7 @@ class _MapScreenState extends State<MapScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Positioned(
-      top: 5,
+      top: MediaQuery.of(context).padding.top + 16,
       left: 16,
       right: 16,
       child: Container(
@@ -307,6 +323,17 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
             // Clear button — shown when search is active
+            SizedBox(width: 10),
+            GestureDetector(
+              onTap: () async {
+                await _loadCurrentLocation();
+                await _loadContacts();
+              },
+              child: const Padding(
+                padding: EdgeInsets.only(right: 12),
+                child: Icon(Icons.my_location_rounded, color: Colors.red),
+              ),
+            ),
             if (_searchQuery.isNotEmpty)
               GestureDetector(
                 onTap: () {
@@ -328,8 +355,8 @@ class _MapScreenState extends State<MapScreen> {
                 color: _selectedCategory != null
                     ? AppColors.red
                     : isDark
-                        ? Colors.white54
-                        : AppColors.textSecondary,
+                    ? Colors.white54
+                    : AppColors.textSecondary,
                 size: 22,
               ),
             ),
@@ -407,7 +434,9 @@ class _MapScreenState extends State<MapScreen> {
                       '${_filteredContacts.length} nearby',
                       style: TextStyle(
                         fontSize: 13,
-                        color: isDark ? Colors.white54 : AppColors.textSecondary,
+                        color: isDark
+                            ? Colors.white54
+                            : AppColors.textSecondary,
                         fontFamily: 'SF Pro Display',
                       ),
                     ),
