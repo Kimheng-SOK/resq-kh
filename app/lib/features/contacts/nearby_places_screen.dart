@@ -66,12 +66,6 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
     try {
       _nearbyRadiusKm = await LocationPreferencesService.getRadius();
       final position = await LocationService.getCurrentLocation();
-      print(position);
-
-      print(
-        '======================================================== Lat=${position?.latitude}, '
-        '========================================================Lng=${position?.longitude}',
-      );
       final center = position != null
           ? LatLng(position.latitude, position.longitude)
           : _defaultCenter;

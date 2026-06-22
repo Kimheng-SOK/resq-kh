@@ -1,3 +1,4 @@
+import 'package:app/services/location_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -10,17 +11,46 @@ import '../../models/emergency_contact.dart';
 import 'widgets/contact_profile_marker.dart';
 import 'widgets/user_location_marker.dart';
 
-class MapDetailScreen extends StatelessWidget {
+class MapDetailScreen extends StatefulWidget {
   final EmergencyContact contact;
 
   const MapDetailScreen({super.key, required this.contact});
 
+  @override
+  State<MapDetailScreen> createState() => _MapDetailScreenState();
+}
+
+class _MapDetailScreenState extends State<MapDetailScreen> {
+  final MapController _mapController = MapController();
+
   static const LatLng _defaultCenter = LatLng(11.5564, 104.9282);
+
+  LatLng _userLocation = _defaultCenter;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshLocation();
+  }
+
+  Future<void> _refreshLocation() async {
+    final position = await LocationService.getCurrentLocation();
+
+    if (position == null) return;
+
+    final newLocation = LatLng(position.latitude, position.longitude);
+
+    setState(() {
+      _userLocation = newLocation;
+    });
+
+    _mapController.move(newLocation, 15);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final color = ServiceUtils.colorForType(contact.type);
-    final icon = ServiceUtils.iconForType(contact.type);
+    final color = ServiceUtils.colorForType(widget.contact.type);
+    final icon = ServiceUtils.iconForType(widget.contact.type);
     final screenHeight = MediaQuery.of(context).size.height;
     final topPadding = MediaQuery.of(context).padding.top;
 
@@ -37,7 +67,7 @@ class MapDetailScreen extends StatelessWidget {
           ),
 
           Positioned(
-            top: topPadding + 64,
+            top: topPadding + 200,
             right: 16,
             child: _buildFilterColumn(context),
           ),
@@ -75,6 +105,7 @@ class MapDetailScreen extends StatelessWidget {
         0,
       ]),
       child: FlutterMap(
+        mapController: _mapController,
         options: const MapOptions(
           initialCenter: _defaultCenter,
           initialZoom: 14,
@@ -88,20 +119,20 @@ class MapDetailScreen extends StatelessWidget {
           MarkerLayer(
             markers: [
               Marker(
-                point: LatLng(contact.lat, contact.lng),
+                point: LatLng(widget.contact.lat, widget.contact.lng),
                 width: 48,
                 height: 56,
                 child: ContactProfileMarker(
-                  initials: _initials(contact.name),
+                  initials: _initials(widget.contact.name),
                   color: color,
                   isActive: true,
                 ),
               ),
-              const Marker(
-                point: _defaultCenter,
+              Marker(
+                point: _userLocation,
                 width: 32,
                 height: 32,
-                child: UserLocationMarker(),
+                child: const UserLocationMarker(),
               ),
             ],
           ),
@@ -125,6 +156,17 @@ class MapDetailScreen extends StatelessWidget {
     return Column(
       spacing: screenWidth < 360 ? 8 : 12,
       children: [
+        GestureDetector(
+          onTap: _refreshLocation,
+          child: _FilterBtn(
+            icon: Icons.my_location_rounded,
+            color: Colors.blue,
+            size: btnSize,
+            iconSize: iconSize,
+            isDark: isDark,
+          ),
+        ),
+
         _FilterBtn(
           icon: Icons.local_hospital_rounded,
           color: AppColors.red,
@@ -132,16 +174,10 @@ class MapDetailScreen extends StatelessWidget {
           iconSize: iconSize,
           isDark: isDark,
         ),
+
         _FilterBtn(
           icon: Icons.navigation_rounded,
           color: const Color(0xFF005FB0),
-          size: btnSize,
-          iconSize: iconSize,
-          isDark: isDark,
-        ),
-        _FilterBtn(
-          icon: Icons.local_fire_department_rounded,
-          color: const Color(0xFFF57C00),
           size: btnSize,
           iconSize: iconSize,
           isDark: isDark,
@@ -243,11 +279,11 @@ class MapDetailScreen extends StatelessWidget {
                     _ServiceInfoRow(color: color, icon: icon),
                     SizedBox(height: screenWidth < 360 ? 12 : 16),
 
-                    _CallEmergencyBtn(phone: contact.phone),
+                    _CallEmergencyBtn(phone: widget.contact.phone),
                     SizedBox(height: screenWidth < 360 ? 6 : 8),
 
                     _ActionBtnRow(
-                      contact: contact,
+                      contact: widget.contact,
                       isDark: isDark,
                       compact: screenWidth < 360,
                     ),
