@@ -8,6 +8,7 @@ import { FirstAidSeverity, FirstAidTopic } from '../../modules/first-aid/entitie
 import { FirstAidStep } from '../../modules/first-aid/entities/first-aid-step.entity';
 import { FirstAidTranslation } from '../../modules/first-aid/entities/first-aid-translation.entity';
 import { FirstAidStepTranslation } from '../../modules/first-aid/entities/first-aid-step-translation.entity';
+import { IncidentType } from 'src/modules/incident-types/entity/incident-type.entity';
 
 config();
 
@@ -452,7 +453,29 @@ async function seed() {
     }
   }
   console.log('First aid topics seeded');
+
+  // ── Incident Types ─────────────────────────────
+  const incidentTypeRepo = dataSource.getRepository(IncidentType);
+
+  const incidentTypesData = [
+    { slug: 'fire', label: 'Fire', icon_name: 'fire', recommended_responder: 'fire', sort_order: 1 },
+    { slug: 'road_accident', label: 'Road Accident', icon_name: 'car_crash', recommended_responder: 'ambulance', sort_order: 2 },
+    { slug: 'medical_emergency', label: 'Medical Emergency', icon_name: 'medical', recommended_responder: 'medical', sort_order: 3 },
+    { slug: 'crime_in_progress', label: 'Crime in Progress', icon_name: 'police', recommended_responder: 'police', sort_order: 4 },
+    { slug: 'drowning', label: 'Drowning', icon_name: 'water', recommended_responder: 'ambulance', sort_order: 5 },
+    { slug: 'natural_disaster', label: 'Flood / Disaster', icon_name: 'storm', recommended_responder: 'disaster', sort_order: 6 },
+    { slug: 'domestic_violence', label: 'Domestic Violence', icon_name: 'shield', recommended_responder: 'police', sort_order: 7 },
+    { slug: 'electric_hazard', label: 'Electric Hazard', icon_name: 'bolt', recommended_responder: 'fire', sort_order: 8 },
+  ];
+
+  for (const it of incidentTypesData) {
+    await incidentTypeRepo.delete({ slug: it.slug });
+    await incidentTypeRepo.save(incidentTypeRepo.create(it));
+  }
+  console.log('Incident types seeded');
+
   console.log('Seed completed successfully.');
+
   await dataSource.destroy();
 }
 
