@@ -275,7 +275,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     SettingsTile(
                       icon: Icons.privacy_tip_outlined,
                       label: 'Privacy Policy',
-                      onTap: () {},
+                      onTap: () {
+                        context.push('/privacy-policy');
+                      },
                     ),
                     const DividerWidget(),
                     SettingsTile(
