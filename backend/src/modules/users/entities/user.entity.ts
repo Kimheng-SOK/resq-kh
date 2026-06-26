@@ -54,7 +54,4 @@ export class User {
 
   @OneToMany(() => UserLocation, (location) => location.user)
   locations?: UserLocation[];
-
-  @OneToMany(() => Notification, (notification) => notification.user)
-  notifications?: Notification[];
 }

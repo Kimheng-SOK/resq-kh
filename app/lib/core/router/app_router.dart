@@ -13,6 +13,7 @@ import 'package:app/features/contacts/nearby_places_screen.dart';
 import 'package:app/features/contacts/police_screen.dart';
 import 'package:app/features/map/map_detail_screen.dart';
 import 'package:app/features/map/map_screen.dart';
+import 'package:app/features/notifications/notification_screen.dart';
 import 'package:app/features/preference/preference_screen.dart';
 import 'package:app/models/emergency_contact.dart';
 import 'package:flutter/material.dart';
@@ -141,8 +142,7 @@ GoRouter createRouter(String initialRoute) {
       ),
       GoRoute(
         path: '/notifications',
-        builder: (context, state) =>
-            const PlaceholderScreen(title: 'Notifications'),
+        builder: (context, state) => const NotificationScreen(),
       ),
       GoRoute(
         path: '/settings',
@@ -154,9 +154,8 @@ GoRouter createRouter(String initialRoute) {
       ),
       GoRoute(
         path: '/emergency-report',
-        builder: (context, state) => EmergencyReportForm(
-          incidentType: state.extra as IncidentType,
-        ),
+        builder: (context, state) =>
+            EmergencyReportForm(incidentType: state.extra as IncidentType),
       ),
     ],
   );

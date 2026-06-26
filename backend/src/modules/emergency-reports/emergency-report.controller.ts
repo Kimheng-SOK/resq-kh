@@ -22,4 +22,10 @@ export class EmergencyReportsController {
   findOne(@Param('id') id: string) {
     return this.service.findOne(id);
   }
+  
+  @Get('user/:userId')
+  findByUser(@Param('userId') userId: string) {
+    return this.service.findByUser(userId);
+  }
+
 }

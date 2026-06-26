@@ -6,7 +6,7 @@ import {
   EmergencyAlertStatus,
 } from './entities/emergency-alert.entity';
 import { UserLocation } from '../user-locations/entities/user-location.entity';
-import { Notification, NotificationType } from '../notifications/entities/notification.entity';
+import { Notification } from '../notifications/entities/notification.entity';
 import { CreateEmergencyAlertDto } from './dto/create-emergency-alert.dto';
 import { UpdateAlertStatusDto } from './dto/update-alert-status.dto';
 import { UsersService } from '../users/users.service';
@@ -68,16 +68,6 @@ export class EmergencyAlertsService {
       status: EmergencyAlertStatus.ACTIVE,
     });
     const savedAlert = await this.alertRepository.save(alert);
-
-    await this.notificationRepository.save(
-      this.notificationRepository.create({
-        user_id: dto.user_id,
-        emergency_alert_id: savedAlert.id,
-        type: NotificationType.SOS,
-        title: 'SOS Alert Triggered',
-        body: `Emergency alert (${emergencyType.label}) has been activated.`,
-      }),
-    );
 
     return this.findOne(savedAlert.id);
   }

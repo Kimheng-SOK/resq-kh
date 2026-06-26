@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { Notification } from './entities/notification.entity';
 import { QueryNotificationDto } from './dto/query-notification.dto';
 
@@ -8,40 +9,50 @@ import { QueryNotificationDto } from './dto/query-notification.dto';
 export class NotificationsService {
   constructor(
     @InjectRepository(Notification)
-    private notificationRepository: Repository<Notification>,
+    private readonly repo: Repository<Notification>,
   ) {}
 
+  async createNotification(
+    serviceId: string,
+    reportId: string,
+    title: string,
+    body: string,
+  ) {
+    const notification = this.repo.create({
+      service_id: serviceId,
+      emergency_report_id: reportId,
+      title,
+      body,
+    });
+
+    return this.repo.save(notification);
+  }
+
   async findAll(query: QueryNotificationDto) {
-    const page = query.page ?? 1;
-    const limit = query.limit ?? 20;
-    const [items, total] = await this.notificationRepository.findAndCount({
-      where: { user_id: query.userId },
-      order: { created_at: 'DESC' },
-      skip: (page - 1) * limit,
-      take: limit,
+    return this.repo.find({
+      where: {
+        service_id: query.serviceId,
+      },
+      relations: {
+        report: true,
+      },
+      order: {
+        created_at: 'DESC',
+      },
     });
-    return {
-      items,
-      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
-    };
   }
 
-  async markRead(id: string, userId: string) {
-    const notification = await this.notificationRepository.findOne({
-      where: { id, user_id: userId },
+  async markRead(id: string) {
+    const notification = await this.repo.findOne({
+      where: { id },
     });
+
     if (!notification) {
-      throw new NotFoundException(`Notification ${id} not found`);
+      throw new NotFoundException();
     }
-    notification.is_read = true;
-    return this.notificationRepository.save(notification);
-  }
 
-  async markAllRead(userId: string) {
-    await this.notificationRepository.update(
-      { user_id: userId, is_read: false },
-      { is_read: true },
-    );
-    return { updated: true };
+    notification.is_read = true;
+
+    return this.repo.save(notification);
   }
 }

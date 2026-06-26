@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:app/models/first_aid_topic.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class FirstAidApiService {
-  static const String _baseUrl = 'http://localhost:3000';
+  static final String _baseUrl = dotenv.env['API_URL']!;
 
   static Future<List<FirstAidTopic>> fetchTopics({String lang = 'en'}) async {
     final uri = Uri.parse('$_baseUrl/first-aid/topics?lang=$lang');
@@ -11,7 +12,7 @@ class FirstAidApiService {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> body = jsonDecode(response.body);
-      final List<dynamic> list = body['data'] as List<dynamic>;  // ← unwrap data
+      final List<dynamic> list = body['data'] as List<dynamic>;
       return list
           .map((t) => FirstAidTopic.fromJson(t as Map<String, dynamic>))
           .toList();
@@ -29,7 +30,8 @@ class FirstAidApiService {
     if (response.statusCode == 200) {
       final Map<String, dynamic> body = jsonDecode(response.body);
       return FirstAidTopic.fromJson(
-          body['data'] as Map<String, dynamic>);  // ← unwrap data
+        body['data'] as Map<String, dynamic>,
+      ); // ← unwrap data
     }
     throw Exception('Failed to load topic "$slug": ${response.statusCode}');
   }

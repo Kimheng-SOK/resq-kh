@@ -6,50 +6,38 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
-import { EmergencyAlert } from '../../emergency-alerts/entities/emergency-alert.entity';
 
-export enum NotificationType {
-  SOS = 'sos',
-  CONTACT_ALERT = 'contact_alert',
-  SYSTEM = 'system',
-  REMINDER = 'reminder',
-}
+import { Service } from '../../services/entities/service.entity';
+import { EmergencyReport } from '../../emergency-reports/entity/emergency-report.entity';
 
 @Entity('notifications')
 export class Notification {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id?: string;
 
-  @Column({ type: 'uuid' })
-  user_id: string;
+  @Column()
+  service_id?: string;
 
-  @ManyToOne(() => User, (user) => user.notifications, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_id' })
-  user: User;
+  @ManyToOne(() => Service, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'service_id' })
+  service?: Service;
 
-  @Column({ type: 'uuid', nullable: true })
-  emergency_alert_id: string | null;
+  @Column()
+  emergency_report_id?: string;
 
-  @ManyToOne(() => EmergencyAlert, (alert) => alert.notifications, {
-    onDelete: 'SET NULL',
-    nullable: true,
-  })
-  @JoinColumn({ name: 'emergency_alert_id' })
-  emergency_alert: EmergencyAlert | null;
+  @ManyToOne(() => EmergencyReport, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'emergency_report_id' })
+  report?: EmergencyReport;
 
-  @Column({ type: 'enum', enum: NotificationType })
-  type: NotificationType;
+  @Column()
+  title?: string;
 
-  @Column({ type: 'varchar', length: 255 })
-  title: string;
+  @Column('text')
+  body?: string;
 
-  @Column({ type: 'text' })
-  body: string;
+  @Column({ default: false })
+  is_read?: boolean;
 
-  @Column({ type: 'boolean', default: false })
-  is_read: boolean;
-
-  @CreateDateColumn({ type: 'timestamptz' })
-  created_at: Date;
+  @CreateDateColumn()
+  created_at?: Date;
 }
