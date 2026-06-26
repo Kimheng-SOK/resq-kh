@@ -26,6 +26,8 @@ import '../../features/settings/settings_screen.dart';
 import 'package:app/providers/user_provider.dart';
 import '../../features/first_aid/first_aid_screen.dart';
 import '../../features/first_aid/first_aid_detail_screen.dart';
+import '../../models/incident_type_model.dart';
+import '../../features/home/widgets/emergency_report_form.dart';
 
 GoRouter createRouter(String initialRoute) {
   return GoRouter(
@@ -149,6 +151,12 @@ GoRouter createRouter(String initialRoute) {
     GoRoute(
       path: '/preferences',
       builder: (context, state) => const PreferenceScreen(),
+    ),
+    GoRoute(
+      path: '/emergency-report',
+      builder: (context, state) => EmergencyReportForm(
+        incidentType: state.extra as IncidentType,
+      ),
     ),
   ],
   );
