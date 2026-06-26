@@ -11,6 +11,9 @@ import 'package:app/services/location_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_color.dart';
+import 'widgets/emergency_radial_menu.dart';
+import 'widgets/hold_to_activate_sos.dart';
+import 'package:app/core/utils/emergency_menu_helper.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -65,10 +68,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
             const SizedBox(height: 32),
-            SOSButton(onTap: () => _showSOSDialog(context)),
+            // SOSButton(onTap: () => _showSOSDialog(context)),
+            HoldToActivateSOS(
+              onTap: () => _showSOSDialog(context),    
+              onHoldComplete: () => showEmergencyRadialMenu(context),
+            ),
             const SizedBox(height: 16),
             Text(
-              'Tap for emergency help',
+              'Tap for emergency help or hold to report an incident',
               style: TextStyle(
                 color: dimText,
                 fontSize: 13,
@@ -340,6 +347,21 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void showEmergencyRadialMenu(BuildContext context) {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.transparent,
+      pageBuilder: (ctx, _, _) => EmergencyRadialMenu(
+        onDismiss: () => Navigator.pop(ctx),
+        onSelect: (incidentType) {
+          Navigator.pop(ctx);
+          context.push('/emergency-report', extra: incidentType);
+        },
       ),
     );
   }

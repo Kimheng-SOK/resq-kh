@@ -15,9 +15,13 @@ import { UserLocationsModule } from './modules/user-locations/user-locations.mod
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { AdminsModule } from './modules/admins/admins.module';
 import { AppController } from './app.controller';
+import { IncidentTypesModule } from './modules/incident-types/incident-type.module';
+import { EmergencyReportsModule } from './modules/emergency-reports/emergency-report.module';
 
 @Module({
   imports: [
+    IncidentTypesModule,
+    EmergencyReportsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig, jwtConfig],
@@ -25,7 +29,7 @@ import { AppController } from './app.controller';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => config.get('database')!,
+       useFactory: (config: ConfigService) => config.get('database')!,
     }),
     AuthModule,
     UsersModule,
