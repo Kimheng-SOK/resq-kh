@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/theme/app_color.dart';
+import 'package:app/core/utils/emergency_menu_helper.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -54,8 +55,8 @@ class BottomNavBar extends StatelessWidget {
               ),
               _SOSNavItem(
                 isSelected: currentIndex == 2,
-                onTap: () => onTap(2),
-                onLongPress: () => _showSOSBottomSheet(context),
+                onTap: () => showEmergencyRadialMenu(context),
+                onLongPress: () => showEmergencyRadialMenu(context),
               ),
               _NavItem(
                 index: 3,
