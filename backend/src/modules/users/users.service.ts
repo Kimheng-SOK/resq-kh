@@ -30,6 +30,22 @@ export class UsersService {
     return user;
   }
 
+  async findAllPaginated(page = 1, limit = 20) {
+    const [data, total] = await this.userRepository.findAndCount({
+      order: { created_at: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
   async update(id: string, dto: UpdateUserDto) {
     const user = await this.findOne(id);
     Object.assign(user, dto);

@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -19,6 +20,7 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { AdminRole } from '../admins/entities/admin.entity';
+import { PaginationQueryDto } from '../../common/dto/pagination.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -28,6 +30,13 @@ export class UsersController {
   @Get()
   findAll() {
     return this.usersService.findAll();
+  }
+
+  @Get('paginated')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(AdminRole.SUPER_ADMIN, AdminRole.MODERATOR, AdminRole.VIEWER)
+  findAllPaginated(@Query() pagination: PaginationQueryDto) {
+    return this.usersService.findAllPaginated(pagination.page, pagination.limit);
   }
 
   @Post()

@@ -72,6 +72,27 @@ export class EmergencyAlertsService {
     return this.findOne(savedAlert.id);
   }
 
+  async findAllPaginated(page = 1, limit = 20, status?: string) {
+    const where: any = {};
+    if (status) where.status = status;
+
+    const [data, total] = await this.alertRepository.findAndCount({
+      where,
+      relations: { emergency_type: true, location: true, user: true },
+      order: { created_at: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
   async updateStatus(id: string, dto: UpdateAlertStatusDto) {
     const alert = await this.findOne(id);
     alert.status = dto.status;
