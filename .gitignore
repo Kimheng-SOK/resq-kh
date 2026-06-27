@@ -12,3 +12,7 @@ backend/.env
 # General
 .DS_Store
 *.log
+.claude
+.cursor
+.codegraph
+.md

@@ -1,0 +1,493 @@
+[
+  {
+    "id": "police_001",
+    "name": "Phnom Penh Municipal Police",
+    "type": "police",
+    "phone": "117",
+    "address": "No. 275, Preah Norodom Blvd, Daun Penh, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Emergency Response",
+      "Crime Reporting",
+      "Public Order"
+    ],
+    "lat": 11.557,
+    "lng": 104.922,
+    "distanceKm": null
+  },
+  {
+    "id": "police_002",
+    "name": "Tourist Police Headquarters",
+    "type": "police",
+    "phone": "097 778 0002",
+    "address": "No. 275, Preah Norodom Blvd, Daun Penh, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Tourist Assistance",
+      "Crime Reporting",
+      "Lost Property"
+    ],
+    "lat": 11.5568,
+    "lng": 104.9218,
+    "distanceKm": null
+  },
+  {
+    "id": "police_003",
+    "name": "Chamkar Mon District Police",
+    "type": "police",
+    "phone": "023 987 701",
+    "address": "Preah Norodom Blvd, corner of St. 294, Chamkar Mon, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Emergency Response",
+      "Crime Reporting",
+      "Patrol"
+    ],
+    "lat": 11.543,
+    "lng": 104.921,
+    "distanceKm": null
+  },
+  {
+    "id": "police_004",
+    "name": "Toul Kork District Police",
+    "type": "police",
+    "phone": "023 881 612",
+    "address": "St. 169, Toul Kork, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Emergency Response",
+      "Crime Reporting",
+      "Patrol"
+    ],
+    "lat": 11.576,
+    "lng": 104.91,
+    "distanceKm": null
+  },
+  {
+    "id": "police_005",
+    "name": "Sen Sok District Police",
+    "type": "police",
+    "phone": "012 999 999",
+    "address": "Sen Sok District, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Emergency Response",
+      "Crime Reporting",
+      "Traffic Control"
+    ],
+    "lat": 11.59,
+    "lng": 104.878,
+    "distanceKm": null
+  },
+  {
+    "id": "hospital_001",
+    "name": "Calmette Hospital",
+    "type": "hospital",
+    "phone": "023 426 948",
+    "address": "No. 3, Preah Monivong Blvd, Sangkat Sras Chok, Daun Penh, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Emergency",
+      "Surgery",
+      "ICU",
+      "Outpatient",
+      "Infectious Disease"
+    ],
+    "lat": 11.5813,
+    "lng": 104.9158,
+    "distanceKm": null
+  },
+  {
+    "id": "hospital_002",
+    "name": "Khmer-Soviet Friendship Hospital",
+    "type": "hospital",
+    "phone": "023 217 524",
+    "address": "Yothapol Khemarak Phoumin Blvd (St. 271), Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Emergency",
+      "Surgery",
+      "Maternity",
+      "Pediatrics",
+      "Outpatient"
+    ],
+    "lat": 11.553,
+    "lng": 104.905,
+    "distanceKm": null
+  },
+  {
+    "id": "hospital_003",
+    "name": "Royal Phnom Penh Hospital",
+    "type": "hospital",
+    "phone": "023 991 000",
+    "address": "No. 888, Burman Avenue (St. 993), Sangkat Phnom Penh Thmei, Sen Sok, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Emergency",
+      "Cardiology",
+      "Surgery",
+      "Pediatrics",
+      "Trauma Care"
+    ],
+    "lat": 11.588,
+    "lng": 104.892,
+    "distanceKm": null
+  },
+  {
+    "id": "hospital_004",
+    "name": "Preah Ang Duong Hospital",
+    "type": "hospital",
+    "phone": "023 218 875",
+    "address": "No. 118, Preah Norodom Blvd, corner of St. 114, Daun Penh, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Emergency",
+      "Dermatology",
+      "Outpatient",
+      "Specialist Care"
+    ],
+    "lat": 11.564,
+    "lng": 104.924,
+    "distanceKm": null
+  },
+  {
+    "id": "hospital_005",
+    "name": "Sen Sok International University Hospital",
+    "type": "hospital",
+    "phone": "098 729 307",
+    "address": "Phnom Penh Thmei, Khan Sen Sok, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Emergency",
+      "Surgery",
+      "Maternity",
+      "Pediatrics",
+      "Teaching Hospital"
+    ],
+    "lat": 11.595,
+    "lng": 104.885,
+    "distanceKm": null
+  },
+  {
+    "id": "fire_001",
+    "name": "Phnom Penh Fire Department HQ",
+    "type": "fire",
+    "phone": "118",
+    "address": "No. 58, St. 360, Sangkat Boeung Keng Kang, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Fire Suppression",
+      "Rescue",
+      "Hazmat Response"
+    ],
+    "lat": 11.549,
+    "lng": 104.918,
+    "distanceKm": null
+  },
+  {
+    "id": "fire_002",
+    "name": "Daun Penh Fire Station",
+    "type": "fire",
+    "phone": "011 997 296",
+    "address": "Daun Penh District, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Fire Suppression",
+      "Rescue",
+      "First Aid"
+    ],
+    "lat": 11.57,
+    "lng": 104.924,
+    "distanceKm": null
+  },
+  {
+    "id": "fire_003",
+    "name": "Toul Kork Fire Station",
+    "type": "fire",
+    "phone": "118",
+    "address": "Toul Kork District, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Fire Suppression",
+      "Rescue",
+      "Emergency Response"
+    ],
+    "lat": 11.578,
+    "lng": 104.908,
+    "distanceKm": null
+  },
+  {
+    "id": "fire_004",
+    "name": "Meanchey Fire Station",
+    "type": "fire",
+    "phone": "118",
+    "address": "Meanchey District, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Fire Suppression",
+      "Rescue",
+      "Emergency Response"
+    ],
+    "lat": 11.531,
+    "lng": 104.935,
+    "distanceKm": null
+  },
+  {
+    "id": "fire_005",
+    "name": "Sen Sok Fire Station",
+    "type": "fire",
+    "phone": "118",
+    "address": "Sen Sok District, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Fire Suppression",
+      "Rescue",
+      "Emergency Response"
+    ],
+    "lat": 11.589,
+    "lng": 104.876,
+    "distanceKm": null
+  },
+  {
+    "id": "ambulance_001",
+    "name": "Calmette Ambulance (S.A.M.U.)",
+    "type": "ambulance",
+    "phone": "119",
+    "address": "No. 3, Preah Monivong Blvd, Daun Penh, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Emergency Medical Transport",
+      "On-site First Aid",
+      "Critical Care"
+    ],
+    "lat": 11.5813,
+    "lng": 104.9158,
+    "distanceKm": null
+  },
+  {
+    "id": "ambulance_002",
+    "name": "Khmer-Soviet Friendship Hospital Ambulance",
+    "type": "ambulance",
+    "phone": "023 217 764",
+    "address": "Yothapol Khemarak Phoumin Blvd (St. 271), Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Emergency Medical Transport",
+      "On-site First Aid"
+    ],
+    "lat": 11.553,
+    "lng": 104.905,
+    "distanceKm": null
+  },
+  {
+    "id": "ambulance_003",
+    "name": "Preah Kossamak Hospital Ambulance",
+    "type": "ambulance",
+    "phone": "016 909 774",
+    "address": "No. 28, Yothapol Khemarak Phoumin Blvd (St. 271), Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Emergency Medical Transport",
+      "On-site First Aid"
+    ],
+    "lat": 11.556,
+    "lng": 104.907,
+    "distanceKm": null
+  },
+  {
+    "id": "ambulance_004",
+    "name": "Royal Phnom Penh Hospital Ambulance",
+    "type": "ambulance",
+    "phone": "023 991 000",
+    "address": "No. 888, Burman Avenue, Sen Sok, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Emergency Medical Transport",
+      "Advanced Life Support",
+      "Critical Care"
+    ],
+    "lat": 11.588,
+    "lng": 104.892,
+    "distanceKm": null
+  },
+  {
+    "id": "ambulance_005",
+    "name": "National Blood Transfusion Center",
+    "type": "ambulance",
+    "phone": "011 209 888",
+    "address": "Preah Norodom Blvd, corner of St. 114, Daun Penh, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Blood Supply",
+      "Emergency Transfusion",
+      "Donor Services"
+    ],
+    "lat": 11.5645,
+    "lng": 104.9235,
+    "distanceKm": null
+  },
+  {
+    "id": "helpline_001",
+    "name": "Child Helpline Cambodia (CHC)",
+    "type": "helpline",
+    "phone": "1280",
+    "address": "Phnom Penh, Cambodia",
+    "hours": "24/7",
+    "services": [
+      "Child Protection",
+      "Counseling",
+      "Abuse Reporting",
+      "Referral Services"
+    ],
+    "lat": 11.5564,
+    "lng": 104.9282,
+    "distanceKm": null
+  },
+  {
+    "id": "helpline_002",
+    "name": "Child Abuse & Exploitation Police Hotline",
+    "type": "helpline",
+    "phone": "023 720 555",
+    "address": "Ministry of Interior, No. 275, Preah Norodom Blvd, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Child Abuse Reporting",
+      "Exploitation Cases",
+      "Emergency Intervention"
+    ],
+    "lat": 11.557,
+    "lng": 104.922,
+    "distanceKm": null
+  },
+  {
+    "id": "helpline_003",
+    "name": "Human Trafficking Hotline",
+    "type": "helpline",
+    "phone": "1288",
+    "address": "Phnom Penh, Cambodia",
+    "hours": "24/7",
+    "services": [
+      "Trafficking Reporting",
+      "Victim Support",
+      "Rescue Coordination"
+    ],
+    "lat": 11.5564,
+    "lng": 104.9282,
+    "distanceKm": null
+  },
+  {
+    "id": "helpline_004",
+    "name": "Legal Support for Children and Women (LSCW)",
+    "type": "helpline",
+    "phone": "023 220 626",
+    "address": "Ou Thum Village, Phsar Daeum Thkov, Chamkar Mon, Phnom Penh",
+    "hours": "Mon–Fri 08:00–17:00",
+    "services": [
+      "Legal Aid",
+      "Women's Rights",
+      "Domestic Violence Support",
+      "Child Protection"
+    ],
+    "lat": 11.539,
+    "lng": 104.92,
+    "distanceKm": null
+  },
+  {
+    "id": "helpline_005",
+    "name": "Ministry of Health Hotline",
+    "type": "helpline",
+    "phone": "115",
+    "address": "No. 151-153, Preah Norodom Blvd, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Health Information",
+      "Disease Reporting",
+      "Medical Referral"
+    ],
+    "lat": 11.556,
+    "lng": 104.921,
+    "distanceKm": null
+  },
+  {
+    "id": "disaster_001",
+    "name": "National Committee for Disaster Management (NCDM)",
+    "type": "disaster",
+    "phone": "1294",
+    "address": "New Building, St. 516, Tuol Sangke Commune, Russey Keo, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Flood Response",
+      "Disaster Coordination",
+      "Search & Rescue",
+      "Relief Distribution"
+    ],
+    "lat": 11.605,
+    "lng": 104.91,
+    "distanceKm": null
+  },
+  {
+    "id": "disaster_002",
+    "name": "Phnom Penh Capital Hall Emergency",
+    "type": "disaster",
+    "phone": "023 724 046",
+    "address": "No. 45, Preah Moha Ksat Triani Kossomak (St. 106), Daun Penh, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "City Emergency Coordination",
+      "Flood Alerts",
+      "Evacuation Orders"
+    ],
+    "lat": 11.571,
+    "lng": 104.92,
+    "distanceKm": null
+  },
+  {
+    "id": "disaster_003",
+    "name": "Phnom Penh Gendarmerie",
+    "type": "disaster",
+    "phone": "1291",
+    "address": "Phnom Penh, Cambodia",
+    "hours": "24/7",
+    "services": [
+      "Disaster Security",
+      "Crowd Control",
+      "Emergency Patrol"
+    ],
+    "lat": 11.562,
+    "lng": 104.915,
+    "distanceKm": null
+  },
+  {
+    "id": "disaster_004",
+    "name": "Electricite Du Cambodge (EDC) Emergency",
+    "type": "disaster",
+    "phone": "1298",
+    "address": "No. 19, St. 19, Sangkat Chey Chumnas, Daun Penh, Phnom Penh",
+    "hours": "24/7",
+    "services": [
+      "Power Outage Response",
+      "Electrical Hazard",
+      "Infrastructure Emergency"
+    ],
+    "lat": 11.568,
+    "lng": 104.927,
+    "distanceKm": null
+  },
+  {
+    "id": "disaster_005",
+    "name": "Cambodia Red Cross – Phnom Penh",
+    "type": "disaster",
+    "phone": "023 723 871",
+    "address": "Ang Yukanthor (St. 19), Wat Phnom, Daun Penh, Phnom Penh",
+    "hours": "Mon–Sat 07:30–17:00",
+    "services": [
+      "Disaster Relief",
+      "First Aid Training",
+      "Blood Donation",
+      "Emergency Shelter"
+    ],
+    "lat": 11.576,
+    "lng": 104.924,
+    "distanceKm": null
+  }
+]

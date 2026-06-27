@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:app/core/theme/app_color.dart';
+import 'package:app/core/l10n/app_localizations.dart';
 
 class HeaderNavBar extends StatelessWidget implements PreferredSizeWidget {
   final String userName;
@@ -7,20 +9,25 @@ class HeaderNavBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onProfileTap;
 
   const HeaderNavBar({
-    Key? key,
+    super.key,
     required this.userName,
     this.hasNotification = false,
     this.onNotificationTap,
     this.onProfileTap,
-  }) : super(key: key);
+  });
 
   @override
-  Size get preferredSize => const Size.fromHeight(80);
+  Size get preferredSize => const Size.fromHeight(50);
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final dimColor = isDark ? Colors.white70 : AppColors.textSecondary;
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
-      color: const Color(0xFFF2F2F2),
+      color: Theme.of(context).scaffoldBackgroundColor,
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top + 12,
         left: 20,
@@ -36,10 +43,10 @@ class HeaderNavBar extends StatelessWidget implements PreferredSizeWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'Hey!',
+                Text(
+                  l10n.heyGreeting,
                   style: TextStyle(
-                    color: Color(0xFF555555),
+                    color: dimColor,
                     fontSize: 15,
                     fontWeight: FontWeight.w400,
                   ),
@@ -47,8 +54,8 @@ class HeaderNavBar extends StatelessWidget implements PreferredSizeWidget {
                 const SizedBox(height: 2),
                 Text(
                   userName.toUpperCase(),
-                  style: const TextStyle(
-                    color: Color(0xFF1A1A1A),
+                  style: TextStyle(
+                    color: dimColor,
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.5,

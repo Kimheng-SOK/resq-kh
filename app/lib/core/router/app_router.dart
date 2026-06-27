@@ -1,67 +1,191 @@
+import 'package:app/auth/screens/complete_profile_screen.dart';
+import 'package:app/auth/screens/edit_profile_screen.dart';
+import 'package:app/auth/screens/location_permission_screen.dart';
+import 'package:app/auth/screens/otp_screen.dart';
+import 'package:app/auth/screens/register_screen.dart';
+import 'package:app/auth/screens/splash_screen.dart';
+import 'package:app/features/contacts/ambulance_screen.dart';
+import 'package:app/features/contacts/contact_screen.dart';
+import 'package:app/features/contacts/fire_station_screen.dart';
+import 'package:app/features/contacts/general_contacts_screen.dart';
+import 'package:app/features/contacts/hospital_screen.dart';
+import 'package:app/features/contacts/nearby_places_screen.dart';
+import 'package:app/features/contacts/police_screen.dart';
+import 'package:app/features/map/map_detail_screen.dart';
+import 'package:app/features/map/map_screen.dart';
+import 'package:app/features/notifications/notification_screen.dart';
+import 'package:app/features/preference/preference_screen.dart';
+import 'package:app/features/settings/privacy_policy_screen.dart';
+import 'package:app/models/emergency_contact.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/home/home_screen.dart';
 import '../../widgets/bottomNav.dart';
 import '../../widgets/headerNav.dart';
+import '../../features/settings/settings_screen.dart';
+import 'package:app/providers/user_provider.dart';
+import 'package:app/core/l10n/app_localizations.dart';
+import '../../features/first_aid/first_aid_screen.dart';
+import '../../features/first_aid/first_aid_detail_screen.dart';
+import '../../models/incident_type_model.dart';
+import '../../features/home/widgets/emergency_report_form.dart';
 
-final router = GoRouter(
-  initialLocation: '/',
-  routes: [
-    ShellRoute(
-      builder: (context, state, child) {
-        return AppShell(currentLocation: state.matchedLocation, child: child);
-      },
-      routes: [
-        GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
-        GoRoute(
-          path: '/map',
-          builder: (context, state) => const _RouteBody(title: 'Map'),
-        ),
-        GoRoute(
-          path: '/sos',
-          builder: (context, state) => const _RouteBody(title: 'SOS'),
-        ),
-        GoRoute(
-          path: '/contacts',
-          builder: (context, state) => const _RouteBody(title: 'Contacts'),
-        ),
-        GoRoute(
-          path: '/first-aid',
-          builder: (context, state) => const _RouteBody(title: 'First Aid'),
-        ),
-        GoRoute(
-          path: '/profile',
-          builder: (context, state) => const _RouteBody(title: 'Profile'),
-        ),
-        GoRoute(
-          path: '/notifications',
-          builder: (context, state) => const _RouteBody(title: 'Notifications'),
-        ),
-      ],
-    ),
-  ],
-);
+GoRouter createRouter(String initialRoute) {
+  return GoRouter(
+    initialLocation: initialRoute,
+    routes: [
+      GoRoute(
+        path: '/splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
 
-class AppShell extends StatelessWidget {
+      GoRoute(
+        path: '/register',
+        builder: (context, state) => const RegisterScreen(),
+      ),
+
+      GoRoute(
+        path: '/otp',
+        builder: (context, state) {
+          final data = state.extra as Map<String, dynamic>;
+
+          return OtpScreen(
+            email: data['email'] as String?,
+            phoneNumber: data['phone_number'] as String,
+          );
+        },
+      ),
+
+      GoRoute(
+        path: '/location-permission',
+        builder: (context, state) => const LocationPermissionScreen(),
+      ),
+      GoRoute(
+        path: '/complete-profile',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return CompleteProfileScreen(
+            editing: extra?['editing'] as bool? ?? false,
+          );
+        },
+      ),
+
+      ShellRoute(
+        builder: (context, state, child) {
+          return AppShell(currentLocation: state.matchedLocation, child: child);
+        },
+        routes: [
+          GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+
+          GoRoute(
+            path: '/map',
+            builder: (context, state) => const MapScreen(),
+            routes: [
+              GoRoute(
+                path: 'detail',
+                builder: (context, state) {
+                  final contact = state.extra as EmergencyContact;
+                  return MapDetailScreen(contact: contact);
+                },
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/sos',
+            builder: (context, state) {
+              final l10n = AppLocalizations.of(context)!;
+              return _RouteBody(title: l10n.navSOS);
+            },
+          ),
+          GoRoute(
+            path: '/contacts',
+            builder: (context, state) => const ContactsScreen(),
+            routes: [
+              GoRoute(
+                path: '/general',
+                builder: (context, state) => const GeneralContactsScreen(),
+              ),
+              GoRoute(
+                path: '/police',
+                builder: (context, state) => const PoliceScreen(),
+              ),
+              GoRoute(
+                path: '/ambulance',
+                builder: (context, state) => const AmbulanceScreen(),
+              ),
+              GoRoute(
+                path: '/hospital',
+                builder: (context, state) => const HospitalScreen(),
+              ),
+              GoRoute(
+                path: '/fire',
+                builder: (context, state) => const FireStationScreen(),
+              ),
+              GoRoute(
+                path: '/nearby',
+                builder: (context, state) => const NearbyPlacesScreen(),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/first-aid',
+            builder: (context, state) => const FirstAidScreen(),
+          ),
+          GoRoute(
+            path: '/first-aid/:conditionId',
+            builder: (context, state) => FirstAidDetailScreen(
+              conditionId: state.pathParameters['conditionId']!,
+            ),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/profile',
+        builder: (context, state) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationScreen(),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/preferences',
+        builder: (context, state) => const PreferenceScreen(),
+      ),
+      GoRoute(
+        path: '/privacy-policy',
+        builder: (context, state) => const PrivacyPolicyScreen(),
+      ),
+      GoRoute(
+        path: '/emergency-report',
+        builder: (context, state) =>
+            EmergencyReportForm(incidentType: state.extra as IncidentType),
+      ),
+    ],
+  );
+}
+
+class AppShell extends ConsumerStatefulWidget {
   final String currentLocation;
   final Widget child;
 
-  const AppShell({Key? key, required this.currentLocation, required this.child})
-    : super(key: key);
+  const AppShell({
+    super.key,
+    required this.currentLocation,
+    required this.child,
+  });
 
   int _currentIndexForLocation(String location) {
-    switch (location) {
-      case '/map':
-        return 1;
-      case '/sos':
-        return 2;
-      case '/contacts':
-        return 3;
-      case '/first-aid':
-        return 4;
-      default:
-        return 0;
-    }
+    if (location.startsWith('/contacts')) return 3;
+    if (location.startsWith('/map')) return 1;
+    if (location.startsWith('/sos')) return 2;
+    if (location.startsWith('/first-aid')) return 4;
+
+    return 0;
   }
 
   String _locationForIndex(int index) {
@@ -80,21 +204,58 @@ class AppShell extends StatelessWidget {
   }
 
   @override
+  ConsumerState<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends ConsumerState<AppShell> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch the user profile for the header display + offline caching.
+    // No redirect here — the splash screen handles the initial routing.
+    ref.read(userProvider.notifier).fetchProfile();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final userState = ref.watch(userProvider);
+    final l10n = AppLocalizations.of(context)!;
+
+    // If the token became invalid (401), redirect to register
+    ref.listen(userProvider.select((s) => s.needsReAuth), (_, needsReAuth) {
+      if (needsReAuth == true) {
+        context.go('/register');
+      }
+    });
+
+    // Extract a display name from the profile safely
+    String displayName = l10n.guestLabel;
+    final user = userState.user;
+    if (user != null && user.fullName.isNotEmpty) {
+      displayName = user.fullName;
+    }
+
+    final isMapRoute = widget.currentLocation.startsWith('/map');
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F2),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
-          HeaderNavBar(
-            userName: 'RESQ',
-            hasNotification: true,
-            onNotificationTap: () => context.go('/notifications'),
-            onProfileTap: () => context.go('/profile'),
-          ),
-          Expanded(child: child),
+          // Hide the standard header for map routes — the MapScreen
+          // provides its own transparent gradient overlay header.
+          if (!isMapRoute)
+            HeaderNavBar(
+              userName: displayName,
+              hasNotification: true,
+              onNotificationTap: () => context.push('/notifications'),
+              onProfileTap: () => context.push('/settings'),
+            ),
+          Expanded(child: widget.child),
           BottomNavBar(
-            currentIndex: _currentIndexForLocation(currentLocation),
-            onTap: (index) => context.go(_locationForIndex(index)),
+            currentIndex: widget._currentIndexForLocation(
+              widget.currentLocation,
+            ),
+            onTap: (index) => context.go(widget._locationForIndex(index)),
           ),
         ],
       ),
