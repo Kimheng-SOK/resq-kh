@@ -6,18 +6,24 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { getUser } from '@/lib/api/users';
 import { getContacts } from '@/lib/api/contacts';
-import { getAlerts } from '@/lib/api/emergency-alerts';
+import { getReportsByUser } from '@/lib/api/emergency-reports';
 import { getUserLocations } from '@/lib/api/user-locations';
 
 export const dynamic = 'force-dynamic';
 
+const REPORT_STATUS_STYLES: Record<string, string> = {
+  pending: 'bg-amber-100 text-amber-800 border-amber-200',
+  dispatched: 'bg-blue-100 text-blue-800 border-blue-200',
+  resolved: 'bg-green-100 text-green-800 border-green-200',
+};
+
 export default async function UserDetailPage({
-  params
+  params,
 }: {
   params: Promise<{ id: string }>;
 }) {
@@ -30,10 +36,10 @@ export default async function UserDetailPage({
     notFound();
   }
 
-  const [contacts, alerts, locations] = await Promise.all([
+  const [contacts, reports, locations] = await Promise.all([
     getContacts(id).catch(() => []),
-    getAlerts({ userId: id }).catch(() => []),
-    getUserLocations(id).catch(() => [])
+    getReportsByUser(id).catch(() => []),
+    getUserLocations(id).catch(() => []),
   ]);
 
   return (
@@ -53,19 +59,27 @@ export default async function UserDetailPage({
             <p>{user.phone_number || '—'}</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-muted-foreground">Blood Group</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              Blood Group
+            </p>
             <p>{user.blood_group || '—'}</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-muted-foreground">Allergies</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              Allergies
+            </p>
             <p>{user.allergies || '—'}</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-muted-foreground">Medical Conditions</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              Medical Conditions
+            </p>
             <p>{user.medical_conditions || '—'}</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-muted-foreground">Language</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              Language
+            </p>
             <p>{user.preferred_language?.toUpperCase() || 'EN'}</p>
           </div>
         </CardContent>
@@ -85,7 +99,9 @@ export default async function UserDetailPage({
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Phone</TableHead>
-                  <TableHead className="hidden md:table-cell">Relationship</TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    Relationship
+                  </TableHead>
                   <TableHead className="hidden md:table-cell">Order</TableHead>
                 </TableRow>
               </TableHeader>
@@ -108,32 +124,47 @@ export default async function UserDetailPage({
         </CardContent>
       </Card>
 
-      {/* Recent Alerts */}
+      {/* Emergency Reports */}
       <Card>
         <CardHeader>
-          <CardTitle>Emergency Alerts ({alerts.length})</CardTitle>
+          <CardTitle>Emergency Reports ({reports.length})</CardTitle>
         </CardHeader>
         <CardContent>
-          {alerts.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No alerts.</p>
+          {reports.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No reports submitted.</p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Type</TableHead>
+                  <TableHead>Incident Type</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    Description
+                  </TableHead>
                   <TableHead className="hidden md:table-cell">Created</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {alerts.slice(0, 10).map((a) => (
-                  <TableRow key={a.id}>
-                    <TableCell>{a.emergency_type?.label || 'N/A'}</TableCell>
+                {reports.map((r) => (
+                  <TableRow key={r.id}>
                     <TableCell>
-                      <Badge variant="outline">{a.status}</Badge>
+                      <Badge variant="outline">
+                        {r.incidentType?.label || 'N/A'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className={REPORT_STATUS_STYLES[r.status] || ''}
+                      >
+                        {r.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell max-w-64 truncate">
+                      {r.description || '—'}
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
-                      {new Date(a.created_at).toLocaleString()}
+                      {new Date(r.created_at).toLocaleString()}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -150,15 +181,21 @@ export default async function UserDetailPage({
         </CardHeader>
         <CardContent>
           {locations.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No location data.</p>
+            <p className="text-sm text-muted-foreground">
+              No location data.
+            </p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Latitude</TableHead>
                   <TableHead>Longitude</TableHead>
-                  <TableHead className="hidden md:table-cell">Accuracy</TableHead>
-                  <TableHead className="hidden md:table-cell">Captured At</TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    Accuracy
+                  </TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    Captured At
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -167,7 +204,9 @@ export default async function UserDetailPage({
                     <TableCell>{Number(loc.latitude).toFixed(6)}</TableCell>
                     <TableCell>{Number(loc.longitude).toFixed(6)}</TableCell>
                     <TableCell className="hidden md:table-cell">
-                      {loc.accuracy ? `${Number(loc.accuracy).toFixed(1)}m` : '—'}
+                      {loc.accuracy
+                        ? `${Number(loc.accuracy).toFixed(1)}m`
+                        : '—'}
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
                       {new Date(loc.captured_at).toLocaleString()}
