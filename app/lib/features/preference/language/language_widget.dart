@@ -1,6 +1,7 @@
 import 'package:app/features/preference/language/card_language.dart';
 import 'package:flutter/material.dart';
 import 'package:app/core/utils/country_code.dart';
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:app/features/preference/language/diver_widget.dart';
 
 class LanguageCard extends StatelessWidget {
@@ -19,6 +20,7 @@ class LanguageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       margin: EdgeInsets.zero,
       child: Padding(
@@ -34,7 +36,7 @@ class LanguageCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'App Language',
+                      l10n.appLanguage,
                       style: TextStyle(
                         color: onSurface,
                         fontSize: 15,

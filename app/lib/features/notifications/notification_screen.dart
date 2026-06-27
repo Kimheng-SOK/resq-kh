@@ -1,6 +1,7 @@
 import 'package:app/models/emergency_report_model.dart';
 import 'package:app/services/emergency_report_service.dart';
 import 'package:flutter/material.dart';
+import 'package:app/core/l10n/app_localizations.dart';
 
 import 'widgets/notification_card.dart';
 
@@ -28,8 +29,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text("Notifications"), centerTitle: true),
+      appBar: AppBar(title: Text(l10n.notifications), centerTitle: true),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: FutureBuilder<List<EmergencyReport>>(
@@ -46,10 +48,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
             final reports = snapshot.data ?? [];
 
             if (reports.isEmpty) {
-              return const Center(
+              return Center(
                 child: Text(
-                  "No notifications yet.",
-                  style: TextStyle(fontSize: 18),
+                  l10n.noNotificationsYet,
+                  style: const TextStyle(fontSize: 18),
                 ),
               );
             }

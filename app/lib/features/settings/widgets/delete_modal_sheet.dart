@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app/providers/user_provider.dart';
@@ -56,9 +57,10 @@ class _DeleteAccountSheetState extends ConsumerState<_DeleteAccountSheet> {
     if (success) {
       Navigator.of(context).pop(true);
     } else {
+      final l10n = AppLocalizations.of(context)!;
       final providerError = ref.read(userProvider).error;
       setState(() {
-        _error = providerError ?? 'Failed to delete account. Please try again.';
+        _error = providerError ?? l10n.failedToDeleteAccount;
         _isLoading = false;
       });
     }
@@ -66,6 +68,7 @@ class _DeleteAccountSheetState extends ConsumerState<_DeleteAccountSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Padding(
@@ -92,7 +95,7 @@ class _DeleteAccountSheetState extends ConsumerState<_DeleteAccountSheet> {
             child: Column(
               children: [
                 Text(
-                  'Are you sure you want to delete your account?',
+                  l10n.deleteAccountConfirm,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: theme.colorScheme.onSurface,
@@ -104,7 +107,7 @@ class _DeleteAccountSheetState extends ConsumerState<_DeleteAccountSheet> {
                 const SizedBox(height: 8),
 
                 Text(
-                  'This action cannot be undone.',
+                  l10n.deleteAccountWarning,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: theme.colorScheme.onSurface.withAlpha(150),
@@ -118,7 +121,7 @@ class _DeleteAccountSheetState extends ConsumerState<_DeleteAccountSheet> {
                   controller: _controller,
                   onChanged: (_) => setState(() => _error = null),
                   decoration: InputDecoration(
-                    labelText: 'Type "${widget.confirmMessage}" to confirm',
+                    labelText: l10n.typeToConfirm(widget.confirmMessage),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -152,8 +155,8 @@ class _DeleteAccountSheetState extends ConsumerState<_DeleteAccountSheet> {
                               color: Colors.white,
                             ),
                           )
-                        : const Text(
-                            'Delete Account',
+                        : Text(
+                            l10n.deleteAccount,
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,

@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:app/providers/radius_provider.dart';
 import 'package:app/services/location_preferences_service.dart';
 import 'package:app/services/refresh_service.dart';
@@ -40,26 +41,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _showRadiusDialog(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     double selectedRadius = await LocationPreferencesService.getRadius();
 
     showDialog(
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: const Text('Nearby Search Radius'),
+          title: Text(l10n.nearbySearchRadius),
           content: StatefulBuilder(
             builder: (context, setState) {
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('${selectedRadius.toStringAsFixed(1)} km'),
+                  Text(l10n.withinKm(selectedRadius.toInt())),
 
                   Slider(
                     value: selectedRadius,
                     min: 0.5,
                     max: 20,
                     divisions: 39,
-                    label: '${selectedRadius.toStringAsFixed(1)} km',
+                    label: l10n.withinKm(selectedRadius.toInt()),
                     onChanged: (value) {
                       setState(() {
                         selectedRadius = value;
@@ -73,7 +75,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -83,7 +85,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
                 Navigator.pop(ctx);
               },
-              child: const Text('Save'),
+              child: Text(l10n.save),
             ),
           ],
         );
@@ -105,6 +107,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final dimColor = isDark ? Colors.white54 : AppColors.textSecondary;
@@ -112,12 +115,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final List<Map<String, dynamic>> profileItems = [
       {
         'icon': Icons.person_outline_rounded,
-        'label': 'Edit Profile',
+        'label': l10n.editProfileLabel,
         'route': '/profile',
       },
       {
         'icon': Icons.settings_outlined,
-        'label': 'Preferences',
+        'label': l10n.preferences,
         'route': '/preferences',
       },
     ];
@@ -125,7 +128,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(l10n.settings),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_rounded, size: 20),
           onPressed: () => context.pop(),
@@ -139,7 +142,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── Profile ──────────────────────────────────────────
-              SectionHeader(title: 'Profile', color: dimColor),
+              SectionHeader(title: l10n.profile, color: dimColor),
               const SizedBox(height: 6),
               Card(
                 margin: EdgeInsets.zero,
@@ -179,7 +182,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               const SizedBox(height: 24),
 
               // ── Notifications ────────────────────────────────────
-              SectionHeader(title: 'Notifications', color: dimColor),
+              SectionHeader(title: l10n.notifications, color: dimColor),
               const SizedBox(height: 6),
               Card(
                 margin: EdgeInsets.zero,
@@ -187,7 +190,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   children: [
                     SettingsTile(
                       icon: Icons.notifications_outlined,
-                      label: 'Push Notifications',
+                      label: l10n.pushNotifications,
                       trailing: Switch(
                         value: _pushNotifications,
                         activeTrackColor: AppColors.red,
@@ -198,7 +201,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     const DividerWidget(),
                     SettingsTile(
                       icon: Icons.email_outlined,
-                      label: 'Email Alerts',
+                      label: l10n.emailAlerts,
                       trailing: Switch(
                         value: _emailAlerts,
                         activeTrackColor: AppColors.red,
@@ -212,7 +215,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               const SizedBox(height: 24),
 
               // ── Account ──────────────────────────────────────────
-              SectionHeader(title: 'Account', color: dimColor),
+              SectionHeader(title: l10n.account, color: dimColor),
               const SizedBox(height: 6),
               Card(
                 margin: EdgeInsets.zero,
@@ -220,7 +223,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   children: [
                     SettingsTile(
                       icon: Icons.medical_information_outlined,
-                      label: 'Medical Info',
+                      label: l10n.medicalInfo,
                       onTap: () => context.push(
                         '/complete-profile',
                         extra: {'editing': true},
@@ -235,15 +238,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     const DividerWidget(),
                     SettingsTile(
                       icon: Icons.location_searching_rounded,
-                      label: 'Nearby Search Radius',
+                      label: l10n.nearbySearchRadius,
                       onTap: () => _showRadiusDialog(context),
                     ),
                     const DividerWidget(),
                     SettingsTile(
                       icon: Icons.location_on_outlined,
-                      label: 'Location Permission',
+                      label: l10n.locationPermission,
                       onTap: () async {
-                        await openAppSettings();
+                        try {
+                          await openAppSettings();
+                        } catch (_) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(l10n.openAppSettingsNotSupported),
+                              ),
+                            );
+                          }
+                        }
                       },
                     ),
                   ],
@@ -253,7 +266,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               const SizedBox(height: 24),
 
               // ── About ────────────────────────────────────────────
-              SectionHeader(title: 'About', color: dimColor),
+              SectionHeader(title: l10n.about, color: dimColor),
               const SizedBox(height: 6),
               Card(
                 margin: EdgeInsets.zero,
@@ -261,7 +274,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   children: [
                     SettingsTile(
                       icon: Icons.info_outline_rounded,
-                      label: 'Version',
+                      label: l10n.version,
                       trailing: Text(
                         '1.0.0',
                         style: TextStyle(
@@ -274,7 +287,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     const DividerWidget(),
                     SettingsTile(
                       icon: Icons.privacy_tip_outlined,
-                      label: 'Privacy Policy',
+                      label: l10n.privacyPolicy,
                       onTap: () {
                         context.push('/privacy-policy');
                       },
@@ -282,7 +295,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     const DividerWidget(),
                     SettingsTile(
                       icon: Icons.article_outlined,
-                      label: 'Terms of Service',
+                      label: l10n.termsOfService,
                       onTap: () {},
                     ),
                   ],
@@ -313,7 +326,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ),
                         const SizedBox(width: 10),
                         Text(
-                          'Delete Account',
+                          l10n.deleteAccount,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 15,

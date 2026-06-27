@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:app/core/theme/app_color.dart';
+import 'package:app/core/l10n/app_localizations.dart';
 
 class HeaderNavBar extends StatelessWidget implements PreferredSizeWidget {
   final String userName;
@@ -23,6 +24,7 @@ class HeaderNavBar extends StatelessWidget implements PreferredSizeWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final dimColor = isDark ? Colors.white70 : AppColors.textSecondary;
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
@@ -42,7 +44,7 @@ class HeaderNavBar extends StatelessWidget implements PreferredSizeWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Hey!',
+                  l10n.heyGreeting,
                   style: TextStyle(
                     color: dimColor,
                     fontSize: 15,

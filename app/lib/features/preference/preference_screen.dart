@@ -6,8 +6,9 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:app/core/theme/app_color.dart';
 import 'package:app/core/theme/theme_controller.dart';
+import 'package:app/core/theme/locale_controller.dart';
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:app/services/refresh_service.dart';
-import 'package:app/services/storage_service.dart';
 import 'package:app/features/preference/theme/theme_widget.dart';
 
 class PreferenceScreen extends StatefulWidget {
@@ -18,36 +19,30 @@ class PreferenceScreen extends StatefulWidget {
 }
 
 class _PreferenceScreenState extends State<PreferenceScreen> {
-  String _language = 'en';
-
   @override
   void initState() {
     super.initState();
-    _loadLanguage();
   }
 
   Future<void> _setLanguage(String lang) async {
-    setState(() => _language = lang);
-    await StorageService.setLanguage(lang);
-  }
-
-  Future<void> _loadLanguage() async {
-    final lang = await StorageService.getLanguage();
-    if (mounted) setState(() => _language = lang);
+    final localeController = context.read<LocaleController>();
+    await localeController.setLocale(LocaleController.localeFromCode(lang));
   }
 
   @override
   Widget build(BuildContext context) {
     final themeController = context.watch<ThemeController>();
+    final localeController = context.watch<LocaleController>();
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final onSurface = theme.colorScheme.onSurface;
     final dimColor = isDark ? Colors.white54 : AppColors.textSecondary;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Preferences'),
+        title: Text(l10n.preferences),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_rounded, size: 20),
           onPressed: () => context.pop(),
@@ -56,7 +51,6 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
       body: RefreshDragPopWidget(
         onRefresh: () async {
           await RefreshService.refreshPreferences(context);
-          await _loadLanguage();
         },
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
@@ -78,7 +72,7 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                 // ── Language ────────────────────────────────────────
                 const SizedBox(height: 6),
                 LanguageCard(
-                  language: _language,
+                  language: localeController.locale.languageCode,
                   onSurface: onSurface,
                   dimColor: dimColor,
                   onLanguageChanged: _setLanguage,

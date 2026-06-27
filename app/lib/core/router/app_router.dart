@@ -23,9 +23,9 @@ import 'package:go_router/go_router.dart';
 import '../../features/home/home_screen.dart';
 import '../../widgets/bottomNav.dart';
 import '../../widgets/headerNav.dart';
-import '../../widgets/placeholder_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import 'package:app/providers/user_provider.dart';
+import 'package:app/core/l10n/app_localizations.dart';
 import '../../features/first_aid/first_aid_screen.dart';
 import '../../features/first_aid/first_aid_detail_screen.dart';
 import '../../models/incident_type_model.dart';
@@ -216,6 +216,7 @@ class _AppShellState extends ConsumerState<AppShell> {
   @override
   Widget build(BuildContext context) {
     final userState = ref.watch(userProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     // If the token became invalid (401), redirect to register
     ref.listen(userProvider.select((s) => s.needsReAuth), (_, needsReAuth) {
@@ -225,7 +226,7 @@ class _AppShellState extends ConsumerState<AppShell> {
     });
 
     // Extract a display name from the profile safely
-    String displayName = 'GUEST';
+    String displayName = l10n.guestLabel;
     final user = userState.user;
     if (user != null && user.fullName.isNotEmpty) {
       displayName = user.fullName;

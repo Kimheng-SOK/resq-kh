@@ -2,6 +2,7 @@
 import 'package:app/features/preference/widgets/animated_option_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:app/core/l10n/app_localizations.dart';
 
 class ThemeCard extends StatelessWidget {
   final ThemeMode themeMode;
@@ -17,16 +18,17 @@ class ThemeCard extends StatelessWidget {
     required this.onThemeChanged,
   });
 
-  String _label(ThemeMode mode) {
+  String _label(ThemeMode mode, AppLocalizations l10n) {
     return switch (mode) {
-      ThemeMode.system => 'Auto',
-      ThemeMode.light => 'Light',
-      ThemeMode.dark => 'Dark',
+      ThemeMode.system => l10n.themeAuto,
+      ThemeMode.light => l10n.themeLight,
+      ThemeMode.dark => l10n.themeDark,
     };
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       margin: EdgeInsets.zero,
       child: Padding(
@@ -42,7 +44,7 @@ class ThemeCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Theme Mode',
+                      l10n.themeMode,
                       style: TextStyle(
                         color: onSurface,
                         fontSize: 15,
@@ -50,7 +52,7 @@ class ThemeCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      _label(themeMode),
+                      _label(themeMode, l10n),
                       style: TextStyle(
                         color: dimColor,
                         fontSize: 13,
@@ -74,7 +76,7 @@ class ThemeCard extends StatelessWidget {
                         value: ThemeMode.system,
                         selectedValue: themeMode,
                         icon: Icons.phone_android_rounded,
-                        label: 'Auto',
+                        label: l10n.themeAuto,
                         onTap: () => onThemeChanged(ThemeMode.system),
                       ),
                     ),
@@ -91,7 +93,7 @@ class ThemeCard extends StatelessWidget {
                         value: ThemeMode.light,
                         selectedValue: themeMode,
                         icon: Icons.light_mode_rounded,
-                        label: 'Light',
+                        label: l10n.themeLight,
                         onTap: () => onThemeChanged(ThemeMode.light),
                       ),
                     ),
@@ -108,7 +110,7 @@ class ThemeCard extends StatelessWidget {
                         value: ThemeMode.dark,
                         selectedValue: themeMode,
                         icon: Icons.dark_mode_rounded,
-                        label: 'Dark',
+                        label: l10n.themeDark,
                         onTap: () => onThemeChanged(ThemeMode.dark),
                       ),
                     ),

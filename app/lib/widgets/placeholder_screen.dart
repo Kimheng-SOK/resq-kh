@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../core/theme/app_color.dart';
 import 'package:go_router/go_router.dart';
 
 class PlaceholderScreen extends StatelessWidget {
@@ -30,13 +29,8 @@ class PlaceholderScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              '$title Screen',
+              title,
               style: theme.textTheme.bodyMedium?.copyWith(fontSize: 16),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'Coming Soon',
-              style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
             ),
           ],
         ),

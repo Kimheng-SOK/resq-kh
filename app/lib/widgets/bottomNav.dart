@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../core/theme/app_color.dart';
 import 'package:app/core/utils/emergency_menu_helper.dart';
+import 'package:app/core/l10n/app_localizations.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -18,6 +19,7 @@ class BottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       height: 100,
@@ -41,7 +43,7 @@ class BottomNavBar extends StatelessWidget {
                 index: 0,
                 icon: Icons.home_rounded,
                 activeIcon: Icons.home_rounded,
-                label: 'Home',
+                label: l10n.navHome,
                 isSelected: currentIndex == 0,
                 onTap: () => onTap(0),
               ),
@@ -49,7 +51,7 @@ class BottomNavBar extends StatelessWidget {
                 index: 1,
                 icon: Icons.map_rounded,
                 activeIcon: Icons.map_rounded,
-                label: 'Map',
+                label: l10n.navMap,
                 isSelected: currentIndex == 1,
                 onTap: () => onTap(1),
               ),
@@ -62,7 +64,7 @@ class BottomNavBar extends StatelessWidget {
                 index: 3,
                 icon: Icons.people_rounded,
                 activeIcon: Icons.people_rounded,
-                label: 'Contacts',
+                label: l10n.navContacts,
                 isSelected: currentIndex == 3,
                 onTap: () => onTap(3),
               ),
@@ -70,7 +72,7 @@ class BottomNavBar extends StatelessWidget {
                 index: 4,
                 icon: Icons.medical_services_rounded,
                 activeIcon: Icons.medical_services_rounded,
-                label: 'First Aid',
+                label: l10n.navFirstAid,
                 isSelected: currentIndex == 4,
                 onTap: () => onTap(4),
               ),
@@ -247,13 +249,11 @@ class _SOSNavItem extends StatelessWidget {
 
 class _EmergencyType {
   final String id;
-  final String label;
   final IconData icon;
   final Color color;
 
   const _EmergencyType({
     required this.id,
-    required this.label,
     required this.icon,
     required this.color,
   });
@@ -262,29 +262,35 @@ class _EmergencyType {
 const List<_EmergencyType> _emergencyTypes = [
   _EmergencyType(
     id: 'police',
-    label: 'Police',
     icon: Icons.local_police_rounded,
     color: AppColors.police,
   ),
   _EmergencyType(
     id: 'hospital',
-    label: 'Hospital',
     icon: Icons.local_hospital_rounded,
     color: AppColors.hospital,
   ),
   _EmergencyType(
     id: 'fire',
-    label: 'Fire',
     icon: Icons.local_fire_department_rounded,
     color: AppColors.fire,
   ),
   _EmergencyType(
     id: 'ambulance',
-    label: 'Ambulance',
     icon: Icons.airport_shuttle_rounded,
     color: AppColors.ambulance,
   ),
 ];
+
+String _labelForEmergencyType(AppLocalizations l10n, String id) {
+  switch (id) {
+    case 'police': return l10n.policeLabel;
+    case 'hospital': return l10n.hospital;
+    case 'fire': return l10n.fireLabel;
+    case 'ambulance': return l10n.ambulance;
+    default: return '';
+  }
+}
 
 class _SOSEmergencySheet extends StatelessWidget {
   const _SOSEmergencySheet();
@@ -293,6 +299,7 @@ class _SOSEmergencySheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -334,14 +341,14 @@ class _SOSEmergencySheet extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Select Emergency Type',
+                  l10n.selectEmergencyType,
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'What kind of help do you need?',
+                  l10n.whatKindOfHelp,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: isDark ? Colors.white54 : AppColors.textSecondary,
                   ),
@@ -354,6 +361,7 @@ class _SOSEmergencySheet extends StatelessWidget {
                     Expanded(
                       child: _EmergencyTypeCard(
                         type: _emergencyTypes[0],
+                        label: _labelForEmergencyType(l10n, _emergencyTypes[0].id),
                         onTap: () =>
                             Navigator.pop(context, _emergencyTypes[0].id),
                       ),
@@ -362,6 +370,7 @@ class _SOSEmergencySheet extends StatelessWidget {
                     Expanded(
                       child: _EmergencyTypeCard(
                         type: _emergencyTypes[1],
+                        label: _labelForEmergencyType(l10n, _emergencyTypes[1].id),
                         onTap: () =>
                             Navigator.pop(context, _emergencyTypes[1].id),
                       ),
@@ -374,6 +383,7 @@ class _SOSEmergencySheet extends StatelessWidget {
                     Expanded(
                       child: _EmergencyTypeCard(
                         type: _emergencyTypes[2],
+                        label: _labelForEmergencyType(l10n, _emergencyTypes[2].id),
                         onTap: () =>
                             Navigator.pop(context, _emergencyTypes[2].id),
                       ),
@@ -382,6 +392,7 @@ class _SOSEmergencySheet extends StatelessWidget {
                     Expanded(
                       child: _EmergencyTypeCard(
                         type: _emergencyTypes[3],
+                        label: _labelForEmergencyType(l10n, _emergencyTypes[3].id),
                         onTap: () =>
                             Navigator.pop(context, _emergencyTypes[3].id),
                       ),
@@ -405,7 +416,7 @@ class _SOSEmergencySheet extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      'Cancel',
+                      l10n.cancel,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -431,9 +442,10 @@ class _SOSEmergencySheet extends StatelessWidget {
 /// A single emergency type card inside the 2×2 grid.
 class _EmergencyTypeCard extends StatelessWidget {
   final _EmergencyType type;
+  final String label;
   final VoidCallback onTap;
 
-  const _EmergencyTypeCard({required this.type, required this.onTap});
+  const _EmergencyTypeCard({required this.type, required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -463,7 +475,7 @@ class _EmergencyTypeCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              type.label,
+              label,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: theme.colorScheme.onSurface,

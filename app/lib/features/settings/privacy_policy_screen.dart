@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
@@ -19,8 +20,9 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text("Privacy Policy")),
+      appBar: AppBar(title: Text(l10n.privacyPolicy)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -32,93 +34,55 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            const Center(
+            Center(
               child: Text(
-                "ResQ-KH Privacy Policy",
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                l10n.privacyPolicyTitle,
+                style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               ),
             ),
 
             const SizedBox(height: 8),
 
-            const Center(
+            Center(
               child: Text(
-                "Last Updated: June 2026",
-                style: TextStyle(color: Colors.grey),
+                l10n.privacyLastUpdated,
+                style: const TextStyle(color: Colors.grey),
               ),
             ),
 
-            sectionTitle("1. Introduction"),
-            sectionBody(
-              "ResQ-KH is an accessibility-first emergency assistance application developed as a university project. "
-              "Your privacy is important to us. This policy explains how your information is collected and used while using the application.",
-            ),
+            sectionTitle(l10n.privacySection1Title),
+            sectionBody(l10n.privacySection1Body),
 
-            sectionTitle("2. Information We Collect"),
-            sectionBody(
-              "We may collect:\n\n"
-              "• Full Name\n"
-              "• Phone Number\n"
-              "• Email Address (optional)\n"
-              "• Current Location (only when permission is granted)\n"
-              "• Emergency Reports submitted through the application\n"
-              "• App preferences such as language and theme.",
-            ),
+            sectionTitle(l10n.privacySection2Title),
+            sectionBody(l10n.privacySection2Body),
 
-            sectionTitle("3. Why We Collect Your Information"),
-            sectionBody(
-              "Your information is collected only to:\n\n"
-              "• Create your account\n"
-              "• Verify your identity using OTP\n"
-              "• Submit emergency reports\n"
-              "• Help emergency responders locate incidents\n"
-              "• Improve the overall user experience.",
-            ),
+            sectionTitle(l10n.privacySection3Title),
+            sectionBody(l10n.privacySection3Body),
 
-            sectionTitle("4. Location Permission"),
-            sectionBody(
-              "Your location is only accessed after your permission has been granted. "
-              "The location is used solely to assist emergency reporting and nearby emergency service recommendations.",
-            ),
+            sectionTitle(l10n.privacySection4Title),
+            sectionBody(l10n.privacySection4Body),
 
-            sectionTitle("5. Data Sharing"),
-            sectionBody(
-              "Emergency reports may be shared with emergency service providers such as hospitals, police stations, fire departments, or ambulance services for demonstration purposes within this academic project. "
-              "We do not sell or share your personal information with third-party advertisers.",
-            ),
+            sectionTitle(l10n.privacySection5Title),
+            sectionBody(l10n.privacySection5Body),
 
-            sectionTitle("6. Data Security"),
-            sectionBody(
-              "We take reasonable measures to protect your information. "
-              "However, as this application is developed for educational purposes, absolute security cannot be guaranteed.",
-            ),
+            sectionTitle(l10n.privacySection6Title),
+            sectionBody(l10n.privacySection6Body),
 
-            sectionTitle("7. Your Rights"),
-            sectionBody(
-              "You may:\n\n"
-              "• Update your personal information.\n"
-              "• Request deletion of your account.\n"
-              "• Withdraw location permission at any time through your device settings.",
-            ),
+            sectionTitle(l10n.privacySection7Title),
+            sectionBody(l10n.privacySection7Body),
 
-            sectionTitle("8. Changes to this Policy"),
-            sectionBody(
-              "This Privacy Policy may be updated from time to time. "
-              "Any significant changes will be reflected within the application.",
-            ),
+            sectionTitle(l10n.privacySection8Title),
+            sectionBody(l10n.privacySection8Body),
 
-            sectionTitle("9. Contact"),
-            sectionBody(
-              "If you have questions regarding this Privacy Policy, please contact the ResQ-KH development team.\n\n"
-              "Email: support@resq-kh.local",
-            ),
+            sectionTitle(l10n.privacySection9Title),
+            sectionBody(l10n.privacySection9Body),
 
             const SizedBox(height: 30),
 
-            const Center(
+            Center(
               child: Text(
-                "© 2026 ResQ-KH",
-                style: TextStyle(color: Colors.grey),
+                l10n.privacyCopyright,
+                style: const TextStyle(color: Colors.grey),
               ),
             ),
 
