@@ -1,5 +1,5 @@
 import 'package:app/models/emergency_report_model.dart';
-import 'package:app/services/emergency_report_service.dart';
+import 'package:app/services/api/emergency_report_api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:app/core/l10n/app_localizations.dart';
 

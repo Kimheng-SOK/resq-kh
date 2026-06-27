@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app/models/incident_type_model.dart';
-import 'package:app/services/incident_type_service.dart';
+import 'package:app/services/api/incident_type_api_service.dart';
 
 class IncidentTypeState {
   final bool isLoading;

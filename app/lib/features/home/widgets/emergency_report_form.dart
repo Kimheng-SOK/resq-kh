@@ -2,7 +2,7 @@ import 'package:app/core/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:app/models/incident_type_model.dart';
-import 'package:app/services/emergency_report_service.dart';
+import 'package:app/services/api/emergency_report_api_service.dart';
 import 'package:app/services/location_service.dart';
 
 /// Maps an incident type icon-name to its localized display label.

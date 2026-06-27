@@ -5,7 +5,7 @@ import 'package:app/core/utils/launcher_helper.dart';
 import 'package:app/features/home/widgets/location_chip.dart';
 import 'package:app/features/home/widgets/quick_action_tile.dart';
 import 'package:app/models/contact_model.dart';
-import 'package:app/services/contact_service.dart';
+import 'package:app/services/api/contact_api_service.dart';
 import 'package:app/services/emergency_repository.dart';
 import 'package:app/services/location_service.dart';
 import 'package:flutter/material.dart';

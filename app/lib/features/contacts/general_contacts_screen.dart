@@ -2,7 +2,7 @@ import 'package:app/core/l10n/app_localizations.dart';
 import 'package:app/core/theme/app_color.dart';
 import 'package:app/core/utils/launcher_helper.dart';
 import 'package:app/features/contacts/models/contacts_model.dart';
-import 'package:app/services/contact_service.dart';
+import 'package:app/services/api/contact_api_service.dart';
 import 'package:app/widgets/refresh_drag_pop_widget.dart';
 import 'package:flutter/material.dart';
 
