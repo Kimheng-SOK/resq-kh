@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class ProgressFooter extends StatefulWidget {
@@ -46,7 +47,7 @@ class _ProgressFooterState extends State<ProgressFooter> {
           _buildBackButton(),
 
           // Progress indicator
-          _buildProgressIndicator(),
+          Expanded(child: _buildProgressIndicator()),
 
           // NEXT button
           _buildNextButton(),
@@ -56,9 +57,10 @@ class _ProgressFooterState extends State<ProgressFooter> {
   }
 
   Widget _buildBackButton() {
+    final l10n = AppLocalizations.of(context)!;
     return Semantics(
       button: true,
-      label: 'Go to previous step',
+      label: l10n.goToPrevStep,
       child: GestureDetector(
         onTapDown: widget.canGoBack
             ? (_) => setState(() => _backPressed = true)
@@ -95,12 +97,12 @@ class _ProgressFooterState extends State<ProgressFooter> {
             opacity: widget.canGoBack ? 1.0 : 0.4,
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              children: const [
-                Icon(Icons.chevron_left, size: 16, color: Color(0xFF1A1C1C)),
-                SizedBox(width: 4),
+              children: [
+                const Icon(Icons.chevron_left, size: 16, color: Color(0xFF1A1C1C)),
+                const SizedBox(width: 4),
                 Text(
-                  'BACK',
-                  style: TextStyle(
+                  l10n.back,
+                  style: const TextStyle(
                     color: Color(0xFF1A1C1C),
                     fontSize: 18,
                     height: 28 / 18,
@@ -115,22 +117,27 @@ class _ProgressFooterState extends State<ProgressFooter> {
   }
 
   Widget _buildProgressIndicator() {
+    final l10n = AppLocalizations.of(context)!;
     return Semantics(
       liveRegion: true,
-      label: 'Step ${widget.currentStep} of ${widget.totalSteps}',
+      label: l10n.stepOf(widget.currentStep, widget.totalSteps),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
-            'Progress',
-            style: TextStyle(
+          Text(
+            l10n.progress,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
               color: Color(0xFF5B403D),
               fontSize: 18,
               height: 28 / 18,
             ),
           ),
           Text(
-            'Step ${widget.currentStep} of ${widget.totalSteps}',
+            l10n.stepOf(widget.currentStep, widget.totalSteps),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: Color(0xFFDD572E),
               fontSize: 18,
@@ -162,9 +169,10 @@ class _ProgressFooterState extends State<ProgressFooter> {
   }
 
   Widget _buildNextButton() {
+    final l10n = AppLocalizations.of(context)!;
     return Semantics(
       button: true,
-      label: 'Go to next step',
+      label: l10n.goToNextStep,
       child: GestureDetector(
         onTapDown: widget.canGoNext
             ? (_) => setState(() => _nextPressed = true)
@@ -204,17 +212,17 @@ class _ProgressFooterState extends State<ProgressFooter> {
             opacity: widget.canGoNext ? 1.0 : 0.4,
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              children: const [
+              children: [
                 Text(
-                  'NEXT',
-                  style: TextStyle(
+                  l10n.next,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     height: 28 / 18,
                   ),
                 ),
-                SizedBox(width: 4),
-                Icon(Icons.chevron_right, size: 16, color: Colors.white),
+                const SizedBox(width: 4),
+                const Icon(Icons.chevron_right, size: 16, color: Colors.white),
               ],
             ),
           ),

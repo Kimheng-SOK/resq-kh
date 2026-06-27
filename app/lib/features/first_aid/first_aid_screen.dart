@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:app/providers/first_aid_provider.dart';
 import 'package:app/features/first_aid/widgets/urgent_notice.dart';
 import 'package:app/features/first_aid/widgets/urgency_card_list.dart';
@@ -24,6 +25,7 @@ class _FirstAidScreenState extends ConsumerState<FirstAidScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(firstAidProvider);
 
     return Scaffold(
@@ -40,7 +42,7 @@ class _FirstAidScreenState extends ConsumerState<FirstAidScreen> {
           if (state.error != null && !state.isLoading)
             Center(
               child: Text(
-                'Error: ${state.error}',
+                l10n.failedToLoadConditions(state.error!),
                 style: const TextStyle(color: Color(0xFFAF101A)),
               ),
             ),

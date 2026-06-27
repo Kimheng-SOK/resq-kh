@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:app/providers/auth_provider.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -29,8 +30,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final phone = _phoneController.text.trim();
 
     if (name.isEmpty || phone.isEmpty) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Name and Phone Number are required')),
+        SnackBar(content: Text(l10n.nameAndPhoneRequired)),
       );
       return;
     }
@@ -48,9 +50,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       context.push('/otp', extra: {'email': email, 'phone_number': phone});
     } else {
       final error = ref.read(authProvider).error;
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(error ?? 'Failed to send OTP. Please try again.'),
+          content: Text(error ?? l10n.failedToSendOtp),
           backgroundColor: Colors.red,
         ),
       );
@@ -59,10 +62,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6FA),
 
-      appBar: AppBar(title: const Text('Create Account'), centerTitle: true),
+      appBar: AppBar(title: Text(l10n.createAccount), centerTitle: true),
 
       body: SafeArea(
         child: SingleChildScrollView(
@@ -81,18 +85,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
               const SizedBox(height: 24),
 
-              const Text(
-                'Welcome to RESQ',
+              Text(
+                l10n.welcomeToResq,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
               ),
 
               const SizedBox(height: 8),
 
-              const Text(
-                'Create your account to continue',
+              Text(
+                l10n.createAccountToContinue,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey),
+                style: const TextStyle(color: Colors.grey),
               ),
 
               const SizedBox(height: 40),
@@ -100,7 +104,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               TextField(
                 controller: _nameController,
                 decoration: InputDecoration(
-                  labelText: 'Full Name',
+                  labelText: l10n.fullName,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -113,7 +117,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
-                  labelText: 'Email (Optional)',
+                  labelText: l10n.emailOptional,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -126,7 +130,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 decoration: InputDecoration(
-                  labelText: 'Phone Number',
+                  labelText: l10n.phoneNumber,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -150,9 +154,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                   child: ref.watch(authProvider).isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text(
-                          'Continue',
-                          style: TextStyle(color: Colors.white, fontSize: 18),
+                      : Text(
+                          l10n.continueLabel,
+                          style: const TextStyle(color: Colors.white, fontSize: 18),
                         ),
                 ),
               ),

@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:app/core/theme/app_color.dart';
 import 'package:app/models/user_model.dart';
 import 'package:app/providers/user_provider.dart';
@@ -37,14 +38,16 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final phone = _phoneController.text.trim();
 
     if (name.isEmpty) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Full name is required')),
+        SnackBar(content: Text(l10n.fullNameRequired)),
       );
       return;
     }
     if (phone.isEmpty) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Phone number is required')),
+        SnackBar(content: Text(l10n.phoneRequired)),
       );
       return;
     }
@@ -57,14 +60,16 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     if (!mounted) return;
 
     if (updated != null) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile updated')),
+        SnackBar(content: Text(l10n.profileUpdated)),
       );
       context.pop();
     } else {
       final error = ref.read(userProvider).error;
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error ?? 'Failed to update profile')),
+        SnackBar(content: Text(error ?? l10n.failedToUpdateProfile)),
       );
     }
   }
@@ -82,6 +87,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final isDark = theme.brightness == Brightness.dark;
     final userState = ref.watch(userProvider);
     final user = userState.user;
+    final l10n = AppLocalizations.of(context)!;
 
     if (user != null) _prefill(user);
 
@@ -93,7 +99,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        title: Text(l10n.editProfile),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_rounded, size: 20),
@@ -124,7 +130,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                user?.fullName ?? 'User',
+                user?.fullName ?? l10n.userFallback,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -165,7 +171,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                               color: AppColors.red, size: 22),
                           const SizedBox(width: 10),
                           Text(
-                            'Personal Information',
+                            l10n.personalInformation,
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w700,
                             ),
@@ -178,8 +184,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         controller: _nameController,
                         textCapitalization: TextCapitalization.words,
                         decoration: InputDecoration(
-                          labelText: 'Full Name',
-                          hintText: 'Enter your full name',
+                          labelText: l10n.fullName,
+                          hintText: l10n.enterFullName,
                           border: inputBorder,
                           prefixIcon:
                               const Icon(Icons.badge_outlined, size: 22),
@@ -191,8 +197,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         controller: _phoneController,
                         keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
-                          labelText: 'Phone Number',
-                          hintText: '+855 XX XXX XXX',
+                          labelText: l10n.phoneNumber,
+                          hintText: l10n.phoneNumberHint,
                           border: inputBorder,
                           prefixIcon:
                               const Icon(Icons.call_outlined, size: 22),
@@ -227,10 +233,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                             strokeWidth: 2.5,
                           ),
                         )
-                      : const Text(
-                          'Save Changes',
-                          style:
-                              TextStyle(color: Colors.white, fontSize: 17),
+                      : Text(
+                          l10n.saveChanges,
+                          style: const TextStyle(color: Colors.white, fontSize: 17),
                         ),
                 ),
               ),

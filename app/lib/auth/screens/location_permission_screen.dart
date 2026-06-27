@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:geolocator/geolocator.dart';
@@ -12,8 +13,9 @@ class LocationPermissionScreen extends StatelessWidget {
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
     if (!serviceEnabled) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Location service is disabled')),
+        SnackBar(content: Text(l10n.locationServiceDisabled)),
       );
       return;
     }
@@ -26,8 +28,9 @@ class LocationPermissionScreen extends StatelessWidget {
 
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Location permission denied')),
+        SnackBar(content: Text(l10n.locationPermissionDenied)),
       );
       return;
     }
@@ -47,6 +50,7 @@ class LocationPermissionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6FA),
 
@@ -65,17 +69,17 @@ class LocationPermissionScreen extends StatelessWidget {
 
               const SizedBox(height: 32),
 
-              const Text(
-                'Enable Location',
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              Text(
+                l10n.enableLocation,
+                style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               ),
 
               const SizedBox(height: 16),
 
-              const Text(
-                'RESQ uses your location to quickly connect you with nearby emergency services and provide faster assistance during emergencies.',
+              Text(
+                l10n.locationExplanation,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+                style: const TextStyle(fontSize: 16, color: Colors.grey),
               ),
 
               const SizedBox(height: 48),
@@ -94,9 +98,9 @@ class LocationPermissionScreen extends StatelessWidget {
                     ),
                   ),
 
-                  child: const Text(
-                    'Allow Location',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  child: Text(
+                    l10n.allowLocation,
+                    style: const TextStyle(color: Colors.white, fontSize: 18),
                   ),
                 ),
               ),
@@ -106,9 +110,9 @@ class LocationPermissionScreen extends StatelessWidget {
               TextButton(
                 onPressed: () => _skip(context),
 
-                child: const Text(
-                  'Skip for now',
-                  style: TextStyle(fontSize: 16),
+                child: Text(
+                  l10n.skipForNow,
+                  style: const TextStyle(fontSize: 16),
                 ),
               ),
             ],

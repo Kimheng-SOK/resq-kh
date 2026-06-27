@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class UrgentNotice extends StatefulWidget {
@@ -38,9 +39,10 @@ class _UrgentNoticeState extends State<UrgentNotice>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Semantics(
       container: true,
-      label: 'IMMEDIATE ACTION REQUIRED',
+      label: l10n.immediateActionRequired,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: widget.onTap,
@@ -74,16 +76,16 @@ class _UrgentNoticeState extends State<UrgentNotice>
               children: [
                 // Heading row
                 Row(
-                  children: const [
-                    Icon(
+                  children: [
+                    const Icon(
                       Icons.warning_amber_rounded,
                       color: Color.fromARGB(255, 255, 242, 240),
                       size: 22,
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Text(
-                      'IMMEDIATE ACTION REQUIRED',
-                      style: TextStyle(
+                      l10n.immediateActionRequired,
+                      style: const TextStyle(
                         color: Color.fromARGB(255, 255, 242, 240),
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
@@ -96,10 +98,9 @@ class _UrgentNoticeState extends State<UrgentNotice>
                 const SizedBox(height: 8),
 
                 // Body text
-                const Text(
-                  'Select the condition below to start life-saving protocols. '
-                  'Call emergency services immediately if not already done.',
-                  style: TextStyle(
+                Text(
+                  l10n.immediateActionBody,
+                  style: const TextStyle(
                     color: Color.fromARGB(255, 255, 242, 240),
                     fontSize: 18,
                     height: 28 / 18,

@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:app/services/api/auth_api_service.dart';
 import 'package:app/services/auth_storage_service.dart';
 import 'package:flutter/material.dart';
@@ -64,29 +65,30 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color(0xFFD32F2F),
+    final l10n = AppLocalizations.of(context)!;
+    return Scaffold(
+      backgroundColor: const Color(0xFFD32F2F),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.health_and_safety, size: 100, color: Colors.white),
-            SizedBox(height: 20),
+            const Icon(Icons.health_and_safety, size: 100, color: Colors.white),
+            const SizedBox(height: 20),
             Text(
-              'RESQ',
-              style: TextStyle(
+              l10n.resq,
+              style: const TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
-              'Emergency Response System',
-              style: TextStyle(color: Colors.white70),
+              l10n.emergencyResponseSystem,
+              style: const TextStyle(color: Colors.white70),
             ),
-            SizedBox(height: 40),
-            CircularProgressIndicator(color: Colors.white),
+            const SizedBox(height: 40),
+            const CircularProgressIndicator(color: Colors.white),
           ],
         ),
       ),

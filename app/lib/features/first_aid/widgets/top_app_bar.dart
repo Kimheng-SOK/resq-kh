@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -11,6 +12,7 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AppBar(
       backgroundColor: const Color(0xFFF9F9F9),
       elevation: 0,
@@ -27,7 +29,7 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
       titleSpacing: 24,
       title: Semantics(
         button: true,
-        label: 'Go back to SOS Cambodia home',
+        label: l10n.goBackToSosHome,
         child: GestureDetector(
           onTap: onBack,
           child: Row(
@@ -36,7 +38,7 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
               const Icon(Icons.arrow_back, color: Color(0xFFAF101A), size: 16),
               const SizedBox(width: 8),
               Text(
-                'SOS CAMBODIA',
+                l10n.sosCambodia,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: const Color(0xFFAF101A),
                   fontWeight: FontWeight.bold,
@@ -54,7 +56,7 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
           padding: const EdgeInsets.only(right: 16),
           child: Semantics(
             button: true,
-            label: 'Settings',
+            label: l10n.settings,
             child: IconButton(
               padding: EdgeInsets.zero,
               icon: const Icon(

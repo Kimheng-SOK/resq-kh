@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -16,10 +17,11 @@ class SosCallButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       child: Semantics(
-        label: 'Call emergency services 119 now',
+        label: l10n.callEmergency119,
         button: true,
         child: Material(
           color: Colors.transparent,
@@ -71,7 +73,7 @@ class SosCallButton extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'CALL 119 NOW',
+                            l10n.call119Now,
                             style: Theme.of(context).textTheme.titleLarge
                                 ?.copyWith(
                                   color: Colors.white,
@@ -80,9 +82,9 @@ class SosCallButton extends StatelessWidget {
                                 ),
                           ),
                           const SizedBox(height: 4),
-                          const Text(
-                            'Emergency hotline — immediate help',
-                            style: TextStyle(
+                          Text(
+                            l10n.emergencyHotlineDesc,
+                            style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 14,
                               height: 18 / 14,

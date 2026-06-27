@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:app/core/theme/app_color.dart';
 import 'package:app/providers/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -64,8 +65,9 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
 
   Future<void> _saveAndContinue() async {
     if (_bloodGroup == null) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select your blood type')),
+        SnackBar(content: Text(l10n.selectBloodType)),
       );
       return;
     }
@@ -89,9 +91,10 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
       }
     } else {
       final error = ref.read(userProvider).error;
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(error ?? 'Failed to save profile. Please try again.'),
+          content: Text(error ?? l10n.failedToSaveProfile),
         ),
       );
     }
@@ -109,6 +112,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final isLoading = ref.watch(userProvider).isLoading || _isChecking;
+    final l10n = AppLocalizations.of(context)!;
 
     final inputBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
@@ -118,7 +122,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(widget.editing ? 'Edit Medical Info' : 'Medical Information'),
+        title: Text(widget.editing ? l10n.editMedicalInfo : l10n.medicalInformation),
         centerTitle: true,
         leading: widget.editing
             ? IconButton(
@@ -170,7 +174,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Emergency Info',
+                                  l10n.emergencyInfo,
                                   style: theme.textTheme.titleSmall?.copyWith(
                                     color: AppColors.red,
                                     fontWeight: FontWeight.w700,
@@ -178,7 +182,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  'This helps emergency responders provide the right assistance quickly.',
+                                  l10n.emergencyInfoDesc,
                                   style: TextStyle(
                                     color: isDark
                                         ? Colors.white54
@@ -200,7 +204,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                     _buildSectionHeader(
                       theme,
                       icon: Icons.bloodtype_outlined,
-                      title: 'Blood Type',
+                      title: l10n.bloodType,
                       required: true,
                     ),
                     const SizedBox(height: 10),
@@ -264,7 +268,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                     _buildSectionHeader(
                       theme,
                       icon: Icons.warning_amber_rounded,
-                      title: 'Allergies',
+                      title: l10n.allergies,
                       required: false,
                     ),
                     const SizedBox(height: 10),
@@ -279,8 +283,8 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                           controller: _allergiesController,
                           maxLines: 2,
                           decoration: InputDecoration(
-                            labelText: 'Known allergies',
-                            hintText: 'e.g., Penicillin, Peanuts, Latex',
+                            labelText: l10n.knownAllergies,
+                            hintText: l10n.allergiesHint,
                             hintStyle: TextStyle(
                               color: isDark
                                   ? Colors.white24
@@ -303,7 +307,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                     _buildSectionHeader(
                       theme,
                       icon: Icons.note_alt_outlined,
-                      title: 'Medical Conditions',
+                      title: l10n.medicalConditions,
                       required: false,
                     ),
                     const SizedBox(height: 10),
@@ -318,8 +322,8 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                           controller: _medicalController,
                           maxLines: 3,
                           decoration: InputDecoration(
-                            labelText: 'Ongoing conditions',
-                            hintText: 'e.g., Asthma, Diabetes, Heart condition',
+                            labelText: l10n.ongoingConditions,
+                            hintText: l10n.conditionsHint,
                             hintStyle: TextStyle(
                               color: isDark
                                   ? Colors.white24
@@ -361,7 +365,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                                 ),
                               )
                             : Text(
-                                widget.editing ? 'Save Changes' : 'Save & Continue',
+                                widget.editing ? l10n.saveChanges : l10n.saveAndContinue,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 17,
@@ -374,8 +378,8 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                       const SizedBox(height: 14),
                       TextButton(
                         onPressed: isLoading ? null : () => context.go('/'),
-                        child: const Text(
-                          'Skip for now',
+                        child: Text(
+                          l10n.skipForNow,
                           style: TextStyle(fontSize: 15, color: Colors.grey),
                         ),
                       ),
@@ -393,6 +397,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
     required String title,
     required bool required,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
         Icon(icon, size: 20, color: AppColors.red),
@@ -406,15 +411,15 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
         ),
         if (required) ...[
           const SizedBox(width: 4),
-          const Text(
-            '*',
-            style: TextStyle(color: AppColors.red, fontSize: 16),
+          Text(
+            l10n.requiredIndicator,
+            style: const TextStyle(color: AppColors.red, fontSize: 16),
           ),
         ],
         const Spacer(),
         if (!required)
           Text(
-            'Optional',
+            l10n.optional,
             style: TextStyle(
               color: AppColors.textSecondary.withAlpha(150),
               fontSize: 12,

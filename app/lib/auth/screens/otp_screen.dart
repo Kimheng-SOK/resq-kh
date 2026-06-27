@@ -1,6 +1,7 @@
 import 'package:app/models/user_model.dart';
 import 'package:app/services/api/auth_api_service.dart';
 import 'package:app/services/auth_storage_service.dart';
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -29,9 +30,10 @@ class _OtpScreenState extends State<OtpScreen> {
     final otp = _otpController.text.trim();
 
     if (otp.isEmpty) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Please enter OTP')));
+      ).showSnackBar(SnackBar(content: Text(l10n.pleaseEnterOtp)));
       return;
     }
 
@@ -76,10 +78,11 @@ class _OtpScreenState extends State<OtpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6FA),
 
-      appBar: AppBar(title: const Text('Verify OTP'), centerTitle: true),
+      appBar: AppBar(title: Text(l10n.verifyOtp), centerTitle: true),
 
       body: SafeArea(
         child: SingleChildScrollView(
@@ -97,17 +100,17 @@ class _OtpScreenState extends State<OtpScreen> {
 
                 const SizedBox(height: 24),
 
-                const Text(
-                  'Verification Code',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                Text(
+                  l10n.verificationCode,
+                  style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
 
                 const SizedBox(height: 12),
 
-                const Text(
-                  'Enter the OTP sent to your phone number',
+                Text(
+                  l10n.enterOtpSent,
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey),
+                  style: const TextStyle(color: Colors.grey),
                 ),
 
                 const SizedBox(height: 40),
@@ -118,7 +121,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   textAlign: TextAlign.center,
                   maxLength: 6,
                   decoration: InputDecoration(
-                    labelText: 'OTP',
+                    labelText: l10n.otpLabel,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -143,9 +146,9 @@ class _OtpScreenState extends State<OtpScreen> {
 
                     child: isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            'Verify OTP',
-                            style: TextStyle(color: Colors.white, fontSize: 18),
+                        : Text(
+                            l10n.verifyOtp,
+                            style: const TextStyle(color: Colors.white, fontSize: 18),
                           ),
                   ),
                 ),
@@ -157,7 +160,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     // TODO:
                     // Resend OTP
                   },
-                  child: const Text('Resend OTP'),
+                  child: Text(l10n.resendOtp),
                 ),
               ],
             ),

@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:app/providers/first_aid_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -63,6 +64,7 @@ class _FirstAidDetailScreenState extends ConsumerState<FirstAidDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(firstAidProvider);
     final topic = state.selectedTopic;
 
@@ -77,7 +79,7 @@ class _FirstAidDetailScreenState extends ConsumerState<FirstAidDetailScreen> {
     if (state.error != null || topic == null) {
       return Scaffold(
         body: Center(
-          child: Text('Error: ${state.error ?? "Topic not found"}'),
+          child: Text(l10n.failedToLoadConditions(state.error?.toString() ?? l10n.topicNotFound)),
         ),
       );
     }
@@ -123,7 +125,7 @@ class _FirstAidDetailScreenState extends ConsumerState<FirstAidDetailScreen> {
                         return StepCard(
                           key: _stepKeys[step.stepNumber], // ← attach key
                           number: step.stepNumber,
-                          title: 'Step ${step.stepNumber}',
+                          title: l10n.stepN(step.stepNumber),
                           description: stepTranslation?.instruction ?? '',
                           imageUrl: step.imageUrl ?? '',
                           imageAlt: stepTranslation?.instruction ?? '',

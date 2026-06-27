@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 enum Severity { critical, urgent, stable }
@@ -49,6 +50,7 @@ class _UrgencyCardState extends State<UrgencyCard> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final config = _severityConfig[widget.severity]!;
 
     return Container(
@@ -167,10 +169,10 @@ class _UrgencyCardState extends State<UrgencyCard> {
                   child: Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         Text(
-                          'START STEPS',
-                          style: TextStyle(
+                          l10n.startSteps,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
                             height: 28 / 18,
@@ -178,8 +180,8 @@ class _UrgencyCardState extends State<UrgencyCard> {
                             letterSpacing: 0.5,
                           ),
                         ),
-                        SizedBox(width: 8),
-                        Icon(Icons.play_arrow, color: Colors.white, size: 18),
+                        const SizedBox(width: 8),
+                        const Icon(Icons.play_arrow, color: Colors.white, size: 18),
                       ],
                     ),
                   ),

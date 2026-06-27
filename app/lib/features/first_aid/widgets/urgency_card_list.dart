@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app/providers/first_aid_provider.dart';
@@ -31,6 +32,7 @@ class UrgencyCardsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(firstAidProvider);
 
     if (state.isLoading) {
@@ -42,14 +44,14 @@ class UrgencyCardsList extends ConsumerWidget {
     if (state.error != null) {
       return Center(
         child: Text(
-          'Failed to load: ${state.error}',
+          l10n.failedToLoadConditions(state.error!),
           style: const TextStyle(color: Color(0xFFAF101A)),
         ),
       );
     }
 
     if (state.topics.isEmpty) {
-      return const Center(child: Text('No conditions available.'));
+      return Center(child: Text(l10n.noConditionsAvailable));
     }
 
     return Column(

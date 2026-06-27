@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
  
 class CrucialWarning extends StatelessWidget {
@@ -12,9 +13,10 @@ class CrucialWarning extends StatelessWidget {
  
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Semantics(
       container: true,
-      label: title,
+      label: l10n.crucialWarning,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         padding: const EdgeInsets.all(16),
@@ -31,7 +33,7 @@ class CrucialWarning extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              title,
+              l10n.crucialWarning,
               style: const TextStyle(
                 color: Color(0xFFAF101A),
                 fontWeight: FontWeight.bold,
