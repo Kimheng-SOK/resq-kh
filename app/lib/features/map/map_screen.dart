@@ -10,7 +10,7 @@ import '../../core/utils/service_utils.dart';
 import '../../features/contacts/models/contacts_model.dart';
 import '../../models/emergency_contact.dart';
 import '../../services/api/services_api_service.dart';
-import '../../services/contact_service.dart';
+import '../../services/api/contact_api_service.dart';
 import '../../services/emergency_repository.dart';
 import 'widgets/service_marker.dart';
 import 'widgets/user_location_marker.dart';
@@ -650,223 +650,232 @@ class _ContactsSheetContentState extends State<_ContactsSheetContent> {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(24),
-                  child: ListView(
-                    controller: scrollController,
+                  child: Padding(
                     padding: const EdgeInsets.fromLTRB(0, 20, 0, 8),
-                    children: [
-                      // ── Search bar inside the sheet ──────────
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Container(
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? const Color(0xFF2C2C2C)
-                                : const Color(0xFFF3F3F4),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: TextField(
-                            controller: _sheetSearchController,
-                            onChanged: _onSearchChanged,
-                            decoration: InputDecoration(
-                              hintText: l10n.searchContactsServices,
-                              hintStyle: TextStyle(
-                                color: isDark
-                                    ? Colors.white38
-                                    : const Color(0xFF9CA3AF),
-                                fontSize: 14,
-                                fontFamily: 'SF Pro Display',
-                              ),
-                              prefixIcon: Icon(
-                                Icons.search_rounded,
-                                color: isDark
-                                    ? Colors.white54
-                                    : AppColors.textSecondary,
-                                size: 20,
-                              ),
-                              suffixIcon: _searchQuery.isNotEmpty
-                                  ? GestureDetector(
-                                      onTap: () {
-                                        _sheetSearchController.clear();
-                                        _onSearchChanged('');
-                                      },
-                                      child: Icon(
-                                        Icons.close_rounded,
-                                        color: isDark
-                                            ? Colors.white54
-                                            : AppColors.textSecondary,
-                                        size: 18,
-                                      ),
-                                    )
-                                  : null,
-                              border: InputBorder.none,
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                vertical: 12,
-                              ),
-                            ),
-                            style: TextStyle(
-                              color: theme.colorScheme.onSurface,
-                              fontSize: 15,
-                              fontFamily: 'SF Pro Display',
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // ── "Seek Help" header ────────────────────
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Row(
-                          children: [
-                            Text(
-                              l10n.seekHelp,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                                color: theme.colorScheme.onSurface,
-                                fontFamily: 'SF Pro Display',
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              l10n.foundCount(_filtered.length),
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: isDark
-                                    ? Colors.white54
-                                    : AppColors.textSecondary,
-                                fontFamily: 'SF Pro Display',
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            Icon(
-                              Icons.chevron_right_rounded,
-                              color: isDark
-                                  ? Colors.white54
-                                  : AppColors.textSecondary,
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      SeekHelpRow(
-                        selectedCategory: _selectedCategory,
-                        onCategorySelected: _onCategoryTap,
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      const Divider(height: 1, indent: 24, endIndent: 24),
-
-                      const SizedBox(height: 16),
-
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Text(
-                          l10n.emergencyContacts,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.red,
-                            letterSpacing: 0.5,
-                            fontFamily: 'SF Pro Display',
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 4),
-
-                      ..._filtered.map(
-                        (contact) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: EmergencyContactTile(
-                            contact: contact,
-                            onTap: () => widget.onContactTap(contact),
-                            onNotifyTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    l10n.notificationsEnabledFor(contact.name),
-                                  ),
-                                  duration: const Duration(seconds: 2),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-
-                      if (_filtered.isEmpty)
+                    child: Column(
+                      children: [
+                        // ── Search bar inside the sheet ──────────
                         Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 32,
-                          ),
-                          child: Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.search_off_rounded,
-                                  size: 40,
-                                  color: isDark
-                                      ? Colors.white38
-                                      : AppColors.textSecondary,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  _searchQuery.isNotEmpty
-                                      ? l10n.noResultsForQuery(_searchQuery)
-                                      : l10n.noCategoryContacts,
-                                  style: TextStyle(
-                                    color: isDark
-                                        ? Colors.white54
-                                        : AppColors.textSecondary,
-                                    fontSize: 15,
-                                    fontFamily: 'SF Pro Display',
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                      const SizedBox(height: 8),
-
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: OutlinedButton.icon(
-                          onPressed: widget.onAddContacts,
-                          icon: const Icon(Icons.person_add_rounded, size: 20),
-                          label: Text(
-                            l10n.addContacts,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'SF Pro Display',
-                            ),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: const Size(double.infinity, 48),
-                            foregroundColor: theme.colorScheme.onSurface,
-                            side: BorderSide(
-                              color: isDark ? Colors.white24 : AppColors.border,
-                            ),
-                            shape: RoundedRectangleBorder(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Container(
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? const Color(0xFF2C2C2C)
+                                  : const Color(0xFFF3F3F4),
                               borderRadius: BorderRadius.circular(12),
                             ),
+                            child: TextField(
+                              controller: _sheetSearchController,
+                              onChanged: _onSearchChanged,
+                              decoration: InputDecoration(
+                                hintText: l10n.searchContactsServices,
+                                hintStyle: TextStyle(
+                                  color: isDark
+                                      ? Colors.white38
+                                      : const Color(0xFF9CA3AF),
+                                  fontSize: 14,
+                                  fontFamily: 'SF Pro Display',
+                                ),
+                                prefixIcon: Icon(
+                                  Icons.search_rounded,
+                                  color: isDark
+                                      ? Colors.white54
+                                      : AppColors.textSecondary,
+                                  size: 20,
+                                ),
+                                suffixIcon: _searchQuery.isNotEmpty
+                                    ? GestureDetector(
+                                        onTap: () {
+                                          _sheetSearchController.clear();
+                                          _onSearchChanged('');
+                                        },
+                                        child: Icon(
+                                          Icons.close_rounded,
+                                          color: isDark
+                                              ? Colors.white54
+                                              : AppColors.textSecondary,
+                                          size: 18,
+                                        ),
+                                      )
+                                    : null,
+                                border: InputBorder.none,
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                              ),
+                              style: TextStyle(
+                                color: theme.colorScheme.onSurface,
+                                fontSize: 15,
+                                fontFamily: 'SF Pro Display',
+                              ),
+                            ),
                           ),
                         ),
-                      ),
 
-                      const SizedBox(height: 20),
-                    ],
+                        const SizedBox(height: 16),
+
+                        // ── "Seek Help" header ────────────────────
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Row(
+                            children: [
+                              Text(
+                                l10n.seekHelp,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                  color: theme.colorScheme.onSurface,
+                                  fontFamily: 'SF Pro Display',
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                l10n.foundCount(_filtered.length),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: isDark
+                                      ? Colors.white54
+                                      : AppColors.textSecondary,
+                                  fontFamily: 'SF Pro Display',
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                Icons.chevron_right_rounded,
+                                color: isDark
+                                    ? Colors.white54
+                                    : AppColors.textSecondary,
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        SeekHelpRow(
+                          selectedCategory: _selectedCategory,
+                          onCategorySelected: _onCategoryTap,
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        const Divider(height: 1, indent: 24, endIndent: 24),
+
+                        const SizedBox(height: 16),
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Text(
+                            l10n.emergencyContacts,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.red,
+                              letterSpacing: 0.5,
+                              fontFamily: 'SF Pro Display',
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 4),
+
+                        // ── Scrollable contacts list ──────────
+                        Expanded(
+                          child: ListView(
+                            controller: scrollController,
+                            children: [
+                              ..._filtered.map(
+                                (contact) => Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                                  child: EmergencyContactTile(
+                                    contact: contact,
+                                    onTap: () => widget.onContactTap(contact),
+                                    onNotifyTap: () {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            l10n.notificationsEnabledFor(contact.name),
+                                          ),
+                                          duration: const Duration(seconds: 2),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+
+                              if (_filtered.isEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 32,
+                                  ),
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.search_off_rounded,
+                                          size: 40,
+                                          color: isDark
+                                              ? Colors.white38
+                                              : AppColors.textSecondary,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          _searchQuery.isNotEmpty
+                                              ? l10n.noResultsForQuery(_searchQuery)
+                                              : l10n.noCategoryContacts,
+                                          style: TextStyle(
+                                            color: isDark
+                                                ? Colors.white54
+                                                : AppColors.textSecondary,
+                                            fontSize: 15,
+                                            fontFamily: 'SF Pro Display',
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+
+                              const SizedBox(height: 8),
+
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 24),
+                                child: OutlinedButton.icon(
+                                  onPressed: widget.onAddContacts,
+                                  icon: const Icon(Icons.person_add_rounded, size: 20),
+                                  label: Text(
+                                    l10n.addContacts,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'SF Pro Display',
+                                    ),
+                                  ),
+                                  style: OutlinedButton.styleFrom(
+                                    minimumSize: const Size(double.infinity, 48),
+                                    foregroundColor: theme.colorScheme.onSurface,
+                                    side: BorderSide(
+                                      color: isDark ? Colors.white24 : AppColors.border,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
