@@ -1,13 +1,13 @@
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:app/models/incident_type_model.dart';
+import 'api_config.dart';
 
 class IncidentTypeService {
-  static final String _baseUrl = dotenv.env['API_URL']!;
+  static String get baseUrl => ApiConfig.baseUrl;
 
   static Future<List<IncidentType>> fetchAll() async {
-    final uri = Uri.parse('$_baseUrl/incident-types');
+    final uri = Uri.parse('$baseUrl/incident-types');
     final response = await http.get(uri);
 
     if (response.statusCode == 200) {

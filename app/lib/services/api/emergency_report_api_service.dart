@@ -1,12 +1,13 @@
 import 'dart:convert';
 
 import 'package:app/models/emergency_report_model.dart';
-import 'package:app/services/auth_storage_service.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
+import '../auth_storage_service.dart';
+import 'api_config.dart';
+
 class EmergencyReportService {
-  static final String _baseUrl = dotenv.env['API_URL']!;
+  static String get baseUrl => ApiConfig.baseUrl;
 
   /// -------------------------
   /// Submit Emergency Report
@@ -25,7 +26,7 @@ class EmergencyReportService {
       throw Exception('You must be logged in to submit a report.');
     }
 
-    final uri = Uri.parse('$_baseUrl/emergency-reports');
+    final uri = Uri.parse('$baseUrl/emergency-reports');
 
     final response = await http.post(
       uri,
@@ -57,7 +58,7 @@ class EmergencyReportService {
     }
 
     final response = await http.get(
-      Uri.parse('$_baseUrl/emergency-reports/user/$userId'),
+      Uri.parse('$baseUrl/emergency-reports/user/$userId'),
     );
 
     if (response.statusCode != 200) {

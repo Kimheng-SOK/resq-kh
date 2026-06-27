@@ -1,14 +1,15 @@
 import 'dart:convert';
 
 import 'package:app/models/notification_model.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
+import 'api_config.dart';
+
 class NotificationService {
-  static final String _baseUrl = dotenv.env['API_URL']!;
+  static String get baseUrl => ApiConfig.baseUrl;
 
   static Future<List<NotificationModel>> getNotifications() async {
-    final response = await http.get(Uri.parse("$_baseUrl/notifications"));
+    final response = await http.get(Uri.parse("$baseUrl/notifications"));
 
     if (response.statusCode != 200) {
       throw Exception("Failed to load notifications");

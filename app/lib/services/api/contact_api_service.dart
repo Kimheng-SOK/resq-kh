@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'api/api_config.dart';
-import 'auth_storage_service.dart';
+import 'api_config.dart';
+import '../auth_storage_service.dart';
 
 class ContactService {
   static String get baseUrl => ApiConfig.baseUrl;
