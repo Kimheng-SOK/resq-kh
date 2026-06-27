@@ -7,5 +7,6 @@ class L10n {
     const Locale(CountryCode.CambodianFlag, 'KH'),
     const Locale(CountryCode.ChineseFlag, 'CN'),
     const Locale(CountryCode.FrenchFlag, 'FR'),
+    const Locale(CountryCode.JapaneseFlag, 'JP'),
   ];
 }
