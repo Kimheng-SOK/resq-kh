@@ -71,6 +71,14 @@ class SeekHelpRow extends StatefulWidget {
 }
 
 class _SeekHelpRowState extends State<SeekHelpRow> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -86,75 +94,87 @@ class _SeekHelpRowState extends State<SeekHelpRow> {
       'other': l10n.otherLabel,
     };
 
-    return SizedBox(
-      height: 80,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        physics: const ClampingScrollPhysics(),
-        children: _categories.map((cat) {
-          final isSelected = widget.selectedCategory == cat.id;
+    final chipChildren = _categories.map((cat) {
+      final isSelected = widget.selectedCategory == cat.id;
 
-          return Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: GestureDetector(
-              onTap: () {
-                widget.onCategorySelected(isSelected ? null : cat.id);
-              },
-              child: SizedBox(
-                width: 64,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 250),
-                      curve: Curves.easeOutCubic,
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? cat.color.withAlpha(25)
-                            : isDark
-                            ? const Color(0xFF2C2C2C)
-                            : const Color(0xFFF3F3F4),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isSelected
-                              ? cat.color.withAlpha(50)
-                              : cat.color.withAlpha(30),
-                          width: isSelected ? 2 : 1.5,
-                        ),
-                      ),
-                      child: Icon(
-                        cat.icon,
-                        color: isSelected ? cat.color : cat.color.withAlpha(180),
-                        size: 28,
-                      ),
+      return Padding(
+        padding: const EdgeInsets.only(right: 12),
+        child: GestureDetector(
+          onTap: () {
+            widget.onCategorySelected(isSelected ? null : cat.id);
+          },
+          child: SizedBox(
+            width: 64,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeOutCubic,
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? cat.color.withAlpha(25)
+                        : isDark
+                        ? const Color(0xFF2C2C2C)
+                        : const Color(0xFFF3F3F4),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isSelected
+                          ? cat.color.withAlpha(50)
+                          : cat.color.withAlpha(30),
+                      width: isSelected ? 2 : 1.5,
                     ),
-
-                    const SizedBox(height: 4),
-
-                    Text(
-                      categoryLabels[cat.id] ?? cat.label,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: isSelected
-                            ? FontWeight.w700
-                            : FontWeight.w500,
-                        color: isSelected
-                            ? cat.color
-                            : isDark
-                            ? Colors.white70
-                            : const Color(0xFF1A1C1C),
-                        fontFamily: 'SF Pro Display',
-                      ),
-                    ),
-                  ],
+                  ),
+                  child: Icon(
+                    cat.icon,
+                    color: isSelected ? cat.color : cat.color.withAlpha(180),
+                    size: 28,
+                  ),
                 ),
-              ),
+
+                const SizedBox(height: 4),
+
+                Text(
+                  categoryLabels[cat.id] ?? cat.label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: isSelected
+                        ? FontWeight.w700
+                        : FontWeight.w500,
+                    color: isSelected
+                        ? cat.color
+                        : isDark
+                        ? Colors.white70
+                        : const Color(0xFF1A1C1C),
+                    fontFamily: 'SF Pro Display',
+                  ),
+                ),
+              ],
             ),
-          );
-        }).toList(),
+          ),
+        ),
+      );
+    }).toList();
+
+    return GestureDetector(
+      onHorizontalDragUpdate: (details) {
+        final newOffset = _scrollController.offset - details.delta.dx;
+        _scrollController.jumpTo(newOffset.clamp(
+          0.0,
+          _scrollController.position.maxScrollExtent,
+        ));
+      },
+      child: SizedBox(
+        height: 96,
+        child: ListView(
+          controller: _scrollController,
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          physics: const NeverScrollableScrollPhysics(),
+          children: chipChildren,
+        ),
       ),
     );
   }
