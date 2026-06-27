@@ -1,5 +1,85 @@
 import type { AdminRole } from '@/lib/auth-types';
 
+// ── Pagination ──
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+// ── Analytics ──
+export interface DashboardOverview {
+  totalUsers: number;
+  activeAlerts: number;
+  pendingReports: number;
+  totalServices: number;
+  servicesByCategory: { category: string; count: number }[];
+  totalNotifications: number;
+  unreadNotifications: number;
+  recentTrends: {
+    newUsersThisWeek: number;
+    newUsersLastWeek: number;
+    alertsThisWeek: number;
+    alertsLastWeek: number;
+  };
+}
+
+export interface TimeSeriesPoint {
+  period: string;
+  count: string;
+}
+
+export interface StatusBreakdown {
+  status: string;
+  count: string;
+}
+
+export interface AlertTypeBreakdown {
+  typeId: string;
+  label: string;
+  color: string;
+  count: string;
+}
+
+export interface ResponseTimeMetrics {
+  averageMinutes: number;
+  byType: { typeId: string; label: string; averageMinutes: number }[];
+}
+
+export interface ActivityItem {
+  id: string;
+  type: 'alert' | 'report' | 'user' | 'notification';
+  description: string;
+  status: string;
+  timestamp: string;
+  relatedId: string | undefined;
+}
+
+export interface AlertMapPoint {
+  id: string;
+  lat: number;
+  lng: number;
+  type: string;
+}
+
+// ── Emergency Report ──
+export interface EmergencyReport {
+  id: string;
+  user_id: string;
+  incident_type_id: string;
+  incidentType?: { id: string; slug: string; label: string; icon_name: string };
+  reporter_name: string;
+  reporter_phone: string;
+  description: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  status: 'pending' | 'dispatched' | 'resolved';
+  created_at: string;
+  updated_at: string;
+}
+
 // ── Admin ──
 export interface AdminUser {
   id: string;
@@ -95,9 +175,10 @@ export interface Contact {
 // ── Notification ──
 export interface Notification {
   id: string;
-  user_id: string;
-  emergency_alert_id: string | null;
-  type: 'sos' | 'contact_alert' | 'system' | 'reminder';
+  service_id?: string;
+  emergency_report_id?: string;
+  user_id?: string;
+  type?: 'report_alert' | 'admin_broadcast' | 'admin_direct';
   title: string;
   body: string;
   is_read: boolean;
