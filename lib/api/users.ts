@@ -1,8 +1,18 @@
 import { api } from '@/lib/api-client';
-import type { User } from './types';
+import type { User, PaginatedResponse } from './types';
 
 export function getUsers(): Promise<User[]> {
   return api.get<User[]>('/users');
+}
+
+export function getUsersPaginated(
+  page = 1,
+  limit = 20,
+): Promise<PaginatedResponse<User>> {
+  return api.get<PaginatedResponse<User>>('/users/paginated', {
+    page: String(page),
+    limit: String(limit),
+  });
 }
 
 export function getUser(id: string): Promise<User> {

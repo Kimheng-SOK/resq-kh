@@ -1,12 +1,14 @@
 import Link from 'next/link';
 import {
+  Activity,
+  Bell,
   Building2,
+  FileText,
   HeartPulse,
   LayoutDashboard,
   PanelLeft,
   Settings,
   Shield,
-  Siren,
   Users2
 } from 'lucide-react';
 
@@ -69,8 +71,16 @@ function DesktopNav({ role }: { role: AdminRole }) {
           <LayoutDashboard className="h-5 w-5" />
         </NavItem>
 
-        <NavItem href="/emergency-alerts" label="Emergency Alerts">
-          <Siren className="h-5 w-5" />
+        <NavItem href="/monitoring" label="Monitoring">
+          <Activity className="h-5 w-5" />
+        </NavItem>
+
+        <NavItem href="/emergency-reports" label="Emergency Reports">
+          <FileText className="h-5 w-5" />
+        </NavItem>
+
+        <NavItem href="/notifications" label="Notifications">
+          <Bell className="h-5 w-5" />
         </NavItem>
 
         <NavItem href="/users" label="Users">
@@ -135,11 +145,25 @@ function MobileNav({ role }: { role: AdminRole }) {
             Dashboard
           </Link>
           <Link
-            href="/emergency-alerts"
+            href="/monitoring"
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
-            <Siren className="h-5 w-5" />
-            Emergency Alerts
+            <Activity className="h-5 w-5" />
+            Monitoring
+          </Link>
+          <Link
+            href="/emergency-reports"
+            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+          >
+            <FileText className="h-5 w-5" />
+            Emergency Reports
+          </Link>
+          <Link
+            href="/notifications"
+            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+          >
+            <Bell className="h-5 w-5" />
+            Notifications
           </Link>
           <Link
             href="/users"
