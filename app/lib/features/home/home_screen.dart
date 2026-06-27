@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:app/core/utils/launcher_helper.dart';
 import 'package:app/features/home/widgets/location_chip.dart';
 import 'package:app/features/home/widgets/quick_action_tile.dart';
@@ -28,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final dimText = theme.textTheme.bodyMedium!.color!;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -73,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Tap for emergency help or hold to report an incident',
+              l10n.tapForHelpOrHold,
               style: TextStyle(
                 color: dimText,
                 fontSize: 13,
@@ -87,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Align(
                   alignment: Alignment.center,
                   child: Text(
-                    'Quick Actions',
+                    l10n.quickActions,
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: dimText,
                       fontSize: 18,
@@ -107,58 +109,58 @@ class _HomeScreenState extends State<HomeScreen> {
                       childAspectRatio: 0.9,
                       children: [
                         QuickActionTile(
-                          label: 'Police Station',
+                          label: l10n.policeStation,
                           icon: Icons.local_police_rounded,
                           color: AppColors.police,
                           isLoading: _loadingCategory == 'police',
                           onTap: () => _handleServiceTap(
                             context,
                             'police',
-                            'Police Station',
+                            l10n.policeStation,
                           ),
                         ),
                         QuickActionTile(
-                          label: 'Hospital',
+                          label: l10n.hospital,
                           icon: Icons.local_hospital_rounded,
                           color: AppColors.hospital,
                           isLoading: _loadingCategory == 'hospital',
                           onTap: () => _handleServiceTap(
                             context,
                             'hospital',
-                            'Hospital',
+                            l10n.hospital,
                           ),
                         ),
                         QuickActionTile(
-                          label: 'Fire Station',
+                          label: l10n.fireStation,
                           icon: Icons.local_fire_department_rounded,
                           color: AppColors.fire,
                           isLoading: _loadingCategory == 'fire',
                           onTap: () => _handleServiceTap(
                             context,
                             'fire',
-                            'Fire Station',
+                            l10n.fireStation,
                           ),
                         ),
                         QuickActionTile(
-                          label: 'Ambulance',
+                          label: l10n.ambulance,
                           icon: Icons.airport_shuttle_rounded,
                           color: AppColors.ambulance,
                           isLoading: _loadingCategory == 'ambulance',
                           onTap: () => _handleServiceTap(
                             context,
                             'ambulance',
-                            'Ambulance',
+                            l10n.ambulance,
                           ),
                         ),
                         QuickActionTile(
-                          label: 'Contact',
+                          label: l10n.contact,
                           icon: Icons.contacts_rounded,
                           color: AppColors.red,
                           isLoading: _loadingCategory == 'contact',
                           onTap: () => _handleGeneralContactTap(context),
                         ),
                         QuickActionTile(
-                          label: 'Nearby',
+                          label: l10n.nearby,
                           icon: Icons.map_rounded,
                           color: Colors.teal,
                           isLoading: false,
@@ -184,6 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ) async {
     if (_loadingCategory != null) return;
 
+    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     setState(() {
       _loadingCategory = category;
@@ -192,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final contacts = await EmergencyRepository().getByType(category);
       if (contacts.isEmpty) {
-        _showMessage(messenger, 'No $label entries are available right now.');
+        _showMessage(messenger, l10n.noServiceAvailable(label));
         return;
       }
 
@@ -218,14 +221,14 @@ class _HomeScreenState extends State<HomeScreen> {
       if (selected.phone.trim().isEmpty) {
         _showMessage(
           messenger,
-          'This service does not have a phone number yet.',
+          l10n.noPhoneNumber,
         );
         return;
       }
 
       await LauncherHelper.makeCall(selected.phone);
     } catch (_) {
-      _showMessage(messenger, 'Unable to place the call right now.');
+      _showMessage(messenger, l10n.unableToCall);
     } finally {
       if (mounted) {
         setState(() {
@@ -238,6 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _handleGeneralContactTap(BuildContext context) async {
     if (_loadingCategory != null) return;
 
+    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     setState(() {
       _loadingCategory = 'contact';
@@ -250,7 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
           .toList();
 
       if (contacts.isEmpty) {
-        _showMessage(messenger, 'No general contacts have been saved yet.');
+        _showMessage(messenger, l10n.noGeneralContacts);
         return;
       }
 
@@ -258,14 +262,14 @@ class _HomeScreenState extends State<HomeScreen> {
       if (firstContact.phoneNumber.trim().isEmpty) {
         _showMessage(
           messenger,
-          'The selected contact does not have a phone number.',
+          l10n.noContactPhone,
         );
         return;
       }
 
       await LauncherHelper.makeCall(firstContact.phoneNumber);
     } catch (_) {
-      _showMessage(messenger, 'Unable to load your saved contacts right now.');
+      _showMessage(messenger, l10n.unableToLoadContacts);
     } finally {
       if (mounted) {
         setState(() {
@@ -298,54 +302,57 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showSOSDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Row(
-          children: [
-            Icon(Icons.warning_rounded, color: AppColors.red, size: 28),
-            SizedBox(width: 10),
-            Text(
-              'EMERGENCY',
-              style: TextStyle(
-                color: AppColors.red,
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
+      builder: (ctx) {
+        final l10n = AppLocalizations.of(ctx)!;
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Row(
+            children: [
+              const Icon(Icons.warning_rounded, color: AppColors.red, size: 28),
+              const SizedBox(width: 10),
+              Text(
+                l10n.emergency,
+                style: const TextStyle(
+                  color: AppColors.red,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            l10n.emergencyConfirm,
+            style: const TextStyle(fontSize: 15, height: 1.5),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(
+                l10n.cancel,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.red,
+                minimumSize: const Size(120, 48),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () async {
+                Navigator.pop(ctx);
+                // context.push('/sos');
+                await LauncherHelper.makeCall('119');
+              },
+              child: Text(
+                l10n.call119,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
               ),
             ),
           ],
-        ),
-        content: const Text(
-          'This will immediately call the national emergency hotline.\n\nAre you sure you need emergency help?',
-          style: TextStyle(fontSize: 15, height: 1.5),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.red,
-              minimumSize: const Size(120, 48),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            onPressed: () async {
-              Navigator.pop(ctx);
-              // context.push('/sos');
-              await LauncherHelper.makeCall('119');
-            },
-            child: const Text(
-              'CALL 119',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 

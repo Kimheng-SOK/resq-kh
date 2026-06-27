@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:app/models/incident_type_model.dart';
@@ -70,7 +71,7 @@ class _EmergencyReportFormState extends State<EmergencyReportForm> {
       if (!mounted) return;
       _showSuccess();
     } catch (e) {
-      setState(() => _submitError = 'Failed to send report. Please try again.');
+      setState(() => _submitError = AppLocalizations.of(context)!.failedToSendReport);
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -80,33 +81,37 @@ class _EmergencyReportFormState extends State<EmergencyReportForm> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Row(
-          children: [
-            Icon(Icons.check_circle, color: Colors.green, size: 28),
-            SizedBox(width: 10),
-            Text('Report Sent'),
-          ],
-        ),
-        content: const Text(
-          'Your emergency report has been submitted. Help is being notified.',
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(ctx); // close dialog
-              context.go('/'); // back to home
-            },
-            child: const Text('OK'),
+      builder: (ctx) {
+        final l10n = AppLocalizations.of(ctx)!;
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.green, size: 28),
+              const SizedBox(width: 10),
+              Text(l10n.reportSent),
+            ],
           ),
-        ],
-      ),
+          content: Text(
+            l10n.reportSentMessage,
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(ctx); // close dialog
+                context.go('/'); // back to home
+              },
+              child: Text(l10n.ok),
+            ),
+          ],
+        );
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.incidentType.label),
@@ -132,7 +137,7 @@ class _EmergencyReportFormState extends State<EmergencyReportForm> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Reporting: ${widget.incidentType.label}',
+                      l10n.reporting(widget.incidentType.label),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.red,
@@ -147,12 +152,12 @@ class _EmergencyReportFormState extends State<EmergencyReportForm> {
             // Name
             TextFormField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Your Name',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.yourName,
+                border: const OutlineInputBorder(),
               ),
               validator: (value) => (value == null || value.trim().isEmpty)
-                  ? 'Name is required'
+                  ? l10n.nameIsRequired
                   : null,
             ),
             const SizedBox(height: 16),
@@ -161,12 +166,12 @@ class _EmergencyReportFormState extends State<EmergencyReportForm> {
             TextFormField(
               controller: _phoneController,
               keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                labelText: 'Phone Number',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.phoneNumber,
+                border: const OutlineInputBorder(),
               ),
               validator: (value) => (value == null || value.trim().isEmpty)
-                  ? 'Phone number is required'
+                  ? l10n.phoneIsRequired
                   : null,
             ),
             const SizedBox(height: 16),
@@ -175,9 +180,9 @@ class _EmergencyReportFormState extends State<EmergencyReportForm> {
             TextFormField(
               controller: _descController,
               maxLines: 4,
-              decoration: const InputDecoration(
-                labelText: 'What happened? (optional)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.whatHappened,
+                border: const OutlineInputBorder(),
                 alignLabelWithHint: true,
               ),
             ),
@@ -206,10 +211,10 @@ class _EmergencyReportFormState extends State<EmergencyReportForm> {
                   Expanded(
                     child: Text(
                       _loadingLocation
-                          ? 'Detecting your location...'
+                          ? l10n.detectingLocation
                           : (_lat != null
-                                ? 'Location detected: ${_lat!.toStringAsFixed(4)}, ${_lng!.toStringAsFixed(4)}'
-                                : 'Location unavailable — please enable GPS'),
+                                ? l10n.locationDetected(_lat!, _lng!)
+                                : l10n.locationUnavailable),
                       style: const TextStyle(fontSize: 13),
                     ),
                   ),
@@ -244,9 +249,9 @@ class _EmergencyReportFormState extends State<EmergencyReportForm> {
                           strokeWidth: 2.5,
                         ),
                       )
-                    : const Text(
-                        'SEND EMERGENCY REPORT',
-                        style: TextStyle(
+                    : Text(
+                        l10n.sendEmergencyReport,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 15,

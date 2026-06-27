@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app/models/incident_type_model.dart';
@@ -41,6 +42,7 @@ class _EmergencyRadialMenuState extends ConsumerState<EmergencyRadialMenu> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(incidentTypeProvider);
     final size = MediaQuery.of(context).size;
     final center = Offset(size.width / 2, size.height / 2 - 60);
@@ -54,7 +56,7 @@ class _EmergencyRadialMenuState extends ConsumerState<EmergencyRadialMenu> {
             ? const Center(child: CircularProgressIndicator(color: Colors.white))
             : state.error != null
                 ? Center(
-                    child: Text('Failed to load: ${state.error}',
+                    child: Text(l10n.failedToLoadConditions(state.error ?? ''),
                         style: const TextStyle(color: Colors.white)))
                 : Stack(
                     children: [
@@ -68,8 +70,8 @@ class _EmergencyRadialMenuState extends ConsumerState<EmergencyRadialMenu> {
                             color: Color.fromARGB(255, 217, 0, 0),
                             shape: BoxShape.circle,
                           ),
-                          child: const Center(
-                            child: Text('SOS',
+                          child: Center(
+                            child: Text(l10n.navSOS,
                                 style: TextStyle(color: Color.fromARGB(255, 254, 254, 254), fontWeight: FontWeight.bold, decoration: TextDecoration.none)),
                           ),
                         ),

@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_color.dart';
 
@@ -37,6 +38,7 @@ class _SOSButtonState extends State<SOSButton>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AnimatedBuilder(
       animation: _pulseAnimation,
       builder: (context, child) {
@@ -58,22 +60,22 @@ class _SOSButtonState extends State<SOSButton>
               ),
             ],
           ),
-          child: const Center(
+          child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'SOS',
-                  style: TextStyle(
+                  l10n.navSOS,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 42,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 4,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
-                  'Emergency',
+                  l10n.sosEmergency,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 14,
