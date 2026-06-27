@@ -1,9 +1,16 @@
 import 'dart:convert';
+
+import 'package:app/models/emergency_report_model.dart';
+import 'package:app/services/auth_storage_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class EmergencyReportService {
-  static const String _baseUrl = 'http://localhost:3000';
+  static final String _baseUrl = dotenv.env['API_URL']!;
 
+  /// -------------------------
+  /// Submit Emergency Report
+  /// -------------------------
   static Future<void> submitReport({
     required String incidentTypeId,
     required String name,
@@ -12,11 +19,15 @@ class EmergencyReportService {
     double? lat,
     double? lng,
   }) async {
+    final userId = await AuthStorageService.getUserId();
+
     final uri = Uri.parse('$_baseUrl/emergency-reports');
+
     final response = await http.post(
       uri,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
+        'user_id': userId,
         'incident_type_id': incidentTypeId,
         'reporter_name': name,
         'reporter_phone': phone,
@@ -27,7 +38,28 @@ class EmergencyReportService {
     );
 
     if (response.statusCode != 200 && response.statusCode != 201) {
-      throw Exception('Failed to submit report: ${response.statusCode}');
+      throw Exception(response.body);
     }
+  }
+
+  /// -------------------------
+  /// Get Current User Reports
+  /// -------------------------
+  static Future<List<EmergencyReport>> getMyReports() async {
+    final userId = await AuthStorageService.getUserId();
+
+    final response = await http.get(
+      Uri.parse('$_baseUrl/emergency-reports/user/$userId'),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load reports');
+    }
+
+    final json = jsonDecode(response.body);
+
+    final List reports = json['data'];
+
+    return reports.map((e) => EmergencyReport.fromJson(e)).toList();
   }
 }

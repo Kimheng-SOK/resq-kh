@@ -1,35 +1,31 @@
 import {
   Controller,
   Get,
+  Patch,
   Param,
   ParseUUIDPipe,
-  Patch,
   Query,
 } from '@nestjs/common';
+
 import { ApiTags } from '@nestjs/swagger';
+
 import { NotificationsService } from './notifications.service';
 import { QueryNotificationDto } from './dto/query-notification.dto';
 
-@ApiTags('notifications')
+@ApiTags('Notifications')
 @Controller('notifications')
 export class NotificationsController {
-  constructor(private readonly notificationsService: NotificationsService) {}
+  constructor(
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
   @Get()
   findAll(@Query() query: QueryNotificationDto) {
     return this.notificationsService.findAll(query);
   }
 
-  @Patch('read-all')
-  markAllRead(@Query('userId') userId: string) {
-    return this.notificationsService.markAllRead(userId);
-  }
-
   @Patch(':id/read')
-  markRead(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Query('userId') userId: string,
-  ) {
-    return this.notificationsService.markRead(id, userId);
+  markRead(@Param('id', ParseUUIDPipe) id: string) {
+    return this.notificationsService.markRead(id);
   }
 }

@@ -13,7 +13,9 @@ import 'package:app/features/contacts/nearby_places_screen.dart';
 import 'package:app/features/contacts/police_screen.dart';
 import 'package:app/features/map/map_detail_screen.dart';
 import 'package:app/features/map/map_screen.dart';
+import 'package:app/features/notifications/notification_screen.dart';
 import 'package:app/features/preference/preference_screen.dart';
+import 'package:app/features/settings/privacy_policy_screen.dart';
 import 'package:app/models/emergency_contact.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -141,8 +143,7 @@ GoRouter createRouter(String initialRoute) {
       ),
       GoRoute(
         path: '/notifications',
-        builder: (context, state) =>
-            const PlaceholderScreen(title: 'Notifications'),
+        builder: (context, state) => const NotificationScreen(),
       ),
       GoRoute(
         path: '/settings',
@@ -153,10 +154,13 @@ GoRouter createRouter(String initialRoute) {
         builder: (context, state) => const PreferenceScreen(),
       ),
       GoRoute(
+        path: '/privacy-policy',
+        builder: (context, state) => const PrivacyPolicyScreen(),
+      ),
+      GoRoute(
         path: '/emergency-report',
-        builder: (context, state) => EmergencyReportForm(
-          incidentType: state.extra as IncidentType,
-        ),
+        builder: (context, state) =>
+            EmergencyReportForm(incidentType: state.extra as IncidentType),
       ),
     ],
   );

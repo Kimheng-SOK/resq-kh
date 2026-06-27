@@ -226,12 +226,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         extra: {'editing': true},
                       ),
                     ),
-                    const DividerWidget(),
-                    SettingsTile(
-                      icon: Icons.contacts_outlined,
-                      label: 'Emergency Contacts',
-                      onTap: () {},
-                    ),
+                    // const DividerWidget(),
+                    // SettingsTile(
+                    //   icon: Icons.contacts_outlined,
+                    //   label: 'Emergency Contacts',
+                    //   onTap: () {},
+                    // ),
                     const DividerWidget(),
                     SettingsTile(
                       icon: Icons.location_searching_rounded,
@@ -275,7 +275,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     SettingsTile(
                       icon: Icons.privacy_tip_outlined,
                       label: 'Privacy Policy',
-                      onTap: () {},
+                      onTap: () {
+                        context.push('/privacy-policy');
+                      },
                     ),
                     const DividerWidget(),
                     SettingsTile(

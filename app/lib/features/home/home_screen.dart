@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:app/core/utils/launcher_helper.dart';
 import 'package:app/features/home/widgets/location_chip.dart';
 import 'package:app/features/home/widgets/quick_action_tile.dart';
-import 'package:app/features/home/widgets/sos_button.dart';
 import 'package:app/models/contact_model.dart';
 import 'package:app/services/contact_service.dart';
 import 'package:app/services/emergency_repository.dart';
@@ -13,7 +12,6 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_color.dart';
 import 'widgets/emergency_radial_menu.dart';
 import 'widgets/hold_to_activate_sos.dart';
-import 'package:app/core/utils/emergency_menu_helper.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -70,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 32),
             // SOSButton(onTap: () => _showSOSDialog(context)),
             HoldToActivateSOS(
-              onTap: () => _showSOSDialog(context),    
+              onTap: () => _showSOSDialog(context),
               onHoldComplete: () => showEmergencyRadialMenu(context),
             ),
             const SizedBox(height: 16),

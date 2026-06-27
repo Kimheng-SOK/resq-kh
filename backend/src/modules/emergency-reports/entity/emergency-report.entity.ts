@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { IncidentType } from '../../incident-types/entity/incident-type.entity';
+import { User } from '../../users/entities/user.entity';
 
 export enum ReportStatus {
   PENDING = 'pending',
@@ -19,6 +20,13 @@ export enum ReportStatus {
 export class EmergencyReport {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column({ type: 'uuid' })
+  user_id: string;
+
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
   @Column({ type: 'uuid' })
   incident_type_id: string;

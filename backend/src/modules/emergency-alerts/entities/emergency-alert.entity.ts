@@ -65,7 +65,4 @@ export class EmergencyAlert {
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updated_at: Date;
-
-  @OneToMany(() => Notification, (notification) => notification.emergency_alert)
-  notifications: Notification[];
 }

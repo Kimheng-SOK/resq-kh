@@ -1,8 +1,17 @@
-import { IsString, IsOptional, IsNumber, IsUUID, IsNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsUUID,
+  IsNotEmpty,
+} from 'class-validator';
 
 export class CreateEmergencyReportDto {
   @IsUUID()
   incident_type_id: string;
+
+  @IsUUID()
+  user_id: string;
 
   @IsString()
   @IsNotEmpty()
