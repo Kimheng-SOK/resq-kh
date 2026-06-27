@@ -147,6 +147,7 @@
   "medicalInfo": "ព័ត៌មានវេជ្ជសាស្រ្ត",
   "nearbySearchRadius": "កាំស្វែងរកនៅក្បែរ",
   "locationPermission": "ការអនុញ្ញាតទីតាំង",
+  "openAppSettingsNotSupported": "ការបើកការកំណត់កម្មវិធីមិនត្រូវបានគាំទ្រនៅលើវេទិកានេះទេ។",
   "notifications": "ការជូនដំណឹង",
   "pushNotifications": "ការជូនដំណឹង Push",
   "emailAlerts": "ការជូនដំណឹងតាមអ៊ីមែល",

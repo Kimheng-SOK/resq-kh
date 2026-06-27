@@ -19,13 +19,17 @@ class EmergencyReport {
 
   factory EmergencyReport.fromJson(Map<String, dynamic> json) {
     return EmergencyReport(
-      id: json['id'],
-      reporterName: json['reporter_name'],
-      reporterPhone: json['reporter_phone'],
+      id: json['id'] ?? '',
+      reporterName: json['reporter_name'] ?? 'Unknown',
+      reporterPhone: json['reporter_phone'] ?? '',
       description: json['description'] ?? '',
-      status: json['status'],
-      incidentType: json['incidentType']['label'],
-      createdAt: DateTime.parse(json['created_at']),
+      status: json['status'] ?? 'pending',
+      incidentType: json['incidentType'] is Map<String, dynamic>
+          ? (json['incidentType'] as Map<String, dynamic>)['label'] ?? 'Unknown'
+          : 'Unknown',
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : DateTime.now(),
     );
   }
 }

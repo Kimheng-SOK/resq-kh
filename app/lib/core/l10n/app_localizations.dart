@@ -878,6 +878,12 @@ abstract class AppLocalizations {
   /// **'Location Permission'**
   String get locationPermission;
 
+  /// Message shown when openAppSettings is not supported on the current platform.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening app settings is not supported on this platform.'**
+  String get openAppSettingsNotSupported;
+
   /// No description provided for @notifications.
   ///
   /// In en, this message translates to:

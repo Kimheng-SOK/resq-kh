@@ -21,6 +21,10 @@ class EmergencyReportService {
   }) async {
     final userId = await AuthStorageService.getUserId();
 
+    if (userId == null) {
+      throw Exception('You must be logged in to submit a report.');
+    }
+
     final uri = Uri.parse('$_baseUrl/emergency-reports');
 
     final response = await http.post(
@@ -48,6 +52,10 @@ class EmergencyReportService {
   static Future<List<EmergencyReport>> getMyReports() async {
     final userId = await AuthStorageService.getUserId();
 
+    if (userId == null) {
+      return []; // Not logged in or user ID not saved yet — no reports to show
+    }
+
     final response = await http.get(
       Uri.parse('$_baseUrl/emergency-reports/user/$userId'),
     );
@@ -58,7 +66,12 @@ class EmergencyReportService {
 
     final json = jsonDecode(response.body);
 
-    final List reports = json['data'];
+    final data = json['data'];
+    if (data == null) {
+      return [];
+    }
+
+    final List reports = data as List;
 
     return reports.map((e) => EmergencyReport.fromJson(e)).toList();
   }

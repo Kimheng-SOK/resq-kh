@@ -429,6 +429,10 @@ class AppLocalizationsKm extends AppLocalizations {
   String get locationPermission => 'ការអនុញ្ញាតទីតាំង';
 
   @override
+  String get openAppSettingsNotSupported =>
+      'ការបើកការកំណត់កម្មវិធីមិនត្រូវបានគាំទ្រនៅលើវេទិកានេះទេ។';
+
+  @override
   String get notifications => 'ការជូនដំណឹង';
 
   @override

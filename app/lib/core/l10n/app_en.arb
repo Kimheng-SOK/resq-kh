@@ -147,6 +147,7 @@
   "medicalInfo": "Medical Info",
   "nearbySearchRadius": "Nearby Search Radius",
   "locationPermission": "Location Permission",
+  "openAppSettingsNotSupported": "Opening app settings is not supported on this platform.",
   "notifications": "Notifications",
   "pushNotifications": "Push Notifications",
   "emailAlerts": "Email Alerts",

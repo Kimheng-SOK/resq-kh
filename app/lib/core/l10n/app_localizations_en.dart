@@ -426,6 +426,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get locationPermission => 'Location Permission';
 
   @override
+  String get openAppSettingsNotSupported =>
+      'Opening app settings is not supported on this platform.';
+
+  @override
   String get notifications => 'Notifications';
 
   @override

@@ -12,7 +12,11 @@ class FirstAidApiService {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> body = jsonDecode(response.body);
-      final List<dynamic> list = body['data'] as List<dynamic>;
+      final data = body['data'];
+      if (data == null) {
+        return [];
+      }
+      final List<dynamic> list = data as List<dynamic>;
       return list
           .map((t) => FirstAidTopic.fromJson(t as Map<String, dynamic>))
           .toList();
@@ -31,7 +35,7 @@ class FirstAidApiService {
       final Map<String, dynamic> body = jsonDecode(response.body);
       return FirstAidTopic.fromJson(
         body['data'] as Map<String, dynamic>,
-      ); // ← unwrap data
+      );
     }
     throw Exception('Failed to load topic "$slug": ${response.statusCode}');
   }

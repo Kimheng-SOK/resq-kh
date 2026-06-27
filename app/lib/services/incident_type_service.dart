@@ -12,7 +12,11 @@ class IncidentTypeService {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> body = jsonDecode(response.body);
-      final List<dynamic> list = body['data'] as List<dynamic>;
+      final data = body['data'];
+      if (data == null) {
+        return [];
+      }
+      final List<dynamic> list = data as List<dynamic>;
       return list.map((i) => IncidentType.fromJson(i)).toList();
     }
     throw Exception('Failed to load incident types: ${response.statusCode}');

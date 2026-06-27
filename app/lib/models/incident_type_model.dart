@@ -15,10 +15,10 @@ class IncidentType {
 
   factory IncidentType.fromJson(Map<String, dynamic> json) {
     return IncidentType(
-      id: json['id'] as String,
-      slug: json['slug'] as String,
-      label: json['label'] as String,
-      iconName: json['icon_name'] as String,
+      id: json['id'] as String? ?? '',
+      slug: json['slug'] as String? ?? '',
+      label: json['label'] as String? ?? 'Unknown',
+      iconName: json['icon_name'] as String? ?? 'warning',
       recommendedResponder: json['recommended_responder'] as String?,
     );
   }
