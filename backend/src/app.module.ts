@@ -14,6 +14,7 @@ import { EmergencyAlertsModule } from './modules/emergency-alerts/emergency-aler
 import { UserLocationsModule } from './modules/user-locations/user-locations.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { AdminsModule } from './modules/admins/admins.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { AppController } from './app.controller';
 import { IncidentTypesModule } from './modules/incident-types/incident-type.module';
 import { EmergencyReportsModule } from './modules/emergency-reports/emergency-report.module';
@@ -41,6 +42,7 @@ import { EmergencyReportsModule } from './modules/emergency-reports/emergency-re
     UserLocationsModule,
     NotificationsModule,
     AdminsModule,
+    AnalyticsModule,
   ],
   providers: [
     {
