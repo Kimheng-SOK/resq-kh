@@ -180,6 +180,7 @@ class _SOSNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
@@ -226,10 +227,10 @@ class _SOSNavItem extends StatelessWidget {
                         )
                       : null,
                 ),
-                child: const Center(
+                child: Center(
                   child: Text(
-                    'SOS',
-                    style: TextStyle(
+                    l10n.navSOS,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 13,
                       fontWeight: FontWeight.w800,

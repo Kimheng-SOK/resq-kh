@@ -878,7 +878,7 @@ abstract class AppLocalizations {
   /// **'Location Permission'**
   String get locationPermission;
 
-  /// Message shown when openAppSettings is not supported on the current platform.
+  /// No description provided for @openAppSettingsNotSupported.
   ///
   /// In en, this message translates to:
   /// **'Opening app settings is not supported on this platform.'**
@@ -1489,6 +1489,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dark'**
   String get themeDark;
+
+  /// No description provided for @incidentFire.
+  ///
+  /// In en, this message translates to:
+  /// **'Fire'**
+  String get incidentFire;
+
+  /// No description provided for @incidentCarCrash.
+  ///
+  /// In en, this message translates to:
+  /// **'Car Crash'**
+  String get incidentCarCrash;
+
+  /// No description provided for @incidentMedical.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical Emergency'**
+  String get incidentMedical;
+
+  /// No description provided for @incidentPolice.
+  ///
+  /// In en, this message translates to:
+  /// **'Police'**
+  String get incidentPolice;
+
+  /// No description provided for @incidentWater.
+  ///
+  /// In en, this message translates to:
+  /// **'Flood / Water'**
+  String get incidentWater;
+
+  /// No description provided for @incidentStorm.
+  ///
+  /// In en, this message translates to:
+  /// **'Storm'**
+  String get incidentStorm;
+
+  /// No description provided for @incidentShield.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get incidentShield;
+
+  /// No description provided for @incidentBolt.
+  ///
+  /// In en, this message translates to:
+  /// **'Electrical'**
+  String get incidentBolt;
+
+  /// No description provided for @incidentUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get incidentUnknown;
 }
 
 class _AppLocalizationsDelegate

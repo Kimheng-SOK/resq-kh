@@ -759,4 +759,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get themeDark => 'Dark';
+
+  @override
+  String get incidentFire => 'Fire';
+
+  @override
+  String get incidentCarCrash => 'Car Crash';
+
+  @override
+  String get incidentMedical => 'Medical Emergency';
+
+  @override
+  String get incidentPolice => 'Police';
+
+  @override
+  String get incidentWater => 'Flood / Water';
+
+  @override
+  String get incidentStorm => 'Storm';
+
+  @override
+  String get incidentShield => 'Security';
+
+  @override
+  String get incidentBolt => 'Electrical';
+
+  @override
+  String get incidentUnknown => 'Unknown';
 }

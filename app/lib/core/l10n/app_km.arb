@@ -262,5 +262,15 @@
   "themeMode": "របៀបរូបរាង",
   "themeAuto": "ស្វ័យប្រវត្តិ",
   "themeLight": "ពន្លឺ",
-  "themeDark": "ងងឹត"
+  "themeDark": "ងងឹត",
+
+  "incidentFire": "អគ្គីភ័យ",
+  "incidentCarCrash": "គ្រោះថ្នាក់ចរាចរណ៍",
+  "incidentMedical": "គ្រោះអាសន្នវេជ្ជសាស្រ្ត",
+  "incidentPolice": "នគរបាល",
+  "incidentWater": "ទឹកជំនន់",
+  "incidentStorm": "ព្យុះ",
+  "incidentShield": "សន្តិសុខ",
+  "incidentBolt": "បញ្ហាអគ្គិសនី",
+  "incidentUnknown": "មិនស្គាល់"
 }

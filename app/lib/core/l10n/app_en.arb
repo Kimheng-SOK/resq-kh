@@ -262,5 +262,15 @@
   "themeMode": "Theme Mode",
   "themeAuto": "Auto",
   "themeLight": "Light",
-  "themeDark": "Dark"
+  "themeDark": "Dark",
+
+  "incidentFire": "Fire",
+  "incidentCarCrash": "Car Crash",
+  "incidentMedical": "Medical Emergency",
+  "incidentPolice": "Police",
+  "incidentWater": "Flood / Water",
+  "incidentStorm": "Storm",
+  "incidentShield": "Security",
+  "incidentBolt": "Electrical",
+  "incidentUnknown": "Unknown"
 }

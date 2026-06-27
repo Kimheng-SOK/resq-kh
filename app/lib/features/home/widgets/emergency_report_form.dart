@@ -5,6 +5,21 @@ import 'package:app/models/incident_type_model.dart';
 import 'package:app/services/emergency_report_service.dart';
 import 'package:app/services/location_service.dart';
 
+/// Maps an incident type icon-name to its localized display label.
+String _incidentLabel(AppLocalizations l10n, String iconName) {
+  switch (iconName) {
+    case 'fire': return l10n.incidentFire;
+    case 'car_crash': return l10n.incidentCarCrash;
+    case 'medical': return l10n.incidentMedical;
+    case 'police': return l10n.incidentPolice;
+    case 'water': return l10n.incidentWater;
+    case 'storm': return l10n.incidentStorm;
+    case 'shield': return l10n.incidentShield;
+    case 'bolt': return l10n.incidentBolt;
+    default: return l10n.incidentUnknown;
+  }
+}
+
 class EmergencyReportForm extends StatefulWidget {
   final IncidentType incidentType;
 
@@ -114,7 +129,7 @@ class _EmergencyReportFormState extends State<EmergencyReportForm> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.incidentType.label),
+        title: Text(_incidentLabel(l10n, widget.incidentType.iconName)),
         backgroundColor: Colors.red,
         foregroundColor: Colors.white,
       ),
@@ -137,7 +152,7 @@ class _EmergencyReportFormState extends State<EmergencyReportForm> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      l10n.reporting(widget.incidentType.label),
+                      l10n.reporting(_incidentLabel(l10n, widget.incidentType.iconName)),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.red,

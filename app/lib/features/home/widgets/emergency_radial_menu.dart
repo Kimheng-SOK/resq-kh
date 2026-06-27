@@ -19,6 +19,21 @@ IconData _iconFor(String name) {
   }
 }
 
+/// Maps an incident type icon-name to its localized display label.
+String _incidentLabel(AppLocalizations l10n, String iconName) {
+  switch (iconName) {
+    case 'fire': return l10n.incidentFire;
+    case 'car_crash': return l10n.incidentCarCrash;
+    case 'medical': return l10n.incidentMedical;
+    case 'police': return l10n.incidentPolice;
+    case 'water': return l10n.incidentWater;
+    case 'storm': return l10n.incidentStorm;
+    case 'shield': return l10n.incidentShield;
+    case 'bolt': return l10n.incidentBolt;
+    default: return l10n.incidentUnknown;
+  }
+}
+
 class EmergencyRadialMenu extends ConsumerStatefulWidget {
   final void Function(IncidentType) onSelect;
   final VoidCallback onDismiss;
@@ -101,7 +116,7 @@ class _EmergencyRadialMenuState extends ConsumerState<EmergencyRadialMenu> {
                                       color: Colors.white, size: 26),
                                 ),
                                 const SizedBox(height: 6),
-                                Text(type.label,
+                                Text(_incidentLabel(l10n, type.iconName),
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
                                       color: Color.fromARGB(255, 18, 15, 15), 

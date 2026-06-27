@@ -93,7 +93,10 @@ GoRouter createRouter(String initialRoute) {
           ),
           GoRoute(
             path: '/sos',
-            builder: (context, state) => const _RouteBody(title: 'SOS'),
+            builder: (context, state) {
+              final l10n = AppLocalizations.of(context)!;
+              return _RouteBody(title: l10n.navSOS);
+            },
           ),
           GoRoute(
             path: '/contacts',

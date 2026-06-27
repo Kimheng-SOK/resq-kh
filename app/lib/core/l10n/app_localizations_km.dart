@@ -764,4 +764,31 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get themeDark => 'ងងឹត';
+
+  @override
+  String get incidentFire => 'អគ្គីភ័យ';
+
+  @override
+  String get incidentCarCrash => 'គ្រោះថ្នាក់ចរាចរណ៍';
+
+  @override
+  String get incidentMedical => 'គ្រោះអាសន្នវេជ្ជសាស្រ្ត';
+
+  @override
+  String get incidentPolice => 'នគរបាល';
+
+  @override
+  String get incidentWater => 'ទឹកជំនន់';
+
+  @override
+  String get incidentStorm => 'ព្យុះ';
+
+  @override
+  String get incidentShield => 'សន្តិសុខ';
+
+  @override
+  String get incidentBolt => 'បញ្ហាអគ្គិសនី';
+
+  @override
+  String get incidentUnknown => 'មិនស្គាល់';
 }
