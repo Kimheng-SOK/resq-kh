@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:app/core/theme/app_color.dart';
 import 'package:app/core/utils/launcher_helper.dart';
 import 'package:app/core/utils/service_utils.dart';
@@ -66,6 +67,7 @@ class _ServiceContactsScreenState extends State<ServiceContactsScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) {
+        final l10n = AppLocalizations.of(ctx)!;
         final theme = Theme.of(ctx);
         return SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
@@ -158,9 +160,9 @@ class _ServiceContactsScreenState extends State<ServiceContactsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Phone',
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          Text(
+                            l10n.phone,
+                            style: const TextStyle(fontSize: 12, color: Colors.grey),
                           ),
                           Text(
                             contact.phone,
@@ -176,7 +178,7 @@ class _ServiceContactsScreenState extends State<ServiceContactsScreen> {
                       onPressed: () => LauncherHelper.makeCall(contact.phone),
                       icon: const Icon(Icons.call_rounded),
                       color: AppColors.success,
-                      tooltip: 'Call',
+                      tooltip: l10n.call,
                     ),
                   ],
                 ),
@@ -191,7 +193,7 @@ class _ServiceContactsScreenState extends State<ServiceContactsScreen> {
                     child: ElevatedButton.icon(
                       onPressed: () => LauncherHelper.makeCall(contact.phone),
                       icon: const Icon(Icons.phone_rounded, size: 18),
-                      label: const Text('Call'),
+                      label: Text(l10n.call),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.red,
                         foregroundColor: Colors.white,
@@ -209,7 +211,7 @@ class _ServiceContactsScreenState extends State<ServiceContactsScreen> {
                         '${contact.lat},${contact.lng}',
                       ),
                       icon: const Icon(Icons.directions_rounded, size: 18),
-                      label: const Text('Directions'),
+                      label: Text(l10n.directions),
                       style: OutlinedButton.styleFrom(
                         minimumSize: const Size(0, 48),
                         shape: RoundedRectangleBorder(
@@ -231,7 +233,7 @@ class _ServiceContactsScreenState extends State<ServiceContactsScreen> {
                     context.push('/map/detail', extra: contact);
                   },
                   icon: const Icon(Icons.map_outlined, size: 18),
-                  label: const Text('View on Map'),
+                  label: Text(l10n.viewOnMap),
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size(0, 48),
                     shape: RoundedRectangleBorder(
@@ -293,6 +295,7 @@ class _ServiceContactsScreenState extends State<ServiceContactsScreen> {
   }
 
   Widget _buildBody(ThemeData theme, bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -307,23 +310,23 @@ class _ServiceContactsScreenState extends State<ServiceContactsScreen> {
               color: Colors.grey,
             ),
             const SizedBox(height: 12),
-            Text('Could not load services', style: theme.textTheme.titleMedium),
+            Text(l10n.couldNotLoadServices, style: theme.textTheme.titleMedium),
             const SizedBox(height: 8),
             Text(
               _error!,
               style: const TextStyle(color: Colors.grey, fontSize: 13),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: _load, child: const Text('Retry')),
+            ElevatedButton(onPressed: _load, child: Text(l10n.retry)),
           ],
         ),
       );
     }
     if (_services.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
-          'No services found.',
-          style: TextStyle(color: Colors.grey, fontSize: 15),
+          l10n.noServicesFound,
+          style: const TextStyle(color: Colors.grey, fontSize: 15),
         ),
       );
     }
@@ -438,7 +441,7 @@ class _ServiceContactsScreenState extends State<ServiceContactsScreen> {
                         icon: const Icon(Icons.phone_rounded),
                         color: AppColors.success,
                         iconSize: 22,
-                        tooltip: 'Call ${contact.name}',
+                        tooltip: '${l10n.call} ${contact.name}',
                       ),
                     ),
                   ],

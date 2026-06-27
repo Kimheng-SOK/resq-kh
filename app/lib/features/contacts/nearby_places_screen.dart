@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:app/core/theme/app_color.dart';
 import 'package:app/core/utils/launcher_helper.dart';
 import 'package:app/core/utils/service_utils.dart';
@@ -99,9 +100,10 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
 
     if (!mounted) return;
 
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Location updated'),
+      SnackBar(
+        content: Text(l10n.locationUpdated),
         duration: Duration(seconds: 1),
       ),
     );
@@ -163,6 +165,7 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) {
+        final l10n = AppLocalizations.of(ctx)!;
         return SafeArea(
           top: false,
           child: Padding(
@@ -203,7 +206,7 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
                 if (service.distanceKm != null)
                   _detailRow(
                     Icons.near_me_outlined,
-                    '${service.distanceKm!.toStringAsFixed(1)} km away',
+                    l10n.kmAway(service.distanceKm!),
                   ),
                 if (service.phone.isNotEmpty)
                   _detailRow(Icons.phone_rounded, service.phone),
@@ -216,7 +219,7 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
                             ? null
                             : () => LauncherHelper.makeCall(service.phone),
                         icon: const Icon(Icons.call_rounded, size: 18),
-                        label: const Text('Call'),
+                        label: Text(l10n.call),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.red,
                           foregroundColor: Colors.white,
@@ -234,7 +237,7 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
                           '${service.lat},${service.lng}',
                         ),
                         icon: const Icon(Icons.directions_rounded, size: 18),
-                        label: const Text('Directions'),
+                        label: Text(l10n.directions),
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size(0, 48),
                           shape: RoundedRectangleBorder(
@@ -254,7 +257,7 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
                       context.push('/map/detail', extra: service);
                     },
                     icon: const Icon(Icons.map_outlined, size: 18),
-                    label: const Text('View Details'),
+                    label: Text(l10n.viewDetails),
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(0, 48),
                       shape: RoundedRectangleBorder(
@@ -368,6 +371,7 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
   }
 
   Widget _buildSearchBar(ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
     final isDark = theme.brightness == Brightness.dark;
 
     return Positioned(
@@ -401,7 +405,7 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
                 controller: _searchController,
                 onChanged: _onSearchChanged,
                 decoration: InputDecoration(
-                  hintText: 'Search ${widget.title.toLowerCase()}...',
+                  hintText: '${l10n.searchContacts} ${widget.title.toLowerCase()}...',
                   hintStyle: TextStyle(
                     color: isDark ? Colors.white38 : const Color(0xFF9CA3AF),
                     fontSize: 14,
@@ -455,6 +459,7 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
   }
 
   Widget _buildBottomBar(ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
     final isDark = theme.brightness == Brightness.dark;
 
     return Positioned(
@@ -505,7 +510,7 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
                   ),
                   const Spacer(),
                   Text(
-                    '${_filteredServices.length} within ${_nearbyRadiusKm.toStringAsFixed(0)} km',
+                    '${l10n.foundCount(_filteredServices.length)} ${l10n.withinKm(_nearbyRadiusKm.toInt())}',
                     style: TextStyle(
                       fontSize: 13,
                       color: isDark ? Colors.white54 : AppColors.textSecondary,
@@ -538,6 +543,7 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
           maxChildSize: 0.95,
           expand: false,
           builder: (context, scrollController) {
+            final l10n = AppLocalizations.of(context)!;
             final theme = Theme.of(context);
             final isDark = theme.brightness == Brightness.dark;
 
@@ -577,7 +583,7 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
                               ),
                               const Spacer(),
                               Text(
-                                '${_filteredServices.length} found',
+                                l10n.foundCount(_filteredServices.length),
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: isDark
@@ -590,7 +596,7 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Within ${_nearbyRadiusKm.toStringAsFixed(0)} km',
+                            l10n.withinKm(_nearbyRadiusKm.toInt()),
                             style: TextStyle(
                               fontSize: 13,
                               color: isDark
@@ -621,8 +627,8 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
                               child: Center(
                                 child: Text(
                                   _searchQuery.isEmpty
-                                      ? 'No services found within 5 km.'
-                                      : 'No results for "$_searchQuery".',
+                                      ? l10n.noServicesFoundWithin(5)
+                                      : l10n.noResultsForQuery(_searchQuery),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: isDark
@@ -648,6 +654,7 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
   }
 
   Widget _buildErrorState(ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
     final isDark = theme.brightness == Brightness.dark;
 
     return Center(
@@ -663,7 +670,7 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Could not load nearby services',
+              l10n.couldNotLoadNearby,
               style: TextStyle(
                 color: isDark ? Colors.white70 : AppColors.textPrimary,
                 fontSize: 16,
@@ -684,7 +691,7 @@ class _NearbyPlacesScreenState extends ConsumerState<NearbyPlacesScreen> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadServices,
-              child: const Text('Retry'),
+              child: Text(l10n.retry),
             ),
           ],
         ),

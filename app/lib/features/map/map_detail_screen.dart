@@ -4,6 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/l10n/app_localizations.dart';
 import '../../core/theme/app_color.dart';
 import '../../core/utils/launcher_helper.dart';
 import '../../core/utils/service_utils.dart';
@@ -314,6 +315,7 @@ class _ServiceInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final detailScreen = context
         .findAncestorWidgetOfExactType<MapDetailScreen>()!;
     final contact = detailScreen.contact;
@@ -383,7 +385,7 @@ class _ServiceInfoRow extends StatelessWidget {
                   Flexible(
                     child: Text(
                       contact.hours == '24/7'
-                          ? 'OPEN 24 HOURS'
+                          ? l10n.open24Hours
                           : contact.hours.toUpperCase(),
                       style: const TextStyle(
                         fontSize: 12,
@@ -413,6 +415,7 @@ class _CallEmergencyBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final screenWidth = MediaQuery.of(context).size.width;
     final isCompact = screenWidth < 360;
 
@@ -436,7 +439,7 @@ class _CallEmergencyBtn extends StatelessWidget {
             Icon(Icons.phone_rounded, size: isCompact ? 16 : 18),
             SizedBox(width: isCompact ? 8 : 12),
             Text(
-              'CALL EMERGENCY',
+              l10n.callEmergency,
               style: TextStyle(
                 fontSize: isCompact ? 14 : 16,
                 fontWeight: FontWeight.w700,
@@ -464,6 +467,7 @@ class _ActionBtnRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
         Expanded(
@@ -475,7 +479,7 @@ class _ActionBtnRow extends StatelessWidget {
               color: Theme.of(context).colorScheme.onSurface,
             ),
             label: Text(
-              'Contact',
+              l10n.contact,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onSurface,
                 fontSize: compact ? 13 : 15,
@@ -497,7 +501,7 @@ class _ActionBtnRow extends StatelessWidget {
               color: Theme.of(context).colorScheme.onSurface,
             ),
             label: Text(
-              'Directions',
+              l10n.directions,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onSurface,
                 fontSize: compact ? 13 : 15,

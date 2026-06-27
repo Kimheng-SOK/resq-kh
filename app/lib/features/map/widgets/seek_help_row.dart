@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/utils/service_utils.dart';
 
 /// Represents a single category in the "Seek Help" horizontal chip row.
@@ -72,8 +73,18 @@ class SeekHelpRow extends StatefulWidget {
 class _SeekHelpRowState extends State<SeekHelpRow> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+
+    final Map<String, String> categoryLabels = {
+      'contacts': l10n.contactsLabel,
+      'police': l10n.policeLabel,
+      'fire': l10n.fireLabel,
+      'hospital': l10n.hospital,
+      'ambulance': l10n.ambulance,
+      'other': l10n.otherLabel,
+    };
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -121,7 +132,7 @@ class _SeekHelpRowState extends State<SeekHelpRow> {
                   const SizedBox(height: 4),
 
                   Text(
-                    cat.label,
+                    categoryLabels[cat.id] ?? cat.label,
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: isSelected

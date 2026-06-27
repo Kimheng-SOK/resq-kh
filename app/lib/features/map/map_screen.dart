@@ -4,6 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/l10n/app_localizations.dart';
 import '../../core/theme/app_color.dart';
 import '../../core/utils/service_utils.dart';
 import '../../features/contacts/models/contacts_model.dart';
@@ -215,8 +216,9 @@ class _MapScreenState extends State<MapScreen> {
   void _onContactTap(EmergencyContact contact) {
     if (contact.lat == 0 && contact.lng == 0) {
       // Personal contact without location — can't show on map
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${contact.name} has no location on map')),
+        SnackBar(content: Text(l10n.noLocationOnMap(contact.name))),
       );
       return;
     }
@@ -225,6 +227,7 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -233,14 +236,14 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           _buildMapLayer(),
 
-          _buildSearchBar(theme),
+          _buildSearchBar(theme, l10n),
 
           if (!_isLoading && _errorMessage == null)
-            _buildBottomIndicator(theme),
+            _buildBottomIndicator(theme, l10n),
 
           if (_isLoading) const Center(child: CircularProgressIndicator()),
 
-          if (_errorMessage != null) _buildErrorState(theme),
+          if (_errorMessage != null) _buildErrorState(theme, l10n),
         ],
       ),
     );
@@ -271,7 +274,7 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget _buildSearchBar(ThemeData theme) {
+  Widget _buildSearchBar(ThemeData theme, AppLocalizations l10n) {
     final isDark = theme.brightness == Brightness.dark;
 
     return Positioned(
@@ -305,7 +308,7 @@ class _MapScreenState extends State<MapScreen> {
                 controller: _searchController,
                 onChanged: _onSearchChanged,
                 decoration: InputDecoration(
-                  hintText: 'Search contacts, services...',
+                  hintText: l10n.searchContactsServices,
                   hintStyle: TextStyle(
                     color: isDark ? Colors.white38 : const Color(0xFF9CA3AF),
                     fontSize: 14,
@@ -367,7 +370,7 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget _buildBottomIndicator(ThemeData theme) {
+  Widget _buildBottomIndicator(ThemeData theme, AppLocalizations l10n) {
     final isDark = theme.brightness == Brightness.dark;
 
     return Positioned(
@@ -410,7 +413,7 @@ class _MapScreenState extends State<MapScreen> {
                   const Icon(Icons.people_rounded, size: 20),
                   const SizedBox(width: 8),
                   Text(
-                    'Seek Help',
+                    l10n.seekHelp,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -431,7 +434,7 @@ class _MapScreenState extends State<MapScreen> {
                     )
                   else
                     Text(
-                      '${_filteredContacts.length} nearby',
+                      l10n.nearbyCount(_filteredContacts.length),
                       style: TextStyle(
                         fontSize: 13,
                         color: isDark
@@ -483,7 +486,7 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget _buildErrorState(ThemeData theme) {
+  Widget _buildErrorState(ThemeData theme, AppLocalizations l10n) {
     final isDark = theme.brightness == Brightness.dark;
 
     return Center(
@@ -497,7 +500,7 @@ class _MapScreenState extends State<MapScreen> {
           ),
           const SizedBox(height: 12),
           Text(
-            'Could not load contacts',
+            l10n.couldNotLoadContacts,
             style: TextStyle(
               color: isDark ? Colors.white70 : AppColors.textPrimary,
               fontSize: 16,
@@ -524,7 +527,7 @@ class _MapScreenState extends State<MapScreen> {
               });
               _loadContacts();
             },
-            child: const Text('Retry'),
+            child: Text(l10n.retry),
           ),
         ],
       ),
@@ -616,6 +619,7 @@ class _ContactsSheetContentState extends State<_ContactsSheetContent> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -665,7 +669,7 @@ class _ContactsSheetContentState extends State<_ContactsSheetContent> {
                             controller: _sheetSearchController,
                             onChanged: _onSearchChanged,
                             decoration: InputDecoration(
-                              hintText: 'Search contacts, services...',
+                              hintText: l10n.searchContactsServices,
                               hintStyle: TextStyle(
                                 color: isDark
                                     ? Colors.white38
@@ -718,7 +722,7 @@ class _ContactsSheetContentState extends State<_ContactsSheetContent> {
                         child: Row(
                           children: [
                             Text(
-                              'Seek Help',
+                              l10n.seekHelp,
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
@@ -728,7 +732,7 @@ class _ContactsSheetContentState extends State<_ContactsSheetContent> {
                             ),
                             const Spacer(),
                             Text(
-                              '${_filtered.length} found',
+                              l10n.foundCount(_filtered.length),
                               style: TextStyle(
                                 fontSize: 13,
                                 color: isDark
@@ -764,7 +768,7 @@ class _ContactsSheetContentState extends State<_ContactsSheetContent> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Text(
-                          'EMERGENCY CONTACTS',
+                          l10n.emergencyContacts,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
@@ -787,7 +791,7 @@ class _ContactsSheetContentState extends State<_ContactsSheetContent> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    'Notifications enabled for ${contact.name}',
+                                    l10n.notificationsEnabledFor(contact.name),
                                   ),
                                   duration: const Duration(seconds: 2),
                                 ),
@@ -817,8 +821,8 @@ class _ContactsSheetContentState extends State<_ContactsSheetContent> {
                                 const SizedBox(height: 8),
                                 Text(
                                   _searchQuery.isNotEmpty
-                                      ? 'No results for "$_searchQuery"'
-                                      : 'No contacts in this category.',
+                                      ? l10n.noResultsForQuery(_searchQuery)
+                                      : l10n.noCategoryContacts,
                                   style: TextStyle(
                                     color: isDark
                                         ? Colors.white54
@@ -840,8 +844,8 @@ class _ContactsSheetContentState extends State<_ContactsSheetContent> {
                         child: OutlinedButton.icon(
                           onPressed: widget.onAddContacts,
                           icon: const Icon(Icons.person_add_rounded, size: 20),
-                          label: const Text(
-                            'Add contacts',
+                          label: Text(
+                            l10n.addContacts,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,

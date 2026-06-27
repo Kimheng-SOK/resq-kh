@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:app/core/utils/service_utils.dart';
 import 'package:app/widgets/refresh_drag_pop_widget.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ class ContactsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return RefreshDragPopWidget(
       onRefresh: () async {
         await Future.delayed(const Duration(seconds: 1));
@@ -17,9 +19,9 @@ class ContactsScreen extends StatelessWidget {
         children: [
           const SizedBox(height: 16),
 
-          const Center(
+          Center(
             child: Text(
-              'Emergency Services',
+              l10n.emergencyServices,
               style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
           ),
@@ -27,7 +29,7 @@ class ContactsScreen extends StatelessWidget {
           const SizedBox(height: 32),
           _ServiceCard(
             title: ServiceUtils.labelForType('nearby'),
-            subtitle: 'Services near your location',
+            subtitle: l10n.servicesNearYou,
             icon: ServiceUtils.iconForType('nearby'),
             color: ServiceUtils.colorForType('nearby'),
             onTap: () {
@@ -37,7 +39,7 @@ class ContactsScreen extends StatelessWidget {
           const SizedBox(height: 16),
           _ServiceCard(
             title: ServiceUtils.labelForType('police'),
-            subtitle: 'Request immediate assistance',
+            subtitle: l10n.requestAssistance,
             icon: ServiceUtils.iconForType('police'),
             color: ServiceUtils.colorForType('police'),
             onTap: () {
@@ -49,7 +51,7 @@ class ContactsScreen extends StatelessWidget {
 
           _ServiceCard(
             title: ServiceUtils.labelForType('hospital'),
-            subtitle: 'Emergency rooms & trauma centers',
+            subtitle: l10n.erAndTrauma,
             icon: ServiceUtils.iconForType('hospital'),
             color: ServiceUtils.colorForType('hospital'),
             onTap: () {
@@ -61,7 +63,7 @@ class ContactsScreen extends StatelessWidget {
 
           _ServiceCard(
             title: ServiceUtils.labelForType('ambulance'),
-            subtitle: 'Medical & paramedics',
+            subtitle: l10n.medicalAndParamedics,
             icon: ServiceUtils.iconForType('ambulance'),
             color: ServiceUtils.colorForType('ambulance'),
             onTap: () {
@@ -73,7 +75,7 @@ class ContactsScreen extends StatelessWidget {
 
           _ServiceCard(
             title: ServiceUtils.labelForType('fire'),
-            subtitle: 'Fire & rescue emergencies',
+            subtitle: l10n.fireAndRescue,
             icon: ServiceUtils.iconForType('fire'),
             color: ServiceUtils.colorForType('fire'),
             onTap: () {
@@ -85,7 +87,7 @@ class ContactsScreen extends StatelessWidget {
 
           _ServiceCard(
             title: ServiceUtils.labelForType('general'),
-            subtitle: 'Personal emergency contacts',
+            subtitle: l10n.personalEmergencyContacts,
             icon: ServiceUtils.iconForType('general'),
             color: ServiceUtils.colorForType('general'),
             onTap: () {

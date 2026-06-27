@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:app/core/theme/app_color.dart';
 import 'package:app/core/utils/launcher_helper.dart';
 import 'package:app/features/contacts/models/contacts_model.dart';
@@ -92,8 +93,9 @@ class _GeneralContactsScreenState extends State<GeneralContactsScreen> {
 
       await _loadContacts();
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       _showSnack(
-        existing == null ? 'Contact added' : 'Contact updated',
+        existing == null ? l10n.contactAdded : l10n.contactUpdated,
         isError: false,
       );
     } catch (e) {
@@ -108,18 +110,19 @@ class _GeneralContactsScreenState extends State<GeneralContactsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) {
+        final l10n = AppLocalizations.of(ctx)!;
         return AlertDialog(
-          title: const Text('Delete contact'),
-          content: Text('Remove ${contact.name} from your emergency contacts?'),
+          title: Text(l10n.deleteContact),
+          content: Text(l10n.removeFromContacts(contact.name)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
               style: FilledButton.styleFrom(backgroundColor: AppColors.red),
-              child: const Text('Delete'),
+              child: Text(l10n.delete),
             ),
           ],
         );
@@ -132,7 +135,8 @@ class _GeneralContactsScreenState extends State<GeneralContactsScreen> {
       await ContactService.deleteContact(contact.id);
       await _loadContacts();
       if (!mounted) return;
-      _showSnack('Contact deleted', isError: false);
+      final l10n = AppLocalizations.of(context)!;
+      _showSnack(l10n.contactDeleted, isError: false);
     } catch (e) {
       if (!mounted) return;
       _showSnack(e.toString(), isError: true);
@@ -178,6 +182,7 @@ class _GeneralContactsScreenState extends State<GeneralContactsScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
+        final l10n = AppLocalizations.of(ctx)!;
         final theme = Theme.of(ctx);
         final isDark = theme.brightness == Brightness.dark;
 
@@ -213,14 +218,14 @@ class _GeneralContactsScreenState extends State<GeneralContactsScreen> {
                 const SizedBox(height: 18),
                 _DetailRow(
                   icon: Icons.phone_rounded,
-                  label: 'Phone',
+                  label: l10n.phone,
                   value: contact.phoneNumber,
                   trailing: IconButton(
                     onPressed: () =>
                         LauncherHelper.makeCall(contact.phoneNumber),
                     icon: const Icon(Icons.call_rounded),
                     color: AppColors.success,
-                    tooltip: 'Call',
+                    tooltip: l10n.call,
                   ),
                 ),
                 const SizedBox(height: 18),
@@ -233,7 +238,7 @@ class _GeneralContactsScreenState extends State<GeneralContactsScreen> {
                           _openContactForm(contact: contact);
                         },
                         icon: const Icon(Icons.edit_outlined, size: 18),
-                        label: const Text('Edit'),
+                        label: Text(l10n.edit),
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size(0, 48),
                           shape: RoundedRectangleBorder(
@@ -253,7 +258,7 @@ class _GeneralContactsScreenState extends State<GeneralContactsScreen> {
                           Icons.delete_outline_rounded,
                           size: 18,
                         ),
-                        label: const Text('Delete'),
+                        label: Text(l10n.delete),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.red,
                           side: const BorderSide(color: AppColors.red),
@@ -276,6 +281,7 @@ class _GeneralContactsScreenState extends State<GeneralContactsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final filteredContacts = _filteredContacts;
@@ -284,7 +290,7 @@ class _GeneralContactsScreenState extends State<GeneralContactsScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.red,
         onPressed: () => _openContactForm(),
-        tooltip: 'Add contact',
+        tooltip: l10n.addContact,
         child: const Icon(Icons.person_add_rounded, color: Colors.white),
       ),
       body: RefreshDragPopWidget(
@@ -305,7 +311,7 @@ class _GeneralContactsScreenState extends State<GeneralContactsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'General Contact',
+                                l10n.generalContact,
                                 style: theme.textTheme.headlineSmall?.copyWith(
                                   fontWeight: FontWeight.w800,
                                   letterSpacing: 0,
@@ -313,7 +319,7 @@ class _GeneralContactsScreenState extends State<GeneralContactsScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '${_contacts.length} saved emergency contacts',
+                                l10n.savedEmergencyContacts(_contacts.length),
                                 style: TextStyle(
                                   color: isDark
                                       ? Colors.white54
@@ -327,7 +333,7 @@ class _GeneralContactsScreenState extends State<GeneralContactsScreen> {
                         IconButton.filledTonal(
                           onPressed: _loadContacts,
                           icon: const Icon(Icons.refresh_rounded),
-                          tooltip: 'Refresh',
+                          tooltip: l10n.refresh,
                         ),
                       ],
                     ),
@@ -458,6 +464,7 @@ class _ContactFormSheetState extends State<_ContactFormSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
     final isDark = theme.brightness == Brightness.dark;
@@ -495,7 +502,7 @@ class _ContactFormSheetState extends State<_ContactFormSheet> {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    _isEditing ? 'Edit Contact' : 'Add Contact',
+                    _isEditing ? l10n.editContactTitle : l10n.addContactTitle,
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w800,
                     ),
@@ -504,13 +511,13 @@ class _ContactFormSheetState extends State<_ContactFormSheet> {
                   TextFormField(
                     controller: _nameController,
                     textInputAction: TextInputAction.next,
-                    decoration: const InputDecoration(
-                      labelText: 'Name',
-                      prefixIcon: Icon(Icons.person_outline_rounded),
+                    decoration: InputDecoration(
+                      labelText: l10n.name,
+                      prefixIcon: const Icon(Icons.person_outline_rounded),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Name is required';
+                        return l10n.nameRequired;
                       }
                       return null;
                     },
@@ -520,13 +527,13 @@ class _ContactFormSheetState extends State<_ContactFormSheet> {
                     controller: _phoneController,
                     keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.next,
-                    decoration: const InputDecoration(
-                      labelText: 'Phone number',
-                      prefixIcon: Icon(Icons.phone_outlined),
+                    decoration: InputDecoration(
+                      labelText: l10n.phoneNumberLabel,
+                      prefixIcon: const Icon(Icons.phone_outlined),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Phone number is required';
+                        return l10n.phoneNumberRequired;
                       }
                       return null;
                     },
@@ -536,13 +543,13 @@ class _ContactFormSheetState extends State<_ContactFormSheet> {
                     controller: _relationshipController,
                     textInputAction: TextInputAction.done,
                     onFieldSubmitted: (_) => _submit(),
-                    decoration: const InputDecoration(
-                      labelText: 'Relationship',
-                      prefixIcon: Icon(Icons.family_restroom_rounded),
+                    decoration: InputDecoration(
+                      labelText: l10n.relationship,
+                      prefixIcon: const Icon(Icons.family_restroom_rounded),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Relationship is required';
+                        return l10n.relationshipRequired;
                       }
                       return null;
                     },
@@ -561,7 +568,7 @@ class _ContactFormSheetState extends State<_ContactFormSheet> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: const Text('Cancel'),
+                          child: Text(l10n.cancel),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -577,7 +584,7 @@ class _ContactFormSheetState extends State<_ContactFormSheet> {
                                   ),
                                 )
                               : const Icon(Icons.check_rounded, size: 18),
-                          label: Text(_isEditing ? 'Save' : 'Add'),
+                          label: Text(_isEditing ? l10n.save : l10n.add),
                           style: FilledButton.styleFrom(
                             backgroundColor: AppColors.red,
                             minimumSize: const Size(0, 50),
@@ -612,6 +619,7 @@ class _SearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final hasValue = controller.text.isNotEmpty;
@@ -629,7 +637,7 @@ class _SearchField extends StatelessWidget {
         controller: controller,
         onChanged: onChanged,
         decoration: InputDecoration(
-          hintText: 'Search contacts',
+          hintText: l10n.searchContacts,
           prefixIcon: Icon(
             Icons.search_rounded,
             color: isDark ? Colors.white54 : AppColors.textSecondary,
@@ -638,7 +646,7 @@ class _SearchField extends StatelessWidget {
               ? IconButton(
                   onPressed: onClear,
                   icon: const Icon(Icons.close_rounded, size: 20),
-                  tooltip: 'Clear',
+                  tooltip: l10n.clear,
                 )
               : null,
           border: InputBorder.none,
@@ -666,6 +674,7 @@ class _ContactListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -737,10 +746,10 @@ class _ContactListTile extends StatelessWidget {
                 onPressed: onCall,
                 icon: const Icon(Icons.call_rounded),
                 color: AppColors.success,
-                tooltip: 'Call ${contact.name}',
+                tooltip: '${l10n.call} ${contact.name}',
               ),
               PopupMenuButton<_ContactAction>(
-                tooltip: 'Contact actions',
+                tooltip: l10n.contactActions,
                 onSelected: (action) {
                   switch (action) {
                     case _ContactAction.edit:
@@ -751,14 +760,14 @@ class _ContactListTile extends StatelessWidget {
                       break;
                   }
                 },
-                itemBuilder: (context) => const [
+                itemBuilder: (context) => [
                   PopupMenuItem(
                     value: _ContactAction.edit,
                     child: Row(
                       children: [
-                        Icon(Icons.edit_outlined, size: 20),
-                        SizedBox(width: 10),
-                        Text('Edit'),
+                        const Icon(Icons.edit_outlined, size: 20),
+                        const SizedBox(width: 10),
+                        Text(l10n.edit),
                       ],
                     ),
                   ),
@@ -766,13 +775,13 @@ class _ContactListTile extends StatelessWidget {
                     value: _ContactAction.delete,
                     child: Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.delete_outline_rounded,
                           size: 20,
                           color: AppColors.red,
                         ),
-                        SizedBox(width: 10),
-                        Text('Delete'),
+                        const SizedBox(width: 10),
+                        Text(l10n.delete),
                       ],
                     ),
                   ),
@@ -909,6 +918,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -927,7 +937,7 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              isSearching ? 'No contacts found' : 'No emergency contacts yet',
+              isSearching ? l10n.noContactsFound : l10n.noEmergencyContacts,
               textAlign: TextAlign.center,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
@@ -936,8 +946,8 @@ class _EmptyState extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               isSearching
-                  ? 'Try a different name, phone, or relationship.'
-                  : 'Add family or trusted contacts you can reach quickly.',
+                  ? l10n.tryDifferentSearch
+                  : l10n.addFamilyOrTrusted,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: isDark ? Colors.white54 : AppColors.textSecondary,
@@ -948,7 +958,7 @@ class _EmptyState extends StatelessWidget {
               FilledButton.icon(
                 onPressed: onAdd,
                 icon: const Icon(Icons.person_add_rounded),
-                label: const Text('Add Contact'),
+                label: Text(l10n.addContactTitle),
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.red,
                   minimumSize: const Size(0, 46),
@@ -973,6 +983,7 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -989,7 +1000,7 @@ class _ErrorState extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Could not load contacts',
+              l10n.couldNotLoadContacts,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
@@ -1007,7 +1018,7 @@ class _ErrorState extends StatelessWidget {
             FilledButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Retry'),
+              label: Text(l10n.retry),
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.red,
                 shape: RoundedRectangleBorder(

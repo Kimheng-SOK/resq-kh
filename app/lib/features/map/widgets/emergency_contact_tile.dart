@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_color.dart';
 import '../../../core/utils/service_utils.dart';
 import '../../../models/emergency_contact.dart';
@@ -26,6 +27,7 @@ class EmergencyContactTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final color = ServiceUtils.colorForType(contact.type);
@@ -94,7 +96,7 @@ class EmergencyContactTile extends StatelessWidget {
                 color: isDark ? Colors.white54 : AppColors.textSecondary,
               ),
               onPressed: onNotifyTap,
-              tooltip: 'Notify this contact',
+              tooltip: l10n.notifyThisContact,
             ),
           ],
         ),

@@ -1,3 +1,4 @@
+import 'package:app/core/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'service_contacts_screen.dart';
 
@@ -6,9 +7,10 @@ class FireStationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const ServiceContactsScreen(
+    final l10n = AppLocalizations.of(context)!;
+    return ServiceContactsScreen(
       category: 'fire_station',
-      title: 'Fire Station',
+      title: l10n.fireStation,
     );
   }
 }
