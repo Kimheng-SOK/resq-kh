@@ -5,25 +5,33 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { getUsers } from '@/lib/api/users';
-import { getAlerts } from '@/lib/api/emergency-alerts';
-import { getServices } from '@/lib/api/services';
-import { getNotifications } from '@/lib/api/notifications';
-import { Siren, Users2, Building2, Bell } from 'lucide-react';
+import {
+  getDashboardOverview,
+  getReportsTimeSeries,
+  getReportsByStatus,
+} from '@/lib/api/analytics';
+import { getReports } from '@/lib/api/emergency-reports';
+import { StatCard } from '@/components/charts/stat-card';
+import {
+  ReportsOverTimeChart,
+  ReportsByStatusChart,
+} from '@/components/charts/overview-charts';
+import { Users2, FileWarning, Building2, Bell } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
-function StatusBadge({ status }: { status: string }) {
-  const variants: Record<string, string> = {
-    active: 'bg-red-100 text-red-800 border-red-200',
-    resolved: 'bg-green-100 text-green-800 border-green-200',
-    cancelled: 'bg-gray-100 text-gray-800 border-gray-200'
-  };
+const REPORT_STATUS_STYLES: Record<string, string> = {
+  pending: 'bg-amber-100 text-amber-800 border-amber-200',
+  dispatched: 'bg-blue-100 text-blue-800 border-blue-200',
+  resolved: 'bg-green-100 text-green-800 border-green-200',
+};
+
+function ReportStatusBadge({ status }: { status: string }) {
   return (
-    <Badge variant="outline" className={variants[status] || ''}>
+    <Badge variant="outline" className={REPORT_STATUS_STYLES[status] || ''}>
       {status}
     </Badge>
   );
@@ -35,121 +43,125 @@ function formatDateTime(dateStr: string): string {
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 }
 
-export default async function DashboardPage() {
-  const [users, alerts, services, notifications] = await Promise.all([
-    getUsers().catch(() => []),
-    getAlerts().catch(() => []),
-    getServices().catch(() => []),
-    getNotifications().catch(() => [])
-  ]);
+function trendPct(thisWeek: number, lastWeek: number): string | undefined {
+  if (lastWeek === 0 && thisWeek === 0) return undefined;
+  if (lastWeek === 0) return `+${thisWeek} new`;
+  const pct = (((thisWeek - lastWeek) / lastWeek) * 100).toFixed(1);
+  const sign = Number(pct) >= 0 ? '+' : '';
+  return `${sign}${pct}%`;
+}
 
-  const activeAlerts = alerts.filter((a) => a.status === 'active').length;
-  const unreadNotifications = notifications.filter((n) => !n.is_read).length;
-  const recentAlerts = alerts.slice(0, 5);
+export default async function DashboardPage() {
+  const [overview, reportsTimeSeries, reportsByStatus, recentReports] =
+    await Promise.all([
+      getDashboardOverview().catch(() => null),
+      getReportsTimeSeries({ granularity: 'day' }).catch(() => []),
+      getReportsByStatus().catch(() => []),
+      getReports().catch(() => []),
+    ]);
+
+  const topReports = recentReports.slice(0, 5);
 
   return (
     <div className="space-y-6">
-      {/* Stats Cards */}
+      {/* ── Stat Cards ── */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{users.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Registered users on the platform
-            </p>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Total Users"
+          value={overview?.totalUsers ?? 0}
+          icon={<Users2 className="h-4 w-4" />}
+          subtitle="Registered users"
+          trend={
+            overview
+              ? trendPct(
+                  overview.recentTrends.newUsersThisWeek,
+                  overview.recentTrends.newUsersLastWeek,
+                )
+              : undefined
+          }
+        />
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Alerts</CardTitle>
-            <Siren className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{activeAlerts}</div>
-            <p className="text-xs text-muted-foreground">
-              {alerts.length} total, {activeAlerts} currently active
-            </p>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Pending Reports"
+          value={overview?.pendingReports ?? 0}
+          icon={<FileWarning className="h-4 w-4" />}
+          subtitle="Awaiting dispatch"
+        />
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Services</CardTitle>
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{services.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Emergency services listed
-            </p>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Services"
+          value={overview?.totalServices ?? 0}
+          icon={<Building2 className="h-4 w-4" />}
+          subtitle="Emergency services listed"
+        />
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Unread Notifications
-            </CardTitle>
-            <Bell className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{unreadNotifications}</div>
-            <p className="text-xs text-muted-foreground">
-              {notifications.length} total notifications
-            </p>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Unread Notifications"
+          value={overview?.unreadNotifications ?? 0}
+          icon={<Bell className="h-4 w-4" />}
+          subtitle={
+            overview
+              ? `${overview.totalNotifications} total notifications`
+              : undefined
+          }
+        />
       </div>
 
-      {/* Recent Alerts */}
+      {/* ── Charts ── */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <ReportsByStatusChart data={reportsByStatus} />
+        <ReportsOverTimeChart data={reportsTimeSeries} />
+      </div>
+
+      {/* ── Recent Reports Table ── */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Emergency Alerts</CardTitle>
+          <CardTitle>Recent Emergency Reports</CardTitle>
         </CardHeader>
         <CardContent>
-          {recentAlerts.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No alerts found.</p>
+          {topReports.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No reports submitted yet.
+            </p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Type</TableHead>
+                  <TableHead>Reporter</TableHead>
+                  <TableHead>Incident Type</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead className="hidden md:table-cell">Location</TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    Description
+                  </TableHead>
                   <TableHead className="hidden md:table-cell">Time</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {recentAlerts.map((alert) => (
-                  <TableRow key={alert.id}>
+                {topReports.map((report) => (
+                  <TableRow key={report.id}>
                     <TableCell className="font-medium">
-                      {alert.user?.full_name || alert.user?.phone_number || 'Unknown'}
+                      <div>{report.reporter_name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {report.reporter_phone}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">
-                        {alert.emergency_type?.label || 'N/A'}
+                        {report.incidentType?.label || 'N/A'}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <StatusBadge status={alert.status} />
+                      <ReportStatusBadge status={report.status} />
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell max-w-48 truncate">
+                      {report.description || '—'}
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
-                      {alert.location
-                        ? `${Number(alert.location.latitude).toFixed(4)}, ${Number(alert.location.longitude).toFixed(4)}`
-                        : '—'}
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      {formatDateTime(alert.created_at)}
+                      {formatDateTime(report.created_at)}
                     </TableCell>
                   </TableRow>
                 ))}
